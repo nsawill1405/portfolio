@@ -344,7 +344,7 @@
                     <p>Flexible with payment, I accept <strong>percentage deals, Robux, or USD through PayPal</strong>. Hit me up if you want to work together.</p>
                 </div>
                 <div class="avatar-container reveal-right" style="transition-delay:0.25s">
-                    <model-viewer src="preview.glb" alt="3D Avatar" auto-rotate camera-controls disable-zoom touch-action="pan-y" rotation-per-second="30deg" camera-orbit="0deg 75deg 6m" min-camera-orbit="auto auto 6m" max-camera-orbit="auto auto 6m" shadow-intensity="0.8" exposure="1.0" tone-mapping="commerce" style="background-color:#0a0a0f;">
+                    <model-viewer src="preview.glb" alt="3D Avatar" auto-rotate camera-controls disable-zoom interaction-prompt="none" touch-action="pan-y" rotation-per-second="30deg" camera-orbit="0deg 75deg 12m" min-camera-orbit="auto auto 12m" max-camera-orbit="auto auto 12m" shadow-intensity="0.8" exposure="1.0" tone-mapping="commerce" style="background-color:#0a0a0f;">
                         <div slot="poster" style="display:flex;align-items:center;justify-content:center;height:100%;color:#9b59b6;font-size:1rem;">Loading 3D Model...</div>
                     </model-viewer>
                     <div class="avatar-fallback" id="avatarFallback">Model not found. Place <code>preview.glb</code> in the same folder.<br><small style="color:#888;margin-top:0.5rem;display:block;">Convert .fbx to .glb with Blender or an online converter.</small></div>
@@ -1008,7 +1008,17 @@ return PlayerData
         document.addEventListener('DOMContentLoaded', () => {
             const mv = document.querySelector('model-viewer');
             const fb = document.getElementById('avatarFallback');
-            if (mv) mv.addEventListener('error', () => { mv.style.display = 'none'; if (fb) fb.style.display = 'block'; });
+            if (mv) {
+                mv.addEventListener('error', () => { mv.style.display = 'none'; if (fb) fb.style.display = 'block'; });
+                mv.addEventListener('load', () => {
+                    const model = mv.model;
+                    if (model && model.materials) {
+                        for (const mat of model.materials) {
+                            mat.setDoubleSided(true);
+                        }
+                    }
+                });
+            }
         });
     </script>
 </body>
