@@ -653,6 +653,393 @@ return progressionFunnel
                 </p>
             </div>
 
+			            <!-- Portfolio Item Template -->
+            <div class="portfolio-item">
+                <h3>Pet Simulator System</h3>
+                
+                <div class="portfolio-content">
+                    <!-- Left: Image/Video -->
+                    <video src="Portfolio/petsim.mp4" controls class="portfolio-media"></video>
+
+                    <!-- Right: Code Section -->
+                    <div class="portfolio-code">
+                        <pre><code class="language-lua">
+--Services
+local Knit = require(game.ReplicatedStorage.Packages.Knit)
+local RunService = game:GetService("RunService")
+local DataService = nil
+local InventoryHandlerService = nil
+local Modules = game.ReplicatedStorage:WaitForChild("Modules")
+
+--player related variables
+local Player = game.Players.LocalPlayer
+local Mouse = Player:GetMouse()
+local PlayersData = nil
+local MouseClickedConnection = nil
+local MouseMovedConnection = nil
+local SelectedTemplate = nil
+
+--pet related variables
+local AllPetModules = {
+	Pets = "nil",
+	Types = "nil",
+	Rarities = "nil",
+	GuiFunctions = "nil"
+}
+
+local ExistingPets = {}
+
+--Gui related variables
+local Gui = Player.PlayerGui:WaitForChild("Inventory")
+local Inventory = Gui:WaitForChild("Main")
+local PetsFrame = Inventory:WaitForChild("Pets"):WaitForChild("Container")
+local EquippedFrame = PetsFrame:WaitForChild("Equipped"):WaitForChild("Container")
+local UnequippedFrame = PetsFrame:WaitForChild("Unequipped"):WaitForChild("Container")
+local TemplateIcon = Gui:WaitForChild("TemplateIcon")
+local PetDetails = Gui:WaitForChild("TemplateDetails")
+local Open : ImageButton = Gui:WaitForChild("Open")
+local Exit : ImageButton = Inventory:WaitForChild("Exit"):WaitForChild("Button")
+
+local NonEquippedPetsSorting = nil
+local EquippedPetsSorting = nil
+
+local EquipConnections = {}
+
+
+local InventoryHandler = Knit.CreateController({
+	Name = "InventoryHandler"
+})
+
+local function WipeFrame(Frame)
+	for _, Pet in pairs(Frame:GetChildren()) do -- remove pets from frame
+		if Pet:IsA("ImageButton") or Pet:IsA("ImageLabel") then
+			Pet:Destroy() -- remove every single pet in frame
+		end
+	end
+end
+
+function InventoryHandler.AddEquipConnection(Func)
+	table.insert(EquipConnections,Func)
+end
+
+function InventoryHandler.RemoveEquipConnection(Func)
+	table.remove(EquipConnections,table.find(EquipConnections,Func))
+end
+
+local function WipeFrames(Frames : {Frame : Frame})
+	for _, Frame in pairs(Frames) do -- remove pets from frame
+		WipeFrame(Frame)
+	end
+end
+
+function InventoryHandler.GetNonItemedPet(Pet,Proc : string?,Args : {}?)
+	local NonItemedPet = Pet
+	for _, Statistic in pairs(AllPetModules.Types.All) do
+		if string.find(Pet,Statistic.Prefix) then
+			NonItemedPet = Pet:gsub(Statistic.Prefix,"")
+
+			if Proc ~= nil then
+				if Args ~= nil then
+					Statistic[Proc](Statistic,PetDetails,Args)
+				else
+					Statistic[Proc](Statistic,PetDetails)
+				end
+			end
+			NonItemedPet = InventoryHandler.GetNonItemedPet(NonItemedPet) -- if pet is a proc of another proc then get the non itemed pet
+		end
+	end
+
+	return NonItemedPet
+end
+
+local function MakeNewTemplate(Pet,Parent)
+	local TemplateClone = TemplateIcon:Clone() -- new pet icon
+	TemplateClone.Visible = true
+	TemplateClone.Name = Pet
+	
+	local NonItemedPet = InventoryHandler.GetNonItemedPet(Pet,"InventoryInit",{TemplateClone})
+	
+	local PetData = AllPetModules.Pets.All[NonItemedPet]
+	TemplateClone.Parent = Parent
+	TemplateClone.Item.Image = PetData.Image
+	TemplateClone.Multiplier.Text = PetData.Multiplier
+	TemplateClone.Type.BackgroundColor3 = AllPetModules.Rarities.All[PetData.Type].Color
+	
+	TemplateClone.MouseLeave:Connect(function()
+		InventoryHandler.LeaveInspectedPet(TemplateClone)
+	end)
+	TemplateClone.MouseEnter:Connect(function()
+		InventoryHandler.InspectPet(TemplateClone)
+	end)
+	
+	AllPetModules.Rarities.All[PetData.Type]:InventoryInit(TemplateClone)
+	
+	if Parent.Parent.Name == "Equipped" then
+		if EquippedPetsSorting == nil then
+			EquippedPetsSorting = {}
+			EquippedPetsSorting[1] = {TemplateClone,PetData.Multiplier}
+			return TemplateClone
+		end
+		
+		for Index, Value in ipairs(EquippedPetsSorting) do
+			if PetData.Multiplier > Value[2] then
+				table.insert(EquippedPetsSorting, Index, {TemplateClone, PetData.Multiplier})
+				return TemplateClone
+			end
+		end
+		table.insert(EquippedPetsSorting,{TemplateClone,PetData.Multiplier})
+	elseif Parent.Parent.Name == "Unequipped" then
+		if NonEquippedPetsSorting == nil then
+			NonEquippedPetsSorting = {}
+			NonEquippedPetsSorting[1] = {TemplateClone,PetData.Multiplier}
+			return TemplateClone
+		end
+		for Index, Value in ipairs(NonEquippedPetsSorting) do
+			if PetData.Multiplier > Value[2] then
+				table.insert(NonEquippedPetsSorting, Index, {TemplateClone, PetData.Multiplier})
+				return TemplateClone
+			end
+		end
+		table.insert(NonEquippedPetsSorting,{TemplateClone,PetData.Multiplier})
+	end
+	
+	return TemplateClone
+end
+
+function InventoryHandler.MouseMoved()
+	if SelectedTemplate == nil then
+		if MouseMovedConnection ~= nil then
+			MouseMovedConnection:Disconnect()
+			MouseMovedConnection = nil
+		else
+			return
+		end
+	end
+	local MousePos = Vector2.new(Mouse.X, Mouse.Y)
+	local ScreenSize = workspace.CurrentCamera.ViewportSize
+
+	local PetSize = PetDetails.AbsoluteSize
+	local Offset = Vector2.new(0, 0.1) * ScreenSize
+	local ClampedX = math.clamp(MousePos.X + Offset.X, 0, ScreenSize.X - PetSize.X)
+	local ClampedY = math.clamp(MousePos.Y + Offset.Y, 0, ScreenSize.Y - PetSize.Y)
+
+	PetDetails.Position = UDim2.fromOffset(ClampedX,ClampedY)
+	
+	--[[
+	local AbsolutePosition = PetDetails.AbsolutePosition
+	local AbsoluteSize = PetDetails.AbsoluteSize
+	local ScreenSize = workspace.CurrentCamera.ViewportSize
+	
+	PetDetails.Position = UDim2.fromOffset(Mouse.X,Mouse.Y) +UDim2.fromScale(0,0.1) -- update position of pet details to mouse position]]
+end
+
+function InventoryHandler.InspectPet(Pet)
+	local NonItemedPet = InventoryHandler.GetNonItemedPet(Pet.Name)
+	if PetDetails.PetName.Text == NonItemedPet and PetDetails.Visible then
+		return -- if pet is already hovered then return
+	end
+	for _, Detail in pairs(PetDetails:GetChildren()) do
+		if Detail:HasTag("Specific") then
+			Detail:Destroy()
+		end
+	end
+	
+	NonItemedPet = InventoryHandler.GetNonItemedPet(Pet.Name,"DisplayInit",{PetDetails})
+	local PetData = AllPetModules.Pets.All[NonItemedPet]
+	AllPetModules.Rarities.All[PetData.Type]:DisplayInit(Pet)
+	PetDetails.Visible = true
+	PetDetails.PetName.Text = PetData.DisplayName
+	PetDetails.Descriptions.Text = PetData.Description
+	PetDetails.Type.Text = PetData.Type
+	PetDetails.Type.TextColor3 = AllPetModules.Rarities.All[PetData.Type].Color
+	PetDetails.GlobalAmount.Text = tostring(ExistingPets[NonItemedPet] or 1).." exist"
+	PetDetails.Multiplier.Text = PetData.Multiplier
+	PetDetails.Position = UDim2.fromOffset(Mouse.X,Mouse.Y) -- update position of pet details to mouse position
+	SelectedTemplate = Pet
+	
+	local Layout = PetDetails:FindFirstChildWhichIsA("UIListLayout")
+	if Layout then
+		local TotalHeight = 0
+		for _, Child in ipairs(PetDetails:GetChildren()) do
+			if Child:IsA("GuiObject") and Child.Visible and Child ~= Layout then
+				TotalHeight += Child.Size.Y.Offset + Layout.Padding.Offset
+			end
+		end
+		PetDetails.Size = UDim2.new(PetDetails.Size.X.Scale, PetDetails.Size.X.Offset, 0, TotalHeight)
+	end
+	
+	MouseClickedConnection = Pet.InputBegan:Connect(function(Input) -- listen for when player clicks on pet
+		if Input.UserInputType == Enum.UserInputType.MouseButton1 then -- make sure its a left click
+			InventoryHandler.SelectPet(Pet)
+		end
+	end)
+	
+	MouseMovedConnection = Mouse.Move:Connect(InventoryHandler.MouseMoved) -- listen for when mouse moves
+end
+
+local function RemoveMouseConnections()
+	for _, Detail in pairs(PetDetails:GetChildren()) do
+		if Detail:HasTag("Specific") then
+			Detail:Destroy()
+		end
+	end
+	
+	if MouseClickedConnection ~= nil then
+		MouseClickedConnection:Disconnect()
+		MouseClickedConnection = nil
+	end
+	if MouseMovedConnection ~= nil then
+		MouseMovedConnection:Disconnect()
+		MouseMovedConnection = nil
+	end
+end
+
+function InventoryHandler.LeaveInspectedPet(Pet)
+	local NonItemedPet = InventoryHandler.GetNonItemedPet(Pet.Name)
+	if NonItemedPet == PetDetails.PetName.Text  then -- make sure pet is actually hovered
+		PetDetails.Visible = false
+		SelectedTemplate = nil
+		InventoryHandler.GetNonItemedPet(Pet.Name,"RemoveDisplay",{PetDetails})
+		RemoveMouseConnections()
+	end
+end
+
+function InventoryHandler.SelectPet(Pet)
+	for _, Connection in pairs(EquipConnections) do
+		if Connection(Pet) == false then
+			return -- make sure we WANT to equip/unequip the pet
+		end
+	end
+	if Pet.Parent.Parent.Name == "Equipped" then -- if pet is already equipped then unequip it
+		InventoryHandlerService:UnequipPet(Pet.Name)
+	else
+		InventoryHandlerService:EquipPet(Pet.Name)
+	end
+end
+
+function InventoryHandler.PreloadAddExistingPet(Pet)
+	local Name = InventoryHandler.GetNonItemedPet(Pet.Name or Pet)
+	local Success, Error = pcall(function()
+		ExistingPets[Name] = ExistingPets[Name] + 1 -- add to existing pets
+	end)
+	if not Success then
+		if ExistingPets == nil then
+			ExistingPets = {}
+		end
+		ExistingPets[Name] = 1 -- if pet doesnt exist then make it 1
+	end
+end
+
+function InventoryHandler.PreloadRemoveExistingPet(Pet)
+	local Name = InventoryHandler.GetNonItemedPet(Pet.Name or Pet)
+	local Success, Error = pcall(function()
+		ExistingPets[Name] = (ExistingPets[Name] or 1) - 1 -- remove from existing pets
+	end)
+	if not Success then
+		if ExistingPets == nil then
+			ExistingPets = {}
+		end
+		ExistingPets[Name] = 0 -- if pet doesnt exist then make it 0
+	end
+end
+
+function InventoryHandler.ReloadInventory(Data)
+	local Success, Error = pcall(function()
+		for _, Detail in pairs(PetDetails:GetChildren()) do
+			if Detail:HasTag("Specific") then
+				Detail:Destroy()
+			end
+		end
+		NonEquippedPetsSorting = nil
+		EquippedPetsSorting = nil
+		PlayersData = Data
+		PetDetails.Visible = false
+		local Pets = Data.Pets
+		local EquippedPets = Data.EquippedPets
+
+		-- Remove unused connections to save resources
+		RemoveMouseConnections()
+		SelectedTemplate = nil
+
+		EquippedFrame.Parent.Title.Text = string.format("Equipped Pets (%d/%d)",#EquippedPets,Data.MaxEquippedPets)
+
+		WipeFrames({EquippedFrame,UnequippedFrame})
+
+		for _, Pet in pairs(Pets) do -- load in new pets to unequipped frame
+			if UnequippedFrame:FindFirstChild(Pet) then
+				if UnequippedFrame[Pet].Amount.Visible == false then UnequippedFrame[Pet].Amount.Visible = true end
+				UnequippedFrame[Pet].Amount.Text = tostring(tonumber(string.split(UnequippedFrame[Pet].Amount.Text,"x")[1]) +1).."x" -- display amount of same pet in inventory
+
+				local PetData = AllPetModules.Pets.All[InventoryHandler.GetNonItemedPet(Pet)]
+				AllPetModules.Rarities.All[PetData.Type]:InventoryInit(UnequippedFrame:FindFirstChild(Pet))
+				continue
+			end
+			MakeNewTemplate(Pet,UnequippedFrame)
+		end
+		if NonEquippedPetsSorting ~= nil then
+			for Index, Template in ipairs(NonEquippedPetsSorting) do
+				Template[1].LayoutOrder = Index
+			end
+		end
+
+
+		for _, Pet in pairs(EquippedPets) do -- load in new pets to equipped frame
+			local TemplateClone = MakeNewTemplate(Pet,EquippedFrame)
+			TemplateClone.Amount.Text = "" -- no amount needed as its only 1
+		end
+		if EquippedPetsSorting ~= nil then
+			for Index, Template in ipairs(EquippedPetsSorting) do
+				Template[1].LayoutOrder = Index
+			end
+		end
+	end)
+end
+
+function InventoryHandler:KnitStart()
+	DataService = Knit.GetService("PlayerHandler")
+	InventoryHandlerService = Knit.GetService("InventoryHandler")
+	
+	for Name, Misc in pairs(AllPetModules) do
+		local Required = require(Modules:WaitForChild(Name))
+		Required.All = Required.Load()
+		AllPetModules[Name] = Required
+	end
+	
+	Open.Activated:Connect(function() -- check for when player wants to open/close inventory
+		Inventory.Visible = not Inventory.Visible
+	end)
+	
+	Exit.Activated:Connect(function()
+		Inventory.Visible = false
+	end)
+	
+
+	DataService.DataChanged:Connect(InventoryHandler.ReloadInventory) -- check when players data changes
+	InventoryHandlerService.ExistingPetsChanged:Connect(function(Data)
+		ExistingPets = Data
+	end)
+	
+	InventoryHandlerService:GetExistingPets():andThen(function(Data) -- get existing pets
+		ExistingPets = Data
+	end)
+	DataService:GetPlayerData():andThen(function(Data) -- get current players data whenever they join
+		InventoryHandler.ReloadInventory(Data) -- refresh inventory
+	end)
+end
+
+
+Inventory.Visible = false
+return InventoryHandler
+                        </code></pre>
+                    </div>
+                </div>
+
+                <!-- Below: Description -->
+                <p class="description">
+					Got hired short-term to make a pet simulator inventory and egg system.
+                </p>
+            </div>
+
             <!-- Add more portfolio items by copying the template above -->
 
 
