@@ -418,12 +418,8 @@
             width: 2.5rem;
             height: 2.5rem;
             margin: 0 auto 1rem auto;
-            color: #9b59b6;
-        }
-
-        .robux-icon svg {
-            width: 100%;
-            height: 100%;
+            display: block;
+            filter: brightness(0) saturate(100%) invert(49%) sepia(45%) saturate(1200%) hue-rotate(240deg) brightness(90%) contrast(90%);
         }
 
         .payment-card h4 {
@@ -540,15 +536,15 @@
                         projects that reached millions of players.
                     </p>
                     <p style="margin-bottom: 1rem;">
-                        I code in <strong>Luau, Python, C#, HTML, CSS, JavaScript, and Java</strong>, whatever 
+                        I code in <strong>Luau, Python, C#, HTML, CSS, JavaScript, and Java</strong> — basically whatever 
                         the project needs. I can handle everything from game mechanics and UI to backend systems.
                     </p>
                     <p style="margin-bottom: 1rem;">
                         I put in <strong>5+ hours every day</strong> on development work. Available for both long-term partnerships 
-                        and one-off projects.
+                        and quick one-off projects.
                     </p>
                     <p>
-                        Flexible with payment, I accept <strong>percentage deals, Robux, or USD through PayPal</strong>. 
+                        Flexible with payment — I accept <strong>percentage deals, Robux, or USD through PayPal</strong>. 
                         Hit me up if you want to work together.
                     </p>
                 </div>
@@ -569,14 +565,7 @@
                         <p>Revenue share partnerships for long-term projects</p>
                     </div>
                     <div class="payment-card">
-                        <div class="robux-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="currentColor">
-                                <g transform="rotate(25 50 50)">
-                                    <rect x="15" y="15" width="70" height="70" fill="currentColor"/>
-                                    <rect x="35" y="35" width="30" height="30" fill="#0a0a0f"/>
-                                </g>
-                            </svg>
-                        </div>
+                        <img src="robux.png" alt="Robux" class="robux-icon">
                         <h4>Robux</h4>
                         <p>Direct payment through Roblox platform</p>
                     </div>
@@ -864,10 +853,10 @@ greet("Developer")</code></pre>
             
             // Helper function to setup model
             function setupModel(model) {
-                // Apply materials to all meshes to avoid wireframe
+                // Fix materials and disable wireframe
                 model.traverse((child) => {
                     if (child.isMesh) {
-                        // Ensure materials are properly rendered
+                        // Handle missing materials
                         if (!child.material) {
                             child.material = new THREE.MeshStandardMaterial({
                                 color: 0x9b59b6,
@@ -875,14 +864,22 @@ greet("Developer")</code></pre>
                                 metalness: 0.2
                             });
                         }
-                        // Force materials to be non-wireframe
-                        if (Array.isArray(child.material)) {
-                            child.material.forEach(mat => {
+                        
+                        // Fix wireframe for both single and multi-materials
+                        const materials = Array.isArray(child.material) ? child.material : [child.material];
+                        materials.forEach(mat => {
+                            if (mat) {
                                 mat.wireframe = false;
-                            });
-                        } else {
-                            child.material.wireframe = false;
-                        }
+                                mat.needsUpdate = true;
+                                
+                                // Ensure proper material type for FBX
+                                if (mat.type === 'MeshPhongMaterial' || mat.type === 'MeshLambertMaterial') {
+                                    // Keep original material but ensure it's not wireframe
+                                    mat.flatShading = false;
+                                }
+                            }
+                        });
+                        
                         child.castShadow = true;
                         child.receiveShadow = true;
                     }
@@ -901,6 +898,8 @@ greet("Developer")</code></pre>
                 
                 scene.add(model);
                 loadingText.style.display = 'none';
+                
+                console.log('Model loaded successfully');
             }
             
             // Try loading FBX first, then GLB
