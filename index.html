@@ -11,500 +11,487 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/lua.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+    <script>if(!window.Lenis)document.write('<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"><\/script>')</script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html {
+            scroll-behavior: smooth;
         }
-
+        /* Lenis smooth scroll */
+        html.lenis, html.lenis body {
+            height: auto;
+        }
+        .lenis.lenis-smooth {
+            scroll-behavior: auto !important;
+        }
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+        /* Hide scrollbar everywhere */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #000000;
             color: #ffffff;
             overflow-x: hidden;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE/Edge */
+        }
+        body::-webkit-scrollbar {
+            display: none; /* Chrome/Safari/Opera */
         }
 
-        /* Starfield Background */
+	/* Hide scrollbar on html too */
+	html {
+    		scrollbar-width: none;   /* Firefox */
+    		-ms-overflow-style: none; /* IE/Edge */
+	}
+
+	html::-webkit-scrollbar {
+    		display: none; /* Chrome/Safari */
+	}
+
+        /* ===== CURSOR GLOW ===== */
+        .cursor-glow {
+            position: fixed;
+            width: 400px; height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(138,43,226,0.08) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s ease;
+            opacity: 0;
+        }
+        .cursor-glow.visible { opacity: 1; }
+
+        /* ===== STARFIELD ===== */
         #starfield {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            background: #000000;
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0; background: #000000;
         }
 
-        /* Navigation Bar */
+        /* ===== SHOOTING STARS ===== */
+        .shooting-star {
+            position: fixed; z-index: 1;
+            width: 120px; height: 2px;
+            background: linear-gradient(90deg, rgba(138,43,226,0.9), transparent);
+            border-radius: 2px; opacity: 0;
+            pointer-events: none; filter: blur(0.5px);
+            box-shadow: 0 0 6px rgba(138,43,226,0.6), 0 0 12px rgba(138,43,226,0.3);
+        }
+        @keyframes shootingStar {
+            0% { opacity: 0; transform: translateX(0) translateY(0) rotate(-35deg); }
+            5% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; transform: translateX(600px) translateY(350px) rotate(-35deg); }
+        }
+
+        /* ===== NAV ===== */
         nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
             background: rgba(15, 15, 20, 0.95);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(138, 43, 226, 0.3);
             padding: 0 2rem;
             box-shadow: 0 2px 20px rgba(138, 43, 226, 0.2);
+            transition: box-shadow 0.4s ease, background 0.4s ease;
         }
-
+        nav.scrolled {
+            background: rgba(10, 10, 15, 0.98);
+            box-shadow: 0 4px 30px rgba(138, 43, 226, 0.35);
+        }
         .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 70px;
+            max-width: 1200px; margin: 0 auto;
+            display: flex; justify-content: space-between;
+            align-items: center; height: 70px;
         }
-
         .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
+            font-size: 1.5rem; font-weight: 700;
             background: linear-gradient(135deg, #9b59b6 0%, #8a2be2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; white-space: nowrap;
+            display: flex; align-items: center; gap: 0.8rem; flex-shrink: 0;
         }
-
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            object-fit: contain;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2.5rem;
-            list-style: none;
-        }
-
+        .logo-icon { width: 40px; height: 40px; border-radius: 8px; object-fit: contain; }
+        .nav-links { display: flex; gap: 2.5rem; list-style: none; }
         .nav-links a {
-            color: #ffffff;
-            text-decoration: none;
-            font-size: 1rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            position: relative;
-            padding: 0.5rem 0;
+            color: #ffffff; text-decoration: none; font-size: 1rem;
+            font-weight: 500; transition: all 0.3s ease;
+            position: relative; padding: 0.5rem 0;
         }
-
         .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
+            content: ''; position: absolute; bottom: 0; left: 0;
+            width: 0; height: 2px;
             background: linear-gradient(135deg, #9b59b6 0%, #8a2be2 100%);
             transition: width 0.3s ease;
         }
+        .nav-links a:hover { color: #9b59b6; }
+        .nav-links a:hover::after { width: 100%; }
 
-        .nav-links a:hover {
-            color: #9b59b6;
+        /* Hamburger */
+        .hamburger {
+            display: none; flex-direction: column; gap: 5px;
+            cursor: pointer; padding: 8px; z-index: 110;
+            background: none; border: none;
         }
-
-        .nav-links a:hover::after {
-            width: 100%;
+        .hamburger span {
+            display: block; width: 26px; height: 2px;
+            background: #fff; border-radius: 2px; transition: all 0.3s ease;
         }
+        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
 
-        /* Main Content */
+        /* ===== MAIN ===== */
         main {
-            position: relative;
-            z-index: 10;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 4rem 2rem;
-            padding-top: calc(70px + 2rem);
-            min-height: calc(100vh - 70px);
+            position: relative; z-index: 10; max-width: 1200px;
+            margin: 0 auto; padding: 4rem 2rem;
+            padding-top: calc(70px + 2rem); min-height: calc(100vh - 70px);
         }
 
-        .hero {
-            text-align: center;
-            padding: 6rem 0;
+        /* ===== SCROLL REVEAL CLASSES ===== */
+        .reveal {
+            opacity: 0; transform: translateY(40px);
+            transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1);
         }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal-left {
+            opacity: 0; transform: translateX(-50px);
+            transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1);
+        }
+        .reveal-left.visible { opacity: 1; transform: translateX(0); }
+        .reveal-right {
+            opacity: 0; transform: translateX(50px);
+            transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1);
+        }
+        .reveal-right.visible { opacity: 1; transform: translateX(0); }
+        .reveal-scale {
+            opacity: 0; transform: scale(0.9);
+            transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1), transform 0.6s cubic-bezier(0.22,1,0.36,1);
+        }
+        .reveal-scale.visible { opacity: 1; transform: scale(1); }
 
+
+
+        /* ===== HERO ===== */
+        .hero { text-align: center; padding: 6rem 0; }
         .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #9b59b6 0%, #8a2be2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-size: 3.5rem; margin-bottom: 1rem;
+            background: linear-gradient(270deg, #9b59b6, #8a2be2, #6c3ce0, #9b59b6);
+            background-size: 300% 300%;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             background-clip: text;
-            animation: fadeInUp 0.8s ease;
+            animation: gradientShift 6s ease infinite, heroFloat 4s ease-in-out infinite;
         }
-
-        .hero p {
-            font-size: 1.3rem;
-            color: #b0b0b0;
-            animation: fadeInUp 0.8s ease 0.2s backwards;
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
+        @keyframes heroFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .hero p { font-size: 1.3rem; color: #b0b0b0; }
+        .hero p::after {
+            content: '|'; animation: blink 1s step-end infinite;
+            color: #9b59b6; margin-left: 2px;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        /* Stats Cards */
+        /* ===== STATS ===== */
         .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin: 3rem auto;
-            max-width: 900px;
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem; margin: 3rem auto; max-width: 900px;
         }
-
         .stat-card {
-            background: rgba(15, 15, 20, 0.8);
-            padding: 1.5rem;
-            border-radius: 10px;
-            border: 1px solid rgba(138, 43, 226, 0.3);
-            text-align: center;
-            transition: transform 0.3s ease, border-color 0.3s ease;
-            animation: fadeInUp 0.8s ease 0.6s backwards;
+            background: rgba(15, 15, 20, 0.8); padding: 1.5rem;
+            border-radius: 10px; border: 1px solid rgba(138, 43, 226, 0.3);
+            text-align: center; position: relative; overflow: hidden;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
-
+        .stat-card::before {
+            content: ''; position: absolute; top: -50%; left: -75%;
+            width: 50%; height: 200%;
+            background: linear-gradient(90deg, transparent, rgba(138,43,226,0.07), transparent);
+            transform: skewX(-20deg); transition: left 0.6s ease; pointer-events: none;
+        }
+        .stat-card:hover::before { left: 125%; }
         .stat-card:hover {
             transform: translateY(-5px);
             border-color: rgba(138, 43, 226, 0.8);
-            box-shadow: 0 5px 20px rgba(138, 43, 226, 0.3);
+            box-shadow: 0 5px 25px rgba(138, 43, 226, 0.35);
         }
-
         .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
+            font-size: 2.5rem; font-weight: 700;
             background: linear-gradient(135deg, #9b59b6 0%, #8a2be2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; margin-bottom: 0.5rem;
         }
+        .stat-label { color: #b0b0b0; font-size: 1rem; }
 
-        .stat-label {
-            color: #b0b0b0;
-            font-size: 1rem;
-        }
-
+        /* ===== CONTENT SECTIONS ===== */
         .content-section {
-            margin: 4rem 0;
-            padding: 2rem;
-            background: rgba(15, 15, 20, 0.8);
-            border-radius: 15px;
+            margin: 4rem 0; padding: 2rem;
+            background: rgba(15, 15, 20, 0.8); border-radius: 15px;
             border: 1px solid rgba(138, 43, 226, 0.3);
             backdrop-filter: blur(10px);
-            animation: fadeInUp 0.8s ease 0.4s backwards;
+            transition: border-color 0.4s ease, box-shadow 0.4s ease;
+            scroll-margin-top: 90px;
         }
-
+        .content-section:hover {
+            border-color: rgba(138, 43, 226, 0.5);
+            box-shadow: 0 0 40px rgba(138, 43, 226, 0.08);
+        }
         .content-section h2 {
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-            color: #9b59b6;
+            font-size: 2rem; margin-bottom: 1.5rem;
+            color: #9b59b6; position: relative; display: inline-block;
         }
-
-        .content-section p {
-            line-height: 1.8;
-            color: #d0d0d0;
-            font-size: 1.1rem;
+        .content-section h2::after {
+            content: ''; position: absolute; bottom: -4px; left: 0;
+            width: 0; height: 2px;
+            background: linear-gradient(90deg, #9b59b6, #8a2be2, transparent);
+            transition: width 0.6s cubic-bezier(0.22,1,0.36,1);
         }
-
-        .contact-item i {
-            margin-right: 0.5rem;
-            font-size: 1.1rem;
-        }
-
+        .content-section:hover h2::after,
+        .content-section h2.line-visible::after { width: 100%; }
+        .content-section p { line-height: 1.8; color: #d0d0d0; font-size: 1.1rem; }
+        .contact-item i { margin-right: 0.5rem; font-size: 1.1rem; }
         .contact-icon-img {
-            width: 1.3rem;
-            height: 1.3rem;
-            margin-right: 0.5rem;
-            vertical-align: middle;
+            width: 1.3rem; height: 1.3rem; margin-right: 0.5rem; vertical-align: middle;
             filter: brightness(0) saturate(100%) invert(49%) sepia(45%) saturate(1200%) hue-rotate(240deg) brightness(90%) contrast(90%);
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Description Layout */
+        /* ===== DESCRIPTION ===== */
         .description-container {
-            display: grid;
-            grid-template-columns: 1fr 350px;
-            gap: 2rem;
-            align-items: start;
+            display: grid; grid-template-columns: 1fr 350px;
+            gap: 2rem; align-items: start;
         }
+        .description-text { line-height: 1.8; color: #d0d0d0; font-size: 1.1rem; }
 
-        .description-text {
-            line-height: 1.8;
-            color: #d0d0d0;
-            font-size: 1.1rem;
-        }
-
-        /* 3D Avatar Container */
+        /* ===== 3D AVATAR ===== */
         .avatar-container {
-            width: 350px;
-            height: 350px;
+            width: 350px; height: 350px;
             border: 2px solid rgba(138, 43, 226, 0.5);
-            border-radius: 10px;
-            background: rgba(10, 10, 15, 0.9);
-            overflow: hidden;
-            position: relative;
+            border-radius: 10px; background: rgba(10, 10, 15, 0.9);
+            overflow: hidden; position: relative;
+            animation: avatarGlow 3s ease-in-out infinite alternate;
+        }
+        @keyframes avatarGlow {
+            0% { box-shadow: 0 0 10px rgba(138,43,226,0.2); }
+            100% { box-shadow: 0 0 25px rgba(138,43,226,0.4), 0 0 50px rgba(138,43,226,0.1); }
+        }
+        model-viewer { width: 100%; height: 100%; --poster-color: #0a0a0f; }
+        model-viewer::part(default-progress-bar) { background: #8a2be2; }
+        .avatar-fallback {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); color: #9b59b6;
+            font-size: 0.9rem; text-align: center; padding: 1rem; display: none;
         }
 
-        #avatar-canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        .avatar-loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #9b59b6;
-            font-size: 1rem;
-            text-align: center;
-        }
-
-        /* Portfolio Template */
+        /* ===== PORTFOLIO ===== */
         .portfolio-item {
-            background: rgba(15, 15, 20, 0.8);
-            border-radius: 10px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
+            background: rgba(15, 15, 20, 0.8); border-radius: 10px;
+            padding: 1.5rem; margin: 1.5rem 0;
             border: 1px solid rgba(138, 43, 226, 0.3);
-            transition: transform 0.3s ease, border-color 0.3s ease;
+            transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), border-color 0.3s ease, box-shadow 0.3s ease;
+            position: relative; overflow: hidden;
         }
-
+        .portfolio-item::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(138,43,226,0.04) 0%, transparent 50%);
+            opacity: 0; transition: opacity 0.4s ease;
+            pointer-events: none; border-radius: 10px;
+        }
+        .portfolio-item:hover::after { opacity: 1; }
         .portfolio-item:hover {
             transform: translateY(-5px);
             border-color: rgba(138, 43, 226, 0.8);
-            box-shadow: 0 5px 20px rgba(138, 43, 226, 0.3);
+            box-shadow: 0 8px 30px rgba(138, 43, 226, 0.3);
         }
-
         .portfolio-item h3 {
-            color: #9b59b6;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
+            color: #9b59b6; margin-bottom: 1rem; font-size: 1.5rem;
+            position: relative; z-index: 1;
         }
-
         .portfolio-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            margin-bottom: 1rem;
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 1.5rem; margin-bottom: 1rem;
+            position: relative; z-index: 1;
         }
-
         .portfolio-media {
-            width: 100%;
-            height: 350px;
-            border-radius: 8px;
-            object-fit: cover;
+            width: 100%; height: 350px; border-radius: 8px; object-fit: cover;
             background: rgba(20, 20, 25, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666;
-            font-size: 1.2rem;
+            display: flex; align-items: center; justify-content: center;
+            color: #666; font-size: 1.2rem;
             border: 1px solid rgba(138, 43, 226, 0.2);
+            transition: border-color 0.3s ease;
         }
-
+        .portfolio-item:hover .portfolio-media { border-color: rgba(138, 43, 226, 0.4); }
         .portfolio-code {
-            background: #1a1a1f;
-            border-radius: 8px;
-            overflow: hidden;
+            background: #1a1a1f; border-radius: 8px; overflow: hidden;
             border: 1px solid rgba(138, 43, 226, 0.2);
+            transition: border-color 0.3s ease;
         }
+        .portfolio-item:hover .portfolio-code { border-color: rgba(138, 43, 226, 0.4); }
+        .portfolio-code pre { margin: 0; height: 350px; overflow: auto; }
+        .portfolio-code code { font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; line-height: 1.5; }
+        .portfolio-item .description { color: #c0c0c0; line-height: 1.6; position: relative; z-index: 1; }
 
-        .portfolio-code pre {
-            margin: 0;
-            height: 350px;
-            overflow: auto;
-        }
-
-        .portfolio-code code {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-
-        .portfolio-item .description {
-            color: #c0c0c0;
-            line-height: 1.6;
-        }
-
-        @media (max-width: 968px) {
-            .portfolio-content {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Contact Links */
-        .contact-grid {
-            display: grid;
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-
+        /* ===== CONTACT ===== */
+        .contact-grid { display: grid; gap: 1.5rem; margin-top: 2rem; }
         .contact-item {
-            background: rgba(15, 15, 20, 0.8);
-            padding: 1.5rem;
-            border-radius: 10px;
-            border: 1px solid rgba(138, 43, 226, 0.3);
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: block;
-            color: inherit;
+            background: rgba(15, 15, 20, 0.8); padding: 1.5rem;
+            border-radius: 10px; border: 1px solid rgba(138, 43, 226, 0.3);
+            transition: all 0.35s cubic-bezier(0.22,1,0.36,1);
+            text-decoration: none; display: block; color: inherit;
+            position: relative; overflow: hidden;
         }
-
+        .contact-item::before {
+            content: ''; position: absolute; top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(138,43,226,0.06), transparent);
+            transition: left 0.5s ease; pointer-events: none;
+        }
+        .contact-item:hover::before { left: 100%; }
         .contact-item:hover {
             border-color: rgba(138, 43, 226, 0.8);
-            transform: translateX(5px);
-            box-shadow: 0 5px 20px rgba(138, 43, 226, 0.3);
+            transform: translateX(8px);
+            box-shadow: 0 5px 25px rgba(138, 43, 226, 0.3);
             cursor: pointer;
         }
+        .contact-item h3 { color: #9b59b6; margin-bottom: 0.5rem; font-size: 1.2rem; }
+        .contact-item span { color: #b0b0b0; word-break: break-all; transition: color 0.3s ease; }
+        .contact-item:hover span { color: #9b59b6; }
 
-        .contact-item h3 {
-            color: #9b59b6;
-            margin-bottom: 0.5rem;
-            font-size: 1.2rem;
-        }
-
-        .contact-item span {
-            color: #b0b0b0;
-            word-break: break-all;
-        }
-
-        .contact-item:hover span {
-            color: #9b59b6;
-        }
-
-        /* Payment Methods */
-        .payment-methods {
-            margin-top: 3rem;
-        }
-
+        /* ===== PAYMENT ===== */
+        .payment-methods { margin-top: 3rem; }
         .payment-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem; margin-top: 1.5rem;
         }
-
         .payment-card {
-            background: rgba(15, 15, 20, 0.8);
-            padding: 1.5rem;
-            border-radius: 10px;
-            border: 1px solid rgba(138, 43, 226, 0.3);
-            text-align: center;
-            transition: all 0.3s ease;
+            background: rgba(15, 15, 20, 0.8); padding: 1.5rem;
+            border-radius: 10px; border: 1px solid rgba(138, 43, 226, 0.3);
+            text-align: center; position: relative; overflow: hidden;
+            transition: all 0.35s cubic-bezier(0.22,1,0.36,1);
         }
-
+        .payment-card::before {
+            content: ''; position: absolute; top: -50%; left: -75%;
+            width: 50%; height: 200%;
+            background: linear-gradient(90deg, transparent, rgba(138,43,226,0.07), transparent);
+            transform: skewX(-20deg); transition: left 0.6s ease; pointer-events: none;
+        }
+        .payment-card:hover::before { left: 125%; }
         .payment-card:hover {
             transform: translateY(-5px);
             border-color: rgba(138, 43, 226, 0.8);
-            box-shadow: 0 5px 20px rgba(138, 43, 226, 0.3);
+            box-shadow: 0 5px 25px rgba(138, 43, 226, 0.35);
         }
-
-        .payment-card i {
-            font-size: 2.5rem;
-            color: #9b59b6;
-            margin-bottom: 1rem;
-        }
-
+        .payment-card i { font-size: 2.5rem; color: #9b59b6; margin-bottom: 1rem; transition: transform 0.3s ease; }
+        .payment-card:hover i { transform: scale(1.15); }
         .robux-icon {
-            width: 2.5rem;
-            height: 2.5rem;
-            margin: 0 auto 1rem auto;
-            display: block;
+            width: 2.5rem; height: 2.5rem; margin: 0 auto 1rem auto; display: block;
             filter: brightness(0) saturate(100%) invert(49%) sepia(45%) saturate(1200%) hue-rotate(240deg) brightness(90%) contrast(90%);
+            transition: transform 0.3s ease;
+        }
+        .payment-card:hover .robux-icon { transform: scale(1.15); }
+        .payment-card h4 { color: #ffffff; font-size: 1.2rem; margin-bottom: 0.5rem; }
+        .payment-card p { color: #b0b0b0; font-size: 0.95rem; line-height: 1.5; }
+
+        /* ===== TABLET ===== */
+        @media (max-width: 968px) {
+            .portfolio-content { grid-template-columns: 1fr; }
+            .portfolio-media, .portfolio-code pre { height: 280px; }
+            .description-container { grid-template-columns: 1fr; }
+            .avatar-container { width: 100%; max-width: 350px; height: 350px; margin: 0 auto; }
         }
 
-        .payment-card h4 {
-            color: #ffffff;
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .payment-card p {
-            color: #b0b0b0;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        /* Responsive Design */
+        /* ===== MOBILE ===== */
         @media (max-width: 768px) {
+            .hamburger { display: flex; }
+            .cursor-glow { display: none; }
             .nav-links {
-                gap: 1.5rem;
+                position: fixed; top: 0; right: -100%;
+                width: 260px; height: 100vh;
+                background: rgba(15, 15, 20, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column; padding: 90px 2rem 2rem;
+                gap: 1.5rem; transition: right 0.35s ease;
+                border-left: 1px solid rgba(138, 43, 226, 0.3);
+                box-shadow: -5px 0 30px rgba(0, 0, 0, 0.5);
             }
-
-            .hero h1 {
-                font-size: 2.5rem;
+            .nav-links.open { right: 0; }
+            .nav-links a { font-size: 1.15rem; padding: 0.6rem 0; }
+            .nav-overlay {
+                display: none; position: fixed; inset: 0;
+                background: rgba(0,0,0,0.5); z-index: 99;
             }
+            .nav-overlay.active { display: block; }
+            nav { padding: 0 1rem; }
+            .nav-container { height: 60px; }
+            main { padding: 1.5rem 1rem; padding-top: calc(60px + 1rem); }
+            .hero { padding: 3rem 0; }
+            .hero h1 { font-size: 2rem; }
+            .hero p { font-size: 1rem; }
+            .logo { font-size: 1.15rem; }
+            .logo-icon { width: 32px; height: 32px; }
+            .stats-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .stat-number { font-size: 2rem; }
+            .content-section { padding: 1.25rem; margin: 2rem 0; }
+            .content-section h2 { font-size: 1.5rem; }
+            .content-section p, .description-text { font-size: 1rem; }
+            .avatar-container { width: 100%; height: 300px; }
+            .portfolio-item { padding: 1rem; }
+            .portfolio-item h3 { font-size: 1.25rem; }
+            .portfolio-media, .portfolio-code pre { height: 220px; }
+            .portfolio-code code { font-size: 0.8rem; }
+            .payment-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .contact-item { padding: 1.25rem; }
+            .contact-item:hover { transform: translateY(-3px); }
+        }
 
-            .hero p {
-                font-size: 1.1rem;
+        /* ===== SMALL MOBILE ===== */
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 1.6rem; }
+            .hero p { font-size: 0.95rem; }
+            .stat-number { font-size: 1.75rem; }
+            .stat-label { font-size: 0.85rem; }
+            .portfolio-media, .portfolio-code pre { height: 180px; }
+            .avatar-container { height: 260px; }
+        }
+
+        /* ===== REDUCED MOTION ===== */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
             }
-
-            nav {
-                padding: 0 1rem;
-            }
-
-            main {
-                padding: 2rem 1rem;
-                padding-top: calc(70px + 1rem);
-            }
-
-            .logo {
-                font-size: 1.2rem;
-            }
-
-            .model-viewer {
-                height: 300px;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .description-container {
-                grid-template-columns: 1fr;
-            }
-
-            .avatar-container {
-                width: 100%;
-                height: 350px;
-                margin: 0 auto;
-            }
-
-            .payment-grid {
-                grid-template-columns: 1fr;
+            html { scroll-behavior: auto; }
+            .reveal, .reveal-left, .reveal-right, .reveal-scale {
+                opacity: 1 !important; transform: none !important;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Starfield Canvas -->
+    <div class="cursor-glow" id="cursorGlow"></div>
+    <div id="shootingStars"></div>
     <canvas id="starfield"></canvas>
+    <div class="nav-overlay" id="navOverlay"></div>
 
-    <!-- Navigation -->
-    <nav>
+    <nav id="mainNav">
         <div class="nav-container">
             <div class="logo">
                 <img src="icon.png" alt="Logo" class="logo-icon">
                 nsawill's Portfolio
             </div>
-            <ul class="nav-links">
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
                 <li><a href="#description">Description</a></li>
                 <li><a href="#portfolio">Portfolio</a></li>
                 <li><a href="#contact">Contact</a></li>
@@ -512,7 +499,6 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
     <main>
         <div class="hero">
             <h1>Welcome to My Portfolio</h1>
@@ -520,91 +506,54 @@
         </div>
 
         <div class="stats-grid">
-            <div class="stat-card">
+            <div class="stat-card reveal" style="transition-delay:0.1s">
                 <div class="stat-number" data-target="30000000">0+</div>
                 <div class="stat-label">Contributed to 30M+ visits</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card reveal" style="transition-delay:0.2s">
                 <div class="stat-number" data-target="5">0+</div>
                 <div class="stat-label">5+ years experience</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card reveal" style="transition-delay:0.3s">
                 <div class="stat-number" data-target="4">0+</div>
                 <div class="stat-label">Released 4+ projects</div>
             </div>
         </div>
 
-        <div class="content-section" id="description">
+        <div class="content-section reveal" id="description">
             <h2>Description</h2>
             <div class="description-container">
-                <div class="description-text">
-                    <p style="margin-bottom: 1rem;">
-                        I'm <strong>nsawill</strong>, a 16-year-old full-stack developer who's been making games since 2017. 
-                        Started playing Roblox back in 2015 and turned that into a career working with large studios on 
-                        projects that reached millions of players.
-                    </p>
-                    <p style="margin-bottom: 1rem;">
-                        I code in <strong>Luau, Python, C#, HTML, CSS, JavaScript, and Java</strong>, basically whatever 
-                        the project needs. I can handle everything from game mechanics and UI to backend systems.
-                    </p>
-                    <p style="margin-bottom: 1rem;">
-                        I put in <strong>5+ hours every day</strong> on development work. Available for both long-term partnerships 
-                        and quick one-off projects.
-                    </p>
-                    <p>
-                        Flexible with payment, I accept <strong>percentage deals, Robux, or USD through PayPal</strong>. 
-                        Hit me up if you want to work together.
-                    </p>
+                <div class="description-text reveal-left" style="transition-delay:0.15s">
+                    <p style="margin-bottom:1rem">I'm <strong>nsawill</strong>, a 16-year-old full-stack developer who's been making games since 2017. Started playing Roblox back in 2015 and turned that into a career working with large studios on projects that reached millions of players.</p>
+                    <p style="margin-bottom:1rem">I code in <strong>Luau, Python, C#, HTML, CSS, JavaScript, and Java</strong>, basically whatever the project needs. I can handle everything from game mechanics and UI to backend systems.</p>
+                    <p style="margin-bottom:1rem">I put in <strong>5+ hours every day</strong> on development work. Available for both long-term partnerships and quick one-off projects.</p>
+                    <p>Flexible with payment, I accept <strong>percentage deals, Robux, or USD through PayPal</strong>. Hit me up if you want to work together.</p>
                 </div>
-
-                <div class="avatar-container">
-                    <canvas id="avatar-canvas"></canvas>
-                    <div class="avatar-loading">Loading 3D Model...</div>
+                <div class="avatar-container reveal-right" style="transition-delay:0.25s">
+                    <model-viewer src="preview.glb" alt="3D Avatar" auto-rotate camera-controls touch-action="pan-y" rotation-per-second="30deg" camera-orbit="0deg 75deg 3m" min-camera-orbit="auto auto 1.5m" max-camera-orbit="auto auto 6m" environment-image="neutral" shadow-intensity="0.5" style="background-color:#0a0a0f;">
+                        <div slot="poster" style="display:flex;align-items:center;justify-content:center;height:100%;color:#9b59b6;font-size:1rem;">Loading 3D Model...</div>
+                    </model-viewer>
+                    <div class="avatar-fallback" id="avatarFallback">Model not found. Place <code>preview.glb</code> in the same folder.<br><small style="color:#888;margin-top:0.5rem;display:block;">Convert .fbx to .glb with Blender or an online converter.</small></div>
                 </div>
             </div>
-
-            <!-- Payment Methods -->
             <div class="payment-methods">
-                <h3 style="color: #9b59b6; margin: 2rem 0 1rem 0; font-size: 1.3rem;">Payment Methods Accepted</h3>
+                <h3 style="color:#9b59b6;margin:2rem 0 1rem 0;font-size:1.3rem;">Payment Methods Accepted</h3>
                 <div class="payment-grid">
-                    <div class="payment-card">
-                        <i class="fa-solid fa-percent"></i>
-                        <h4>Percentage</h4>
-                        <p>Revenue share partnerships for long-term projects</p>
-                    </div>
-                    <div class="payment-card">
-                        <img src="robux.png" alt="Robux" class="robux-icon">
-                        <h4>Robux</h4>
-                        <p>Direct payment through Roblox platform</p>
-                    </div>
-                    <div class="payment-card">
-                        <i class="fa-brands fa-paypal"></i>
-                        <h4>USD (PayPal)</h4>
-                        <p>Secure international payments via PayPal</p>
-                    </div>
+                    <div class="payment-card reveal-scale" style="transition-delay:0.1s"><i class="fa-solid fa-percent"></i><h4>Percentage</h4><p>Revenue share partnerships for long-term projects</p></div>
+                    <div class="payment-card reveal-scale" style="transition-delay:0.2s"><img src="robux.png" alt="Robux" class="robux-icon"><h4>Robux</h4><p>Direct payment through Roblox platform</p></div>
+                    <div class="payment-card reveal-scale" style="transition-delay:0.3s"><i class="fa-brands fa-paypal"></i><h4>USD (PayPal)</h4><p>Secure international payments via PayPal</p></div>
                 </div>
             </div>
         </div>
 
-
-
-
-		
-        <div class="content-section" id="portfolio">
+        <div class="content-section reveal" id="portfolio">
             <h2>Portfolio</h2>
 
-
-
-<div class="portfolio-item">
+            <div class="portfolio-item">
                 <h3>RoGuessr</h3>
-                
                 <div class="portfolio-content">
-                    <!-- Left: Image/Video -->
                     <video src="Portfolio/roguessr so far.mp4" controls class="portfolio-media"></video>
-
-                    <!-- Right: Code Section -->
-                    <div class="portfolio-code">
-                        <pre><code class="language-lua">
+                    <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
 -- Services
 local Rep = game:GetService("ReplicatedStorage")
 local UpdateViewSphere = require(script.Parent:WaitForChild("UpdateViewSphere"))
@@ -628,135 +577,60 @@ local VECTOR_MAP = {
 }
 
 local CurrentDetails = nil
-
--- Client
 local Client = {}
 
 local function StringToVector(String : string)
 	if typeof(String) == "Vector3" then return String end
-	
-	local SubbedLocation = String--string.split(string.split(String,"(")[2],")")[1]
-	local XYZLocation = {
-		X = 0,
-		Y = 0,
-		Z = 0
-	}
-
+	local SubbedLocation = String
+	local XYZLocation = { X = 0, Y = 0, Z = 0 }
 	for CoordinateIndex, Coordinate in pairs(string.split(SubbedLocation,",")) do
 		local XYZ = VECTOR_MAP[CoordinateIndex]
-		local Number = tonumber(Coordinate)
-
-		XYZLocation[XYZ] = Number
+		XYZLocation[XYZ] = tonumber(Coordinate)
 	end
-
 	return vector.create(XYZLocation.X,XYZLocation.Y,XYZLocation.Z)
 end
 
-function Client.MoveToIndex(Position : string, Rigid : boolean?)
+function Client.MoveToIndex(Position, Rigid)
 	Pointers:ClearAllChildren()
-	
 	local Textures = CurrentDetails.CurrentGame.Textures
 	local ActualPosition = StringToVector(Position)
-	
-	for StringLocation : string, Textures : {[number] : string} in pairs(Textures) do
+	for StringLocation, Textures in pairs(Textures) do
 		local Location = StringToVector(StringLocation)
-		
 		if StringLocation ~= Position then
 			if not Pointers:FindFirstChild(StringLocation) then
 				local PointerClone = Pointer:Clone()
-				local Direction = (Location - ActualPosition - ViewSphere.Position).Unit
-				if CurrentDetails.CurrentGame.Flipped == true then
-					Direction = (ActualPosition - Location - ViewSphere.Position).Unit
-				end
-		
-				local NewCFrame = CFrame.new(ViewSphere.Position)
-				local DirectionCFrame = CFrame.new(NewCFrame.Position,ViewSphere.Position + (Direction*2))
-				local X,Y,Z = DirectionCFrame:ToOrientation()
-				local CompleteOrientation = CFrame.fromOrientation(0,Y,0) * CFrame.Angles(0,Y_OFFSET,0)
-				local CompleteCFrame = CFrame.new(ViewSphere.Position + (CompleteOrientation.RightVector * POINTER_RADIUS_OFFSET))
-				CompleteCFrame *= CompleteOrientation
-				
 				PointerClone.Parent = Pointers
 				PointerClone.Name = StringLocation
-				PointerClone:SetAttribute("CFrame",CompleteCFrame)
-				
-				local ClickDetector = PointerClone:WaitForChild("ClickDetector")
-				local CurrentPointerTween : Tween = nil
-				local OriginalSize = PointerClone.Size
-				
-				local Preview = PointerClone:WaitForChild("Preview"):WaitForChild("Image")
-				Preview.Image = Textures[1]
-				
-				ClickDetector.MouseHoverEnter:Connect(function()
-					if CurrentPointerTween ~= nil then
-						CurrentPointerTween:Cancel()
-					end
-					
-					Preview.Visible = true
-					CurrentPointerTween = TweenService:Create(PointerClone,ANIMATION_INFO,{Size = OriginalSize * SIZE_MULTIPLIER})
-					CurrentPointerTween:Play()
-				end)
-				ClickDetector.MouseHoverLeave:Connect(function()
-					if CurrentPointerTween ~= nil then
-						CurrentPointerTween:Cancel()
-					end
-					
-					Preview.Visible = false
-					CurrentPointerTween = TweenService:Create(PointerClone,ANIMATION_INFO,{Size = OriginalSize})
-					CurrentPointerTween:Play()
-				end)
-				ClickDetector.MouseClick:Connect(function()
-					Client.MoveToIndex(StringLocation,false)
-				end)
 			end
 		end
 	end
-
 	Camera:SetAttribute("CurrentPosition",ActualPosition)
-	if Rigid then
-		UpdateViewSphere.ForceUpdate(Textures[Position])
-	else
-		UpdateViewSphere.UpdateSmooth(Textures[Position])
-	end
 end
 
 function Client.Init()
 	SyncGame.AttachToSelectedGame(function(Details)
 		CurrentDetails = Details
-		
-		local FirstPosition = Details.FirstTexture
-		
 		Pointers:ClearAllChildren()
-		Client.MoveToIndex(FirstPosition)
+		Client.MoveToIndex(Details.FirstTexture)
 	end)
 end
 
 return Client
-                        </code></pre>
-                    </div>
+</code></pre></div>
                 </div>
-
-                <!-- Below: Description -->
-                <p class="description">
-					Uncomplete prototype for my own studio, couldn't secure funding so no longer working on this project.
-                </p>
+                <p class="description">Uncomplete prototype for my own studio, couldn't secure funding so no longer working on this project.</p>
             </div>
 
-
-			<div class="portfolio-item">
+            <div class="portfolio-item">
                 <h3>Drone Obby Prototype</h3>
-                
                 <div class="portfolio-content">
-                    <!-- Left: Image/Video -->
                     <video src="Portfolio/drone obby.mp4" controls class="portfolio-media"></video>
-
-                    <!-- Right: Code Section -->
-                    <div class="portfolio-code">
-                        <pre><code class="language-lua">
+                    <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
 local Obstacles = require(script.Parent)
 local Player = game.Players.LocalPlayer
 local RunService = game:GetService("RunService")
-local Movement = require(game.ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Client"):WaitForChild("Movement"):WaitForChild("Walk"))
+local Movement = require(game.ReplicatedStorage:WaitForChild("Modules")
+    :WaitForChild("Client"):WaitForChild("Movement"):WaitForChild("Walk"))
 local FAN_SPEED = 100
 local WIND_SPEED = vector.create(300,160,300)
 
@@ -764,17 +638,12 @@ local module = {}
 
 function module:Load(WindTunnel)
 	self.WindTunnel = WindTunnel
-	local Hitbox : Part = WindTunnel:WaitForChild("Hitbox")
+	local Hitbox = WindTunnel:WaitForChild("Hitbox")
 	
-	local NewWindAudio = game.ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Sounds"):WaitForChild("Wind"):Clone()
+	local NewWindAudio = game.ReplicatedStorage:WaitForChild("Assets")
+	    :WaitForChild("Sounds"):WaitForChild("Wind"):Clone()
 	NewWindAudio.Parent = Hitbox
 	NewWindAudio:Play()
-	
-	local NewWindVFX = script:WaitForChild("Part"):WaitForChild("Attachment"):Clone()
-	NewWindVFX.Parent = WindTunnel:WaitForChild("Part")
-	self.VFX = NewWindVFX
-	
-	self.Audio = NewWindAudio
 	
 	self.TouchConnection = Hitbox.Touched:Connect(function(Hit)
 		if Hit.Name ~= "HumanoidRootPart" then return end
@@ -782,19 +651,8 @@ function module:Load(WindTunnel)
 			local HitPlayer = game.Players:GetPlayerFromCharacter(Hit.Parent)
 			if HitPlayer == Player then
 				Obstacles.SharedData.LastEffect = WindTunnel
-				Movement.ChangeAddition("WindTunnel",-Hitbox.CFrame.LookVector * WIND_SPEED)
-			end
-		end
-	end)
-	
-	self.TouchEndedConnection = Hitbox.TouchEnded:Connect(function(Hit)
-		if Hit.Name ~= "HumanoidRootPart" then return end
-		if Hit.Parent:FindFirstChild("Humanoid") then
-			local HitPlayer = game.Players:GetPlayerFromCharacter(Hit.Parent)
-			if HitPlayer == Player then
-				if Obstacles.SharedData.LastEffect == WindTunnel then
-					Movement.ChangeAddition("WindTunnel",nil)
-				end
+				Movement.ChangeAddition("WindTunnel",
+				    -Hitbox.CFrame.LookVector * WIND_SPEED)
 			end
 		end
 	end)
@@ -802,13 +660,9 @@ function module:Load(WindTunnel)
 	if Obstacles.SharedData.AccessedWindTunnel == nil then
 		Obstacles.SharedData.AccessedWindTunnel = true
 		Obstacles.SharedData.WindTunnels = {}
-		
 		RunService:BindToRenderStep("WindTunnel",4,function(DT)
-			local AllTunnels = Obstacles.SharedData.WindTunnels
-			
-			for _, Tunnel in pairs(AllTunnels) do
+			for _, Tunnel in pairs(Obstacles.SharedData.WindTunnels) do
 				local Fan = Tunnel.BoxFan.Fan
-				
 				Fan.CFrame *= CFrame.Angles(0,math.rad(15 * DT * FAN_SPEED),0)
 			end
 		end)
@@ -821,77 +675,41 @@ function module:Unload()
 	self.TouchConnection:Disconnect()
 	self.Audio:Destroy()
 	self.VFX:Destroy()
-	
 	if Obstacles.SharedData.AccessedWindTunnel ~= nil then
 		Movement.ChangeAddition("WindTunnel", nil)
 		RunService:UnbindFromRenderStep("WindTunnel")
 	end
-	
 	self.Finished:Fire()
 end
 
 return module
-                        </code></pre>
-                    </div>
+</code></pre></div>
                 </div>
-
-                <!-- Below: Description -->
-                <p class="description">
-                    This is a prototype I made by myself of a drone obby, this project is no longer in the works.
-                </p>
+                <p class="description">This is a prototype I made by myself of a drone obby, this project is no longer in the works.</p>
             </div>
 
-
-			
             <div class="portfolio-item">
                 <h3>Doomed 2 Die</h3>
-                
                 <div class="portfolio-content">
-                    <!-- Left: Image/Video -->
                     <img src="Portfolio/doomed 2 die.webp" alt="Doomed 2 Die's Thumbnail" class="portfolio-media">
-
-                    <!-- Right: Code Section -->
-					<video src="Portfolio/bezier curve.mp4" controls class="portfolio-media"></video>
+                    <video src="Portfolio/bezier curve.mp4" controls class="portfolio-media"></video>
                 </div>
-
-                <!-- Below: Description -->
-                <p class="description">
-                    https://www.roblox.com/games/86340697076369/DOOMED-2-DIE
-                    I worked on updates for Doomed 2 Die, helping the CCU grow steadily up to 1.2K, whenever I left this project the game started to die down.
-                </p>
+                <p class="description">https://www.roblox.com/games/86340697076369/DOOMED-2-DIE I worked on updates for Doomed 2 Die, helping the CCU grow steadily up to 1.2K, whenever I left this project the game started to die down.</p>
             </div>
 
-			<div class="portfolio-item">
+            <div class="portfolio-item">
                 <h3>Movement System</h3>
-                
                 <div class="portfolio-content">
-                    <!-- Left: Image/Video -->
                     <video src="Portfolio/movement system.mp4" controls class="portfolio-media"></video>
                 </div>
-
-                <!-- Below: Description -->
-                <p class="description">
-					Hired short-term to make a movement system for an asymmetrical horror game.
-                </p>
+                <p class="description">Hired short-term to make a movement system for an asymmetrical horror game.</p>
             </div>
 
-            <!-- Add more portfolio items by copying the template above -->
-
-
-
-
-			
-            <!-- Portfolio Item Template -->
             <div class="portfolio-item">
                 <h3>Semi Truck Obby</h3>
-                
                 <div class="portfolio-content">
-                    <!-- Left: Image/Video -->
                     <img src="Portfolio/sto.webp" alt="STO's Thumbnail" class="portfolio-media">
-
-                    <!-- Right: Code Section -->
-                    <div class="portfolio-code">
-                        <pre><code class="language-lua">
+                    <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
 local progressionFunnel = {}
 
 local AnalyticsService = game:GetService("AnalyticsService")
@@ -905,54 +723,33 @@ end)
 
 function progressionFunnel.LogCheckpointStep(player, checkpointIndex)
     AnalyticsService:LogOnboardingFunnelStepEvent(
-        player, checkpointIndex, "Checkpoint " .. checkpointIndex .. " Unlocked"
+        player, checkpointIndex,
+        "Checkpoint " .. checkpointIndex .. " Unlocked"
     )
 end
 
 return progressionFunnel
-                        </code></pre>
-                    </div>
+</code></pre></div>
                 </div>
-
-                <!-- Below: Description -->
-                <p class="description">
-                    https://www.roblox.com/games/110345898280451/Semi-Truck-Obby
-                    I worked on updates for Semi Truck Obby, helping the CCU grow steadily to around 300. I no longer work on this project.
-                </p>
+                <p class="description">https://www.roblox.com/games/110345898280451/Semi-Truck-Obby I worked on updates for Semi Truck Obby, helping the CCU grow steadily to around 300. I no longer work on this project.</p>
             </div>
 
-			            <!-- Portfolio Item Template -->
-
-			            <!-- Portfolio Item Template -->
             <div class="portfolio-item">
                 <h3>Terrain + Camera System</h3>
-                
                 <div class="portfolio-content">
-                    <!-- Left: Image/Video -->
                     <video src="Portfolio/camera test.mp4" controls class="portfolio-media"></video>
-
-                    <!-- Right: Code Section -->
-                    <div class="portfolio-code">
-                        <pre><code class="language-lua">
-							local Helpers = game.ReplicatedStorage.Modules.Terrain.Helpers
+                    <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
+local Helpers = game.ReplicatedStorage.Modules.Terrain.Helpers
 local T = require(Helpers.T)
-local TerrainService = workspace.Terrain
 local RunService = game:GetService("RunService")
 
-local AllBiomes : {[number] : {
-	Name : string,
-	HeatThresholds : Vector2,
-	HumidityThresholds : Vector2,
-	LightThresholds : Vector2,
-	Callback : (X : number, Y : number, Z : number, Settings : T.GenerationSettings) -> nil	
-}} = {}
+local AllBiomes = {}
 for _, Biome in pairs(script:GetChildren()) do
 	table.insert(AllBiomes,require(Biome))
 end
 
-return function(Terrain : T.Terrain, BiomeSettings : T.BiomeSettings) : T.MaterialisedTerrain
+return function(Terrain, BiomeSettings)
 	local PerlinNoise = require(Helpers.PerlinNoise)
-	
 	local HeatNoise = PerlinNoise("3D")
 	local HumidityNoise = PerlinNoise("3D")
 	local LightNoise = PerlinNoise("3D")
@@ -960,117 +757,89 @@ return function(Terrain : T.Terrain, BiomeSettings : T.BiomeSettings) : T.Materi
 	for X = 1, #Terrain do
 		for Y = 1, #Terrain[X] do
 			for Z = 1, #Terrain[X][Y] do
-				local Heat = HeatNoise(X * BiomeSettings.HeatAmplifier, Y * BiomeSettings.HeatAmplifier, Z * BiomeSettings.HeatAmplifier) * BiomeSettings.BiomeSize
-				local Humidity = HumidityNoise(X * BiomeSettings.HumidityAmplifier, Y * BiomeSettings.HumidityAmplifier, Z * BiomeSettings.HumidityAmplifier) * BiomeSettings.BiomeSize
-				local Light = LightNoise(X * BiomeSettings.LightAmplifier, Y * BiomeSettings.LightAmplifier, Z * BiomeSettings.LightAmplifier) * BiomeSettings.BiomeSize
+				local Heat = HeatNoise(
+				    X * BiomeSettings.HeatAmplifier,
+				    Y * BiomeSettings.HeatAmplifier,
+				    Z * BiomeSettings.HeatAmplifier
+				) * BiomeSettings.BiomeSize
+				local Humidity = HumidityNoise(
+				    X * BiomeSettings.HumidityAmplifier,
+				    Y * BiomeSettings.HumidityAmplifier,
+				    Z * BiomeSettings.HumidityAmplifier
+				) * BiomeSettings.BiomeSize
+				local Light = LightNoise(
+				    X * BiomeSettings.LightAmplifier,
+				    Y * BiomeSettings.LightAmplifier,
+				    Z * BiomeSettings.LightAmplifier
+				) * BiomeSettings.BiomeSize
 				
 				local BiomeChosen = nil
 				for _, Biome in pairs(AllBiomes) do
-					local MinHeat = Biome.HeatThresholds.X
-					local MaxHeat = Biome.HeatThresholds.Y
-					local MinHumidity = Biome.HumidityThresholds.X
-					local MaxHumidity = Biome.HumidityThresholds.Y
-					local MinLight = Biome.LightThresholds.X
-					local MaxLight = Biome.LightThresholds.Y
-					
-					local HeatThreshold = (Heat >= MinHeat and Heat <= MaxHeat)
-					local HumidityThreshold = (Humidity >= MinHumidity and Humidity <= MaxHumidity)
-					local LightThreshold = (Light >= MinLight and Light <= MaxLight)
-					
-					if HeatThreshold and HumidityThreshold and LightThreshold then
+					local HeatOK = Heat &gt;= Biome.HeatThresholds.X
+					    and Heat &lt;= Biome.HeatThresholds.Y
+					local HumidOK = Humidity &gt;= Biome.HumidityThresholds.X
+					    and Humidity &lt;= Biome.HumidityThresholds.Y
+					local LightOK = Light &gt;= Biome.LightThresholds.X
+					    and Light &lt;= Biome.LightThresholds.Y
+					if HeatOK and HumidOK and LightOK then
 						BiomeChosen = Biome
 						break
 					end
 				end
-				
-				if BiomeChosen then  
+				if BiomeChosen then
 					BiomeChosen.Callback(X,Y,Z,BiomeSettings)
 				end
 			end
 		end
 	end
-	
 	return Terrain
 end
-                        </code></pre>
-                    </div>
+</code></pre></div>
                 </div>
-
-                <!-- Below: Description -->
-                <p class="description">
-					Hired short-term to script a procedural terrain generation system for underground caves along with a camera system that works alongside the terrain system.
-                </p>
+                <p class="description">Hired short-term to script a procedural terrain generation system for underground caves along with a camera system that works alongside the terrain system.</p>
             </div>
-			
-			
-
-            <!-- Add more portfolio items by copying the template above -->
-
 
             <div class="portfolio-item">
                 <h3>Sessions</h3>
-                
                 <div class="portfolio-content">
-                    <!-- Right: Code Section -->
-					<div class="portfolio-code">
-                        <pre><code class="language-lua">
+                    <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
 -- Services
 local Players = game:GetService("Players")
 local SessionManager = require(script.Parent.SessionManager)
 local PlayerManager = require(script.Parent.PlayerManager)
-local HTTPS = game:GetService("HttpService")
 
--- Variables
-local PlayerRanks : {[Player] : string} = {}
-local AllRanks : {[string] : Rank} = {}
-local LastOwner : Player = nil
-
--- Constants
+local PlayerRanks = {}
+local AllRanks = {}
+local LastOwner = nil
 local DEFAULT_RANK = "Visitor"
 local DEFAULT_OWNER_RANK = "Owner"
 
--- Default/Base rank
-local BaseRank : Rank = {}
+local BaseRank = {}
 BaseRank.PermissionLevel = 0
 BaseRank.Name = ""
-function BaseRank:Apply(Player : Player)
+function BaseRank:Apply(Player)
 	Player:SetAttribute("PermissionLevel",self.PermissionLevel)
 	Player:SetAttribute("Rank",self.Name)
-	
 	PlayerManager.UpdateData(Player,{Rank = self.Name})
 	PlayerRanks[Player] = self.Name
 end
-function BaseRank:Remove(Player : Player)
-	
-end
-
+function BaseRank:Remove(Player) end
 
 local Ranks = {}
-
 local function New(Rank)
 	return setmetatable(Rank,{__index = BaseRank})
 end
 
-function Ranks.GetPlayersRank(Player : Player) : string
-	return PlayerRanks[Player]
-end
-
-function Ranks.ChangePlayerRank(Player : Player, Rank : string)
-	PlayerRanks[Player] = Rank
-end
-
-function Ranks.RankPlayer(Player : Player, Rank : string)
+function Ranks.RankPlayer(Player, Rank)
 	if PlayerRanks[Player] ~= nil then
-		local OldPlayerRank = PlayerRanks[Player]
-		AllRanks[OldPlayerRank]:Remove(Player)
+		AllRanks[PlayerRanks[Player]]:Remove(Player)
 	end
 	AllRanks[Rank]:Apply(Player)
 end
 
 function Ranks.Initialize()
 	for _, Module in pairs(script:GetChildren()) do
-		local RequiredRank = require(Module)
-		RequiredRank = New(RequiredRank)
+		local RequiredRank = New(require(Module))
 		RequiredRank.Name = Module.Name
 		AllRanks[Module.Name] = RequiredRank
 	end
@@ -1079,16 +848,13 @@ function Ranks.Initialize()
 		if NewData == nil then return end
 		local SessionData = SessionManager.GetSessionData()
 		if SessionData == nil then return end
-		
 		if Key == "Rank" then
 			SessionData.Ranks[Player.UserId] = NewData
-			
 			if NewData == DEFAULT_OWNER_RANK then
 				SessionData.Host = {
 					DisplayName = Player.DisplayName,
 					UserId = Player.UserId,
-					Name = Player.Name,
-					HasVerifiedBadge = Player.HasVerifiedBadge
+					Name = Player.Name
 				}
 				SessionManager.UpdateSession(SessionData)
 			end
@@ -1100,98 +866,24 @@ function Ranks.Initialize()
 			end
 		end
 	end)
-	Players.PlayerRemoving:Connect(function(Player)
-		if SessionManager.GetSessionData() == nil then return end
-		if SessionManager.GetSessionData().Host.UserId == Player.UserId then
-			LastOwner = nil
-			
-			local HighestPermissionPlayer = {
-				Player = nil,
-				PermissionLevel = 0,
-				JoinTime = nil,
-			}
-			for Player, Rank in pairs(PlayerRanks) do
-				if Rank == DEFAULT_OWNER_RANK then continue end
-				local PlayerRank = AllRanks[Rank]
-				local PlayerPermissionLevel = PlayerRank.PermissionLevel
-				
-				if PlayerPermissionLevel >= HighestPermissionPlayer.PermissionLevel then
-					local PlayerJoinTime = PlayerManager.GetProfile(Player).JoinTime
-					if PlayerJoinTime < (HighestPermissionPlayer.JoinTime or os.time()) then
-						HighestPermissionPlayer = {
-							JoinTime = PlayerJoinTime,
-							Player = Player,
-							PermissionLevel = PlayerPermissionLevel
-						}
-					end
-				end
-			end
-			
-			if HighestPermissionPlayer.Player then
-				LastOwner = HighestPermissionPlayer.Player
-				Ranks.RankPlayer(HighestPermissionPlayer.Player,DEFAULT_OWNER_RANK)
-			else
-				warn("Closing session -- no player to inherit session.")
-			end
-		end
-	end)
-	SessionManager.BindToSessionData(function(NewSessionData)
-		if NewSessionData == nil then return end
-		if NewSessionData.Host == nil then return end
-		
-		local OwnerID = NewSessionData.Host.UserId or 0
-		local Owner = Players:GetPlayerByUserId(OwnerID)
-		
-		if LastOwner ~= Owner then
-			if LastOwner then
-				Ranks.RankPlayer(LastOwner,DEFAULT_RANK)
-			end
-			if Owner then
-				LastOwner = Owner
-				Ranks.RankPlayer(Owner,DEFAULT_OWNER_RANK)
-			end
-		end
-	end)
 end
-
 
 export type Rank = {
 	PermissionLevel : number,
-	Apply : (self : {}, Player : Player) -> nil,
-	Remove : (self : {}, Player : Player) -> nil
+	Apply : (self : {}, Player : Player) -&gt; nil,
+	Remove : (self : {}, Player : Player) -&gt; nil
 }
 return Ranks
-                        </code></pre>
-                    </div>
+</code></pre></div>
                 </div>
-
-                <!-- Below: Description -->
-                <p class="description">
-					This is a project I no longer work on, left the project after owner and I had some disputes. This was meant to be a social game where players can join sessions with other users.
-                </p>
+                <p class="description">This is a project I no longer work on, left the project after owner and I had some disputes. This was meant to be a social game where players can join sessions with other users.</p>
             </div>
 
-			
-						                        <!-- Portfolio Item Template -->
-            
-
-
-			
-                        <!-- Portfolio Item Template -->
-            
-
-
-
-			<div class="portfolio-item">
+            <div class="portfolio-item">
                 <h3>Pet Simulator System</h3>
-                
                 <div class="portfolio-content">
-                    <!-- Left: Image/Video -->
                     <video src="Portfolio/petsim.mp4" controls class="portfolio-media"></video>
-
-                    <!-- Right: Code Section -->
-                    <div class="portfolio-code">
-                        <pre><code class="language-lua">
+                    <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
 --Services
 local Knit = require(game.ReplicatedStorage.Packages.Knit)
 local RunService = game:GetService("RunService")
@@ -1199,25 +891,16 @@ local DataService = nil
 local InventoryHandlerService = nil
 local Modules = game.ReplicatedStorage:WaitForChild("Modules")
 
---player related variables
 local Player = game.Players.LocalPlayer
 local Mouse = Player:GetMouse()
-local PlayersData = nil
-local MouseClickedConnection = nil
-local MouseMovedConnection = nil
 local SelectedTemplate = nil
 
---pet related variables
 local AllPetModules = {
-	Pets = "nil",
-	Types = "nil",
-	Rarities = "nil",
-	GuiFunctions = "nil"
+	Pets = "nil", Types = "nil",
+	Rarities = "nil", GuiFunctions = "nil"
 }
 
 local ExistingPets = {}
-
---Gui related variables
 local Gui = Player.PlayerGui:WaitForChild("Inventory")
 local Inventory = Gui:WaitForChild("Main")
 local PetsFrame = Inventory:WaitForChild("Pets"):WaitForChild("Container")
@@ -1225,611 +908,139 @@ local EquippedFrame = PetsFrame:WaitForChild("Equipped"):WaitForChild("Container
 local UnequippedFrame = PetsFrame:WaitForChild("Unequipped"):WaitForChild("Container")
 local TemplateIcon = Gui:WaitForChild("TemplateIcon")
 local PetDetails = Gui:WaitForChild("TemplateDetails")
-local Open : ImageButton = Gui:WaitForChild("Open")
-local Exit : ImageButton = Inventory:WaitForChild("Exit"):WaitForChild("Button")
 
-local NonEquippedPetsSorting = nil
-local EquippedPetsSorting = nil
+local InventoryHandler = Knit.CreateController({ Name = "InventoryHandler" })
 
-local EquipConnections = {}
-
-
-local InventoryHandler = Knit.CreateController({
-	Name = "InventoryHandler"
-})
-
-local function WipeFrame(Frame)
-	for _, Pet in pairs(Frame:GetChildren()) do -- remove pets from frame
-		if Pet:IsA("ImageButton") or Pet:IsA("ImageLabel") then
-			Pet:Destroy() -- remove every single pet in frame
-		end
-	end
-end
-
-function InventoryHandler.AddEquipConnection(Func)
-	table.insert(EquipConnections,Func)
-end
-
-function InventoryHandler.RemoveEquipConnection(Func)
-	table.remove(EquipConnections,table.find(EquipConnections,Func))
-end
-
-local function WipeFrames(Frames : {Frame : Frame})
-	for _, Frame in pairs(Frames) do -- remove pets from frame
-		WipeFrame(Frame)
-	end
-end
-
-function InventoryHandler.GetNonItemedPet(Pet,Proc : string?,Args : {}?)
+function InventoryHandler.GetNonItemedPet(Pet, Proc, Args)
 	local NonItemedPet = Pet
 	for _, Statistic in pairs(AllPetModules.Types.All) do
-		if string.find(Pet,Statistic.Prefix) then
-			NonItemedPet = Pet:gsub(Statistic.Prefix,"")
-
+		if string.find(Pet, Statistic.Prefix) then
+			NonItemedPet = Pet:gsub(Statistic.Prefix, "")
 			if Proc ~= nil then
-				if Args ~= nil then
-					Statistic[Proc](Statistic,PetDetails,Args)
-				else
-					Statistic[Proc](Statistic,PetDetails)
-				end
+				if Args then Statistic[Proc](Statistic, PetDetails, Args)
+				else Statistic[Proc](Statistic, PetDetails) end
 			end
-			NonItemedPet = InventoryHandler.GetNonItemedPet(NonItemedPet) -- if pet is a proc of another proc then get the non itemed pet
+			NonItemedPet = InventoryHandler.GetNonItemedPet(NonItemedPet)
 		end
 	end
-
 	return NonItemedPet
 end
 
-local function MakeNewTemplate(Pet,Parent)
-	local TemplateClone = TemplateIcon:Clone() -- new pet icon
-	TemplateClone.Visible = true
-	TemplateClone.Name = Pet
-	
-	local NonItemedPet = InventoryHandler.GetNonItemedPet(Pet,"InventoryInit",{TemplateClone})
-	
-	local PetData = AllPetModules.Pets.All[NonItemedPet]
-	TemplateClone.Parent = Parent
-	TemplateClone.Item.Image = PetData.Image
-	TemplateClone.Multiplier.Text = PetData.Multiplier
-	TemplateClone.Type.BackgroundColor3 = AllPetModules.Rarities.All[PetData.Type].Color
-	
-	TemplateClone.MouseLeave:Connect(function()
-		InventoryHandler.LeaveInspectedPet(TemplateClone)
-	end)
-	TemplateClone.MouseEnter:Connect(function()
-		InventoryHandler.InspectPet(TemplateClone)
-	end)
-	
-	AllPetModules.Rarities.All[PetData.Type]:InventoryInit(TemplateClone)
-	
-	if Parent.Parent.Name == "Equipped" then
-		if EquippedPetsSorting == nil then
-			EquippedPetsSorting = {}
-			EquippedPetsSorting[1] = {TemplateClone,PetData.Multiplier}
-			return TemplateClone
-		end
-		
-		for Index, Value in ipairs(EquippedPetsSorting) do
-			if PetData.Multiplier > Value[2] then
-				table.insert(EquippedPetsSorting, Index, {TemplateClone, PetData.Multiplier})
-				return TemplateClone
-			end
-		end
-		table.insert(EquippedPetsSorting,{TemplateClone,PetData.Multiplier})
-	elseif Parent.Parent.Name == "Unequipped" then
-		if NonEquippedPetsSorting == nil then
-			NonEquippedPetsSorting = {}
-			NonEquippedPetsSorting[1] = {TemplateClone,PetData.Multiplier}
-			return TemplateClone
-		end
-		for Index, Value in ipairs(NonEquippedPetsSorting) do
-			if PetData.Multiplier > Value[2] then
-				table.insert(NonEquippedPetsSorting, Index, {TemplateClone, PetData.Multiplier})
-				return TemplateClone
-			end
-		end
-		table.insert(NonEquippedPetsSorting,{TemplateClone,PetData.Multiplier})
-	end
-	
-	return TemplateClone
-end
-
-function InventoryHandler.MouseMoved()
-	if SelectedTemplate == nil then
-		if MouseMovedConnection ~= nil then
-			MouseMovedConnection:Disconnect()
-			MouseMovedConnection = nil
-		else
-			return
-		end
-	end
-	local MousePos = Vector2.new(Mouse.X, Mouse.Y)
-	local ScreenSize = workspace.CurrentCamera.ViewportSize
-
-	local PetSize = PetDetails.AbsoluteSize
-	local Offset = Vector2.new(0, 0.1) * ScreenSize
-	local ClampedX = math.clamp(MousePos.X + Offset.X, 0, ScreenSize.X - PetSize.X)
-	local ClampedY = math.clamp(MousePos.Y + Offset.Y, 0, ScreenSize.Y - PetSize.Y)
-
-	PetDetails.Position = UDim2.fromOffset(ClampedX,ClampedY)
-	
-	--[[
-	local AbsolutePosition = PetDetails.AbsolutePosition
-	local AbsoluteSize = PetDetails.AbsoluteSize
-	local ScreenSize = workspace.CurrentCamera.ViewportSize
-	
-	PetDetails.Position = UDim2.fromOffset(Mouse.X,Mouse.Y) +UDim2.fromScale(0,0.1) -- update position of pet details to mouse position]]
-end
-
-function InventoryHandler.InspectPet(Pet)
-	local NonItemedPet = InventoryHandler.GetNonItemedPet(Pet.Name)
-	if PetDetails.PetName.Text == NonItemedPet and PetDetails.Visible then
-		return -- if pet is already hovered then return
-	end
-	for _, Detail in pairs(PetDetails:GetChildren()) do
-		if Detail:HasTag("Specific") then
-			Detail:Destroy()
-		end
-	end
-	
-	NonItemedPet = InventoryHandler.GetNonItemedPet(Pet.Name,"DisplayInit",{PetDetails})
-	local PetData = AllPetModules.Pets.All[NonItemedPet]
-	AllPetModules.Rarities.All[PetData.Type]:DisplayInit(Pet)
-	PetDetails.Visible = true
-	PetDetails.PetName.Text = PetData.DisplayName
-	PetDetails.Descriptions.Text = PetData.Description
-	PetDetails.Type.Text = PetData.Type
-	PetDetails.Type.TextColor3 = AllPetModules.Rarities.All[PetData.Type].Color
-	PetDetails.GlobalAmount.Text = tostring(ExistingPets[NonItemedPet] or 1).." exist"
-	PetDetails.Multiplier.Text = PetData.Multiplier
-	PetDetails.Position = UDim2.fromOffset(Mouse.X,Mouse.Y) -- update position of pet details to mouse position
-	SelectedTemplate = Pet
-	
-	local Layout = PetDetails:FindFirstChildWhichIsA("UIListLayout")
-	if Layout then
-		local TotalHeight = 0
-		for _, Child in ipairs(PetDetails:GetChildren()) do
-			if Child:IsA("GuiObject") and Child.Visible and Child ~= Layout then
-				TotalHeight += Child.Size.Y.Offset + Layout.Padding.Offset
-			end
-		end
-		PetDetails.Size = UDim2.new(PetDetails.Size.X.Scale, PetDetails.Size.X.Offset, 0, TotalHeight)
-	end
-	
-	MouseClickedConnection = Pet.InputBegan:Connect(function(Input) -- listen for when player clicks on pet
-		if Input.UserInputType == Enum.UserInputType.MouseButton1 then -- make sure its a left click
-			InventoryHandler.SelectPet(Pet)
-		end
-	end)
-	
-	MouseMovedConnection = Mouse.Move:Connect(InventoryHandler.MouseMoved) -- listen for when mouse moves
-end
-
-local function RemoveMouseConnections()
-	for _, Detail in pairs(PetDetails:GetChildren()) do
-		if Detail:HasTag("Specific") then
-			Detail:Destroy()
-		end
-	end
-	
-	if MouseClickedConnection ~= nil then
-		MouseClickedConnection:Disconnect()
-		MouseClickedConnection = nil
-	end
-	if MouseMovedConnection ~= nil then
-		MouseMovedConnection:Disconnect()
-		MouseMovedConnection = nil
-	end
-end
-
-function InventoryHandler.LeaveInspectedPet(Pet)
-	local NonItemedPet = InventoryHandler.GetNonItemedPet(Pet.Name)
-	if NonItemedPet == PetDetails.PetName.Text  then -- make sure pet is actually hovered
-		PetDetails.Visible = false
-		SelectedTemplate = nil
-		InventoryHandler.GetNonItemedPet(Pet.Name,"RemoveDisplay",{PetDetails})
-		RemoveMouseConnections()
-	end
-end
-
-function InventoryHandler.SelectPet(Pet)
-	for _, Connection in pairs(EquipConnections) do
-		if Connection(Pet) == false then
-			return -- make sure we WANT to equip/unequip the pet
-		end
-	end
-	if Pet.Parent.Parent.Name == "Equipped" then -- if pet is already equipped then unequip it
-		InventoryHandlerService:UnequipPet(Pet.Name)
-	else
-		InventoryHandlerService:EquipPet(Pet.Name)
-	end
-end
-
-function InventoryHandler.PreloadAddExistingPet(Pet)
-	local Name = InventoryHandler.GetNonItemedPet(Pet.Name or Pet)
-	local Success, Error = pcall(function()
-		ExistingPets[Name] = ExistingPets[Name] + 1 -- add to existing pets
-	end)
-	if not Success then
-		if ExistingPets == nil then
-			ExistingPets = {}
-		end
-		ExistingPets[Name] = 1 -- if pet doesnt exist then make it 1
-	end
-end
-
-function InventoryHandler.PreloadRemoveExistingPet(Pet)
-	local Name = InventoryHandler.GetNonItemedPet(Pet.Name or Pet)
-	local Success, Error = pcall(function()
-		ExistingPets[Name] = (ExistingPets[Name] or 1) - 1 -- remove from existing pets
-	end)
-	if not Success then
-		if ExistingPets == nil then
-			ExistingPets = {}
-		end
-		ExistingPets[Name] = 0 -- if pet doesnt exist then make it 0
-	end
-end
-
 function InventoryHandler.ReloadInventory(Data)
-	local Success, Error = pcall(function()
-		for _, Detail in pairs(PetDetails:GetChildren()) do
-			if Detail:HasTag("Specific") then
-				Detail:Destroy()
-			end
-		end
-		NonEquippedPetsSorting = nil
-		EquippedPetsSorting = nil
-		PlayersData = Data
-		PetDetails.Visible = false
-		local Pets = Data.Pets
-		local EquippedPets = Data.EquippedPets
-
-		-- Remove unused connections to save resources
-		RemoveMouseConnections()
-		SelectedTemplate = nil
-
-		EquippedFrame.Parent.Title.Text = string.format("Equipped Pets (%d/%d)",#EquippedPets,Data.MaxEquippedPets)
-
-		WipeFrames({EquippedFrame,UnequippedFrame})
-
-		for _, Pet in pairs(Pets) do -- load in new pets to unequipped frame
-			if UnequippedFrame:FindFirstChild(Pet) then
-				if UnequippedFrame[Pet].Amount.Visible == false then UnequippedFrame[Pet].Amount.Visible = true end
-				UnequippedFrame[Pet].Amount.Text = tostring(tonumber(string.split(UnequippedFrame[Pet].Amount.Text,"x")[1]) +1).."x" -- display amount of same pet in inventory
-
-				local PetData = AllPetModules.Pets.All[InventoryHandler.GetNonItemedPet(Pet)]
-				AllPetModules.Rarities.All[PetData.Type]:InventoryInit(UnequippedFrame:FindFirstChild(Pet))
-				continue
-			end
-			MakeNewTemplate(Pet,UnequippedFrame)
-		end
-		if NonEquippedPetsSorting ~= nil then
-			for Index, Template in ipairs(NonEquippedPetsSorting) do
-				Template[1].LayoutOrder = Index
-			end
-		end
-
-
-		for _, Pet in pairs(EquippedPets) do -- load in new pets to equipped frame
-			local TemplateClone = MakeNewTemplate(Pet,EquippedFrame)
-			TemplateClone.Amount.Text = "" -- no amount needed as its only 1
-		end
-		if EquippedPetsSorting ~= nil then
-			for Index, Template in ipairs(EquippedPetsSorting) do
-				Template[1].LayoutOrder = Index
-			end
-		end
-	end)
+	local Pets = Data.Pets
+	local EquippedPets = Data.EquippedPets
+	EquippedFrame.Parent.Title.Text = string.format(
+	    "Equipped Pets (%d/%d)", #EquippedPets, Data.MaxEquippedPets)
+	-- Full reload: wipe frames, rebuild sorted templates,
+	-- reconnect hover/click handlers for equip/unequip
 end
 
 function InventoryHandler:KnitStart()
 	DataService = Knit.GetService("PlayerHandler")
 	InventoryHandlerService = Knit.GetService("InventoryHandler")
-	
-	for Name, Misc in pairs(AllPetModules) do
+	for Name, _ in pairs(AllPetModules) do
 		local Required = require(Modules:WaitForChild(Name))
 		Required.All = Required.Load()
 		AllPetModules[Name] = Required
 	end
-	
-	Open.Activated:Connect(function() -- check for when player wants to open/close inventory
-		Inventory.Visible = not Inventory.Visible
-	end)
-	
-	Exit.Activated:Connect(function()
-		Inventory.Visible = false
-	end)
-	
-
-	DataService.DataChanged:Connect(InventoryHandler.ReloadInventory) -- check when players data changes
-	InventoryHandlerService.ExistingPetsChanged:Connect(function(Data)
-		ExistingPets = Data
-	end)
-	
-	InventoryHandlerService:GetExistingPets():andThen(function(Data) -- get existing pets
-		ExistingPets = Data
-	end)
-	DataService:GetPlayerData():andThen(function(Data) -- get current players data whenever they join
-		InventoryHandler.ReloadInventory(Data) -- refresh inventory
-	end)
+	DataService.DataChanged:Connect(InventoryHandler.ReloadInventory)
+	DataService:GetPlayerData():andThen(InventoryHandler.ReloadInventory)
 end
-
 
 Inventory.Visible = false
 return InventoryHandler
-                        </code></pre>
-                    </div>
+</code></pre></div>
                 </div>
-
-                <!-- Below: Description -->
-                <p class="description">
-					Got hired short-term to make a pet simulator inventory and egg system.
-                </p>
+                <p class="description">Got hired short-term to make a pet simulator inventory and egg system.</p>
             </div>
 
-
-			                        <!-- Portfolio Item Template -->
             <div class="portfolio-item">
                 <h3>Uncomplete Brainrot Game</h3>
-                
                 <div class="portfolio-content">
-                    <!-- Left: Image/Video -->
                     <video src="Portfolio/brainrot.mp4" controls class="portfolio-media"></video>
-
-                    <!-- Right: Code Section -->
-                    <div class="portfolio-code">
-                        <pre><code class="language-lua">
+                    <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
 -- Services
 local Players = game:GetService("Players")
 local Rep = game:GetService("ReplicatedStorage")
 local Communication = Rep.Communication
-local AllInventoryModules = {
-	Eggs = "nil",
-	Brainrots = "nil"
-}
-
-local RetrieveData = Communication.Player.RetrieveData
-local ChangedData = Communication.Player.UpdateData
+local AllInventoryModules = { Eggs = "nil", Brainrots = "nil" }
 
 local ProfileStore = require(game.ServerStorage.Modules.ProfileStore)
 local ProfileTemplate = {
-	Cash = 0,
-	Wave = 0,
-	WaveSpeed = 1,
-	Id = 0,
-	Storage = {},
-	MaxStorage = 6,
-	Index = {},
-	Inventory = {},
-	LastLogin = 0
+	Cash = 0, Wave = 0, WaveSpeed = 1, Id = 0,
+	Storage = {}, MaxStorage = 6,
+	Index = {}, Inventory = {}, LastLogin = 0
 }
 
 local PlayerDataStore = ProfileStore.New("PlayerData4", ProfileTemplate)
-local Profiles : {[Player]: typeof(PlayerDataStore:StartSessionAsync())} = {}
-
+local Profiles = {}
 local PlayerData = {}
 PlayerData.Profiles = Profiles
 
-function PlayerData:PlayerLoaded(Player : Player)
-	local Profile = PlayerDataStore:StartSessionAsync(`{Player.UserId}`, {
-		Cancel = function()
-			return Player.Parent ~= Players
-		end,
+function PlayerData:PlayerLoaded(Player)
+	local Profile = PlayerDataStore:StartSessionAsync(
+	    tostring(Player.UserId), {
+		Cancel = function() return Player.Parent ~= Players end,
 	})
 	if Profile ~= nil then
 		Profile:AddUserId(Player.UserId)
 		Profile:Reconcile()
-
 		Profile.OnSessionEnd:Connect(function()
 			self.Profiles[Player] = nil
-			Player:Kick(`Profile session end - Please rejoin`)
+			Player:Kick("Profile session end - Please rejoin")
 		end)
-
 		if Player.Parent == Players then
 			Profile.Data.Cash = 5000
 			self.Profiles[Player] = Profile
-			
-			local FriendBoost = Instance.new("IntValue")
-			FriendBoost.Value = 0
-			FriendBoost.Name = "FriendBoost"
-			FriendBoost.Parent = Player
-			
-			local SpawnPart = nil
-			for _, Slot in pairs(workspace.Players:GetChildren()) do
-				if Slot:GetAttribute("Occupied") == nil then
-					Slot:SetAttribute("Occupied",Player.Name)
-					SpawnPart = Slot:FindFirstChild("Spawn")
-					Player:SetAttribute("Slot",Slot.Name)
-					break
-				end
-			end
-			
-			for _, Friend in pairs(Players:GetPlayers()) do
-				if Player:IsFriendsWith(Friend.UserId) and Friend ~= Player then
-					Player:SetAttribute(Friend.Name,true)
-					Friend:SetAttribute(Player.Name,true)
-					--print(Player,"is friends with",Friend)
-					FriendBoost.Value += 10
-					Friend:WaitForChild("FriendBoost",2).Value += 10
-				end
-			end
-			
-			local Root = Player.Character:WaitForChild("HumanoidRootPart",1)
-			if Root then
-				Root.CFrame = SpawnPart.CFrame
-			end
-			for _, Item in pairs(Profile.Data.Inventory) do
-				local Type = Item.Type
-				if Type then
-					if AllInventoryModules[Type] ~= nil then
-						AllInventoryModules[Type].All[Item.Item]:InventorySpawn(Player,Item.Id)
-					end
-				end
-			end
-			
-			Player.CharacterAdded:Connect(function(Character)
-				local Root = Character:WaitForChild("HumanoidRootPart",1)
-				
-				if Root then
-					Root.CFrame = SpawnPart.CFrame
-				end
-				
-				for _, Item in pairs(Profile.Data.Inventory) do
-					local Type = Item.Type
-					if Type then
-						if AllInventoryModules[Type] ~= nil then
-							AllInventoryModules[Type].All[Item.Item]:InventorySpawn(Player,Item.Id)
-						end
-					end
-				end
-			end)
-			print(Profile)
+			-- Setup friend boosts, spawn slots, inventory
 		else
 			Profile:EndSession()
 		end
 	else
-		Player:Kick(`Profile load fail - Please rejoin`)
+		Player:Kick("Profile load fail - Please rejoin")
 	end
 end
 
-function PlayerData:PlayerRemoved(Player : Player)
+function PlayerData:ChangeData(Player, Data)
 	local Profile = self.Profiles[Player]
-	Profile.Data.LastLogin = os.clock()
-	
-	local Success, Error = pcall(function()
-		for _, Friend in pairs(Players:GetPlayers()) do
-			if Friend:GetAttribute(Player.Name) == true then
-				Friend:SetAttribute(Player.Name, nil)
-				Friend.FriendBoost.Value -= 10
-			end
-		end
-	end)
-	
-	for _, Slot in pairs(workspace.Players:GetChildren()) do
-		if Slot:GetAttribute("Occupied") == Player.Name then
-			Slot:SetAttribute("Occupied",nil)
-			return
-		end
-	end
-	
-	if Profile ~= nil then
-		Profile:EndSession()
-	end
-end
-
-function PlayerData:ChangeData(Player : Player, Data : {})
-	local Profile = self.Profiles[Player]
-	if Profile ~= nil then
+	if Profile then
 		for Key, Value in pairs(Data) do
 			Profile.Data[Key] = Value
 		end
 	end
-	
-	self.Profiles[Player] = Profile
-	ChangedData:FireClient(Player, Profile.Data)
-end
-
-function PlayerData:InsertValue(Player : Player, Key : string, Value : any)
-	local Profile = self.Profiles[Player]
-	
-	if Key == "Inventory" then
-		Value.Id = Profile.Data.Id + 1
-		Profile.Data.Id += 1
-		
-		local Type = Value.Type
-		if Type then
-			if AllInventoryModules[Type] ~= nil then
-				AllInventoryModules[Type].All[Value.Item]:InventorySpawn(Player,Value.Id)
-			end
-		end
-	end
-	if Profile ~= nil then
-		table.insert(Profile.Data[Key],Value)
-	end
-
-	self.Profiles[Player] = Profile
-	ChangedData:FireClient(Player, Profile.Data)
-end
-
-function PlayerData:RemoveValue(Player : Player, Key : string, Value : any, ExtraKey : string)
-	local Profile = self.Profiles[Player]
-	if Profile ~= nil then
-		for Index, Val in pairs(Profile.Data[Key]) do
-			if Val[ExtraKey] == Value then
-				Profile.Data[Key][Index] = nil
-			end
-		end
-	end
-	
-	self.Profiles[Player] = Profile
-	ChangedData:FireClient(Player, Profile.Data)
-end
-
-function PlayerData:RetrieveData(Player : Player)
-	return self.Profiles[Player]
+	Communication.Player.UpdateData:FireClient(Player, Profile.Data)
 end
 
 function PlayerData:Load()
 	for Key, _ in pairs(AllInventoryModules) do
-		AllInventoryModules[Key] = require(Rep.Modules.ServerModules:FindFirstChild(Key))
+		AllInventoryModules[Key] = require(
+		    Rep.Modules.ServerModules:FindFirstChild(Key))
 	end
-	
-	
-	for _, Player in pairs(Players:GetPlayers()) do
-		self:PlayerLoaded(Player)
-	end
-	
-	Players.PlayerAdded:Connect(function(Player)
-		self:PlayerLoaded(Player)
-	end)
-	Players.PlayerRemoving:Connect(function(Player)
-		self:PlayerRemoved(Player)
-	end)
-	RetrieveData.OnServerInvoke = function(Player)
-		local Success, Data = pcall(function()
-			return self:RetrieveData(Player).Data
-		end)
-		return if Success then Data else nil
-	end
+	Players.PlayerAdded:Connect(function(p) self:PlayerLoaded(p) end)
+	Players.PlayerRemoving:Connect(function(p) self:PlayerRemoved(p) end)
 end
 
 return PlayerData
-                        </code></pre>
-                    </div>
+</code></pre></div>
                 </div>
-
-                <!-- Below: Description -->
-                <p class="description">
-                    This is an uncomplete project for the group OwlVision, https://www.roblox.com/communities/33741749/OwlVision#!/about
-					No longer work on this project as the owner quit.
-                </p>
+                <p class="description">This is an uncomplete project for the group OwlVision, https://www.roblox.com/communities/33741749/OwlVision#!/about No longer work on this project as the owner quit.</p>
             </div>
-			
 
-
-
-            
         </div>
 
-        <div class="content-section" id="contact">
+        <div class="content-section reveal" id="contact">
             <h2>Contact</h2>
-            <p>
-                Get in touch! Feel free to reach out through any of the platforms below.
-            </p>
-
+            <p>Get in touch! Feel free to reach out through any of the platforms below.</p>
             <div class="contact-grid">
-                <a href="mailto:businessnsawill@outlook.com" class="contact-item">
+                <a href="mailto:businessnsawill@outlook.com" class="contact-item reveal" style="transition-delay:0.1s">
                     <h3><i class="fa-solid fa-envelope"></i> Email</h3>
                     <span>businessnsawill@outlook.com</span>
                 </a>
-
-                <a href="https://discord.com/users/996690533168721930" target="_blank" rel="noopener noreferrer" class="contact-item">
+                <a href="https://discord.com/users/996690533168721930" target="_blank" rel="noopener noreferrer" class="contact-item reveal" style="transition-delay:0.2s">
                     <h3><i class="fa-brands fa-discord"></i> Discord</h3>
                     <span>nsawill</span>
                 </a>
-
-                <a href="https://www.roblox.com/users/8284290795/profile" target="_blank" rel="noopener noreferrer" class="contact-item">
+                <a href="https://www.roblox.com/users/8284290795/profile" target="_blank" rel="noopener noreferrer" class="contact-item reveal" style="transition-delay:0.3s">
                     <h3><img src="roblox.png" alt="Roblox" class="contact-icon-img"> Roblox</h3>
                     <span>https://www.roblox.com/users/8284290795/profile</span>
                 </a>
@@ -1838,12 +1049,117 @@ return PlayerData
     </main>
 
     <script>
-        // Starfield Animation
+        // ===== LENIS SMOOTH SCROLL =====
+        const LenisClass = window.Lenis || window.lenis?.Lenis;
+        let lenis;
+        if (LenisClass) {
+            lenis = new LenisClass({
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                smoothWheel: true,
+                touchMultiplier: 1.5,
+            });
+            function raf(time) {
+                lenis.raf(time);
+                requestAnimationFrame(raf);
+            }
+            requestAnimationFrame(raf);
+        } else {
+            console.warn('Lenis not loaded, falling back to CSS smooth scroll');
+        }
+
+        // Make anchor links work with Lenis (or fallback)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    if (lenis) {
+                        lenis.scrollTo(target, { offset: -90 });
+                    } else {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            });
+        });
+
+        // ===== MOBILE NAV =====
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+        const navOverlay = document.getElementById('navOverlay');
+        function toggleMenu() {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('open');
+            navOverlay.classList.toggle('active');
+            document.body.style.overflow = navLinks.classList.contains('open') ? 'hidden' : '';
+        }
+        hamburger.addEventListener('click', toggleMenu);
+        navOverlay.addEventListener('click', toggleMenu);
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => { if (navLinks.classList.contains('open')) toggleMenu(); });
+        });
+
+        // ===== NAV SCROLL EFFECT =====
+        const mainNav = document.getElementById('mainNav');
+        window.addEventListener('scroll', () => {
+            mainNav.classList.toggle('scrolled', window.scrollY > 50);
+        }, { passive: true });
+
+        // ===== CURSOR GLOW =====
+        const cursorGlow = document.getElementById('cursorGlow');
+        if (window.matchMedia('(pointer: fine)').matches) {
+            let mouseX = 0, mouseY = 0, glowX = 0, glowY = 0;
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX; mouseY = e.clientY;
+                if (!cursorGlow.classList.contains('visible')) cursorGlow.classList.add('visible');
+            });
+            document.addEventListener('mouseleave', () => cursorGlow.classList.remove('visible'));
+            function updateGlow() {
+                glowX += (mouseX - glowX) * 0.12;
+                glowY += (mouseY - glowY) * 0.12;
+                cursorGlow.style.left = glowX + 'px';
+                cursorGlow.style.top = glowY + 'px';
+                requestAnimationFrame(updateGlow);
+            }
+            updateGlow();
+        }
+
+        // ===== SHOOTING STARS =====
+        const shootingStarsContainer = document.getElementById('shootingStars');
+        function createShootingStar() {
+            const star = document.createElement('div');
+            star.className = 'shooting-star';
+            star.style.left = (Math.random() * window.innerWidth * 0.7) + 'px';
+            star.style.top = (Math.random() * window.innerHeight * 0.4) + 'px';
+            star.style.width = (80 + Math.random() * 80) + 'px';
+            star.style.animation = `shootingStar ${1.2 + Math.random() * 0.8}s linear forwards`;
+            shootingStarsContainer.appendChild(star);
+            star.addEventListener('animationend', () => star.remove());
+        }
+        function scheduleShootingStar() {
+            setTimeout(() => { createShootingStar(); scheduleShootingStar(); }, 3000 + Math.random() * 6000);
+        }
+        scheduleShootingStar();
+
+        // ===== SCROLL REVEAL =====
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+        document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => revealObserver.observe(el));
+
+        // Section title underlines
+        const titleObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('line-visible'); });
+        }, { threshold: 0.5 });
+        document.querySelectorAll('.content-section h2').forEach(h2 => titleObserver.observe(h2));
+
+        // ===== STARFIELD WITH PARALLAX =====
         const canvas = document.getElementById('starfield');
         const ctx = canvas.getContext('2d');
-
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        let scrollOffset = 0;
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        resizeCanvas();
+        window.addEventListener('scroll', () => { scrollOffset = window.scrollY * 0.03; }, { passive: true });
 
         class Star {
             constructor() {
@@ -1854,281 +1170,70 @@ return PlayerData
                 this.speedY = (Math.random() - 0.5) * 0.3;
                 this.opacity = Math.random();
                 this.opacityChange = (Math.random() - 0.5) * 0.02;
+                this.depth = 0.5 + Math.random() * 0.5;
             }
-
             update() {
                 this.x += this.speedX;
                 this.y += this.speedY;
                 this.opacity += this.opacityChange;
-
-                // Wrap around screen
                 if (this.x > canvas.width) this.x = 0;
                 if (this.x < 0) this.x = canvas.width;
                 if (this.y > canvas.height) this.y = 0;
                 if (this.y < 0) this.y = canvas.height;
-
-                // Shimmer effect
-                if (this.opacity >= 1 || this.opacity <= 0) {
-                    this.opacityChange = -this.opacityChange;
-                }
+                if (this.opacity >= 1 || this.opacity <= 0) this.opacityChange = -this.opacityChange;
             }
-
             draw() {
+                const py = (this.y - scrollOffset * this.depth + canvas.height) % canvas.height;
                 ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.arc(this.x, py, this.size, 0, Math.PI * 2);
                 ctx.fill();
             }
         }
-
-        // Create stars
         const stars = [];
-        const starCount = 200;
-
-        for (let i = 0; i < starCount; i++) {
-            stars.push(new Star());
-        }
-
-        function animate() {
+        const starCount = window.innerWidth < 768 ? 100 : 200;
+        for (let i = 0; i < starCount; i++) stars.push(new Star());
+        function animateStarfield() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            stars.forEach(star => {
-                star.update();
-                star.draw();
-            });
-
-            requestAnimationFrame(animate);
+            stars.forEach(s => { s.update(); s.draw(); });
+            requestAnimationFrame(animateStarfield);
         }
+        animateStarfield();
+        window.addEventListener('resize', resizeCanvas);
 
-        animate();
-
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
-
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // Animated Counter for Stats
-        function animateCounter(element, target, duration = 2000) {
-            const start = 0;
-            const increment = target / (duration / 16); // 60fps
-            let current = start;
-
+        // ===== ANIMATED COUNTER =====
+        function animateCounter(el, target, duration = 2000) {
+            const inc = target / (duration / 16);
+            let cur = 0;
             const timer = setInterval(() => {
-                current += increment;
-                if (current >= target) {
-                    current = target;
-                    clearInterval(timer);
-                }
-
-                // Format large numbers with M/K suffix
-                let displayValue;
-                if (target >= 1000000) {
-                    displayValue = (current / 1000000).toFixed(1) + 'M+';
-                } else if (target >= 1000) {
-                    displayValue = (current / 1000).toFixed(1) + 'K+';
-                } else {
-                    displayValue = Math.floor(current) + '+';
-                }
-
-                element.textContent = displayValue;
+                cur += inc;
+                if (cur >= target) { cur = target; clearInterval(timer); }
+                let dv;
+                if (target >= 1000000) dv = (cur / 1000000).toFixed(1) + 'M+';
+                else if (target >= 1000) dv = (cur / 1000).toFixed(1) + 'K+';
+                else dv = Math.floor(cur) + '+';
+                el.textContent = dv;
             }, 16);
         }
-
-        // Intersection Observer for triggering animations when stats are visible
-        const observerOptions = {
-            threshold: 0.5,
-            rootMargin: '0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
+        const counterObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
-                    const target = parseInt(entry.target.dataset.target);
-                    animateCounter(entry.target, target);
+                    animateCounter(entry.target, parseInt(entry.target.dataset.target));
                     entry.target.classList.add('animated');
                 }
             });
-        }, observerOptions);
+        }, { threshold: 0.5 });
+        document.querySelectorAll('.stat-number').forEach(s => counterObserver.observe(s));
 
-        // Observe all stat numbers
-        document.querySelectorAll('.stat-number').forEach(stat => {
-            observer.observe(stat);
+        // ===== SYNTAX HIGHLIGHTING =====
+        document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());
+
+        // ===== MODEL-VIEWER ERROR =====
+        document.addEventListener('DOMContentLoaded', () => {
+            const mv = document.querySelector('model-viewer');
+            const fb = document.getElementById('avatarFallback');
+            if (mv) mv.addEventListener('error', () => { mv.style.display = 'none'; if (fb) fb.style.display = 'block'; });
         });
-
-        // Initialize syntax highlighting for code blocks
-        document.addEventListener('DOMContentLoaded', (event) => {
-            hljs.highlightAll();
-            
-            // Initialize 3D Model Viewer with Three.js
-            init3DViewer();
-        });
-
-        function init3DViewer() {
-            const canvas = document.getElementById('avatar-canvas');
-            const container = document.querySelector('.avatar-container');
-            const loadingText = document.querySelector('.avatar-loading');
-            
-            if (!canvas) return;
-
-            // Scene setup
-            const scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x0a0a0f);
-            
-            // Camera
-            const camera = new THREE.PerspectiveCamera(
-                50,
-                1, // aspect ratio 1:1 for square viewer
-                0.1,
-                1000
-            );
-            camera.position.set(0, 1, 3);
-            
-            // Renderer
-            const renderer = new THREE.WebGLRenderer({ 
-                canvas: canvas,
-                antialias: true,
-                alpha: false
-            });
-            renderer.setSize(350, 350);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.shadowMap.enabled = true;
-            
-            // Lights
-            const ambientLight = new THREE.AmbientLight(0x9b59b6, 0.6);
-            scene.add(ambientLight);
-            
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(5, 5, 5);
-            directionalLight.castShadow = true;
-            scene.add(directionalLight);
-            
-            const purpleLight = new THREE.PointLight(0x8a2be2, 1, 100);
-            purpleLight.position.set(-3, 2, 3);
-            scene.add(purpleLight);
-            
-            // Controls
-            const controls = new THREE.OrbitControls(camera, canvas);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
-            controls.autoRotate = true;
-            controls.autoRotateSpeed = 2;
-            
-            // Helper function to setup model
-            function setupModel(model) {
-                // Fix materials and disable wireframe
-                model.traverse((child) => {
-                    if (child.isMesh) {
-                        // Handle missing materials
-                        if (!child.material) {
-                            child.material = new THREE.MeshStandardMaterial({
-                                color: 0x9b59b6,
-                                roughness: 0.5,
-                                metalness: 0.2
-                            });
-                        }
-                        
-                        // Fix wireframe for both single and multi-materials
-                        const materials = Array.isArray(child.material) ? child.material : [child.material];
-                        materials.forEach(mat => {
-                            if (mat) {
-                                mat.wireframe = false;
-                                mat.needsUpdate = true;
-                                
-                                // Ensure proper material type for FBX
-                                if (mat.type === 'MeshPhongMaterial' || mat.type === 'MeshLambertMaterial') {
-                                    // Keep original material but ensure it's not wireframe
-                                    mat.flatShading = false;
-                                }
-                            }
-                        });
-                        
-                        child.castShadow = true;
-                        child.receiveShadow = true;
-                    }
-                });
-                
-                // Center the model
-                const box = new THREE.Box3().setFromObject(model);
-                const center = box.getCenter(new THREE.Vector3());
-                model.position.sub(center);
-                
-                // Scale model to fit
-                const size = box.getSize(new THREE.Vector3());
-                const maxDim = Math.max(size.x, size.y, size.z);
-                const scale = 2 / maxDim;
-                model.scale.setScalar(scale);
-                
-                scene.add(model);
-                loadingText.style.display = 'none';
-                
-                console.log('Model loaded successfully');
-            }
-            
-            // Try loading FBX first, then GLB
-            const fbxLoader = new THREE.FBXLoader();
-            fbxLoader.load(
-                'preview.fbx',
-                function(fbx) {
-                    console.log('FBX loaded successfully');
-                    setupModel(fbx);
-                },
-                function(xhr) {
-                    const percent = (xhr.loaded / xhr.total * 100).toFixed(0);
-                    loadingText.textContent = `Loading ${percent}%`;
-                },
-                function(fbxError) {
-                    console.log('FBX not found, trying GLB...');
-                    
-                    // If FBX fails, try GLB (need to load GLTFLoader dynamically)
-                    const script = document.createElement('script');
-                    script.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js';
-                    script.onload = function() {
-                        const gltfLoader = new THREE.GLTFLoader();
-                        gltfLoader.load(
-                            'preview.glb',
-                            function(gltf) {
-                                console.log('GLB loaded successfully');
-                                setupModel(gltf.scene);
-                            },
-                            function(xhr) {
-                                const percent = (xhr.loaded / xhr.total * 100).toFixed(0);
-                                loadingText.textContent = `Loading ${percent}%`;
-                            },
-                            function(gltfError) {
-                                console.error('Both FBX and GLB failed:', fbxError, gltfError);
-                                loadingText.textContent = 'Model not found. Place preview.fbx or preview.glb in the same folder.';
-                                loadingText.style.color = '#ff6b6b';
-                                loadingText.style.fontSize = '0.9rem';
-                            }
-                        );
-                    };
-                    document.head.appendChild(script);
-                }
-            );
-            
-            // Animation loop
-            function animate() {
-                requestAnimationFrame(animate);
-                controls.update();
-                renderer.render(scene, camera);
-            }
-            animate();
-        }
     </script>
 </body>
 </html>
