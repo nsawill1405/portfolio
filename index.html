@@ -586,9 +586,263 @@
             </div>
         </div>
 
+
+
+
+		
         <div class="content-section" id="portfolio">
             <h2>Portfolio</h2>
 
+
+
+<div class="portfolio-item">
+                <h3>RoGuessr</h3>
+                
+                <div class="portfolio-content">
+                    <!-- Left: Image/Video -->
+                    <video src="Portfolio/roguessr so far.mp4" controls class="portfolio-media"></video>
+
+                    <!-- Right: Code Section -->
+                    <div class="portfolio-code">
+                        <pre><code class="language-lua">
+-- Services
+local Rep = game:GetService("ReplicatedStorage")
+local UpdateViewSphere = require(script.Parent:WaitForChild("UpdateViewSphere"))
+local SyncGame = require(script.Parent:WaitForChild("SyncGame"))
+local ViewSphere = workspace.ViewSphere.PrimaryPart
+local TweenService = game:GetService("TweenService")
+
+local Camera = workspace.CurrentCamera
+local Pointer = script:WaitForChild("Pointer")
+local Pointers = workspace:WaitForChild("Pointers")
+
+local RANDOM_INSTANCE = Random.new()
+local POINTER_RADIUS_OFFSET = 20
+local Y_OFFSET = 45
+local ANIMATION_INFO = TweenInfo.new(0.22,Enum.EasingStyle.Sine,Enum.EasingDirection.Out)
+local SIZE_MULTIPLIER = 1.1
+local VECTOR_MAP = {
+	[1] = "X",
+	[2] = "Y",
+	[3] = "Z"
+}
+
+local CurrentDetails = nil
+
+-- Client
+local Client = {}
+
+local function StringToVector(String : string)
+	if typeof(String) == "Vector3" then return String end
+	
+	local SubbedLocation = String--string.split(string.split(String,"(")[2],")")[1]
+	local XYZLocation = {
+		X = 0,
+		Y = 0,
+		Z = 0
+	}
+
+	for CoordinateIndex, Coordinate in pairs(string.split(SubbedLocation,",")) do
+		local XYZ = VECTOR_MAP[CoordinateIndex]
+		local Number = tonumber(Coordinate)
+
+		XYZLocation[XYZ] = Number
+	end
+
+	return vector.create(XYZLocation.X,XYZLocation.Y,XYZLocation.Z)
+end
+
+function Client.MoveToIndex(Position : string, Rigid : boolean?)
+	Pointers:ClearAllChildren()
+	
+	local Textures = CurrentDetails.CurrentGame.Textures
+	local ActualPosition = StringToVector(Position)
+	
+	for StringLocation : string, Textures : {[number] : string} in pairs(Textures) do
+		local Location = StringToVector(StringLocation)
+		
+		if StringLocation ~= Position then
+			if not Pointers:FindFirstChild(StringLocation) then
+				local PointerClone = Pointer:Clone()
+				local Direction = (Location - ActualPosition - ViewSphere.Position).Unit
+				if CurrentDetails.CurrentGame.Flipped == true then
+					Direction = (ActualPosition - Location - ViewSphere.Position).Unit
+				end
+		
+				local NewCFrame = CFrame.new(ViewSphere.Position)
+				local DirectionCFrame = CFrame.new(NewCFrame.Position,ViewSphere.Position + (Direction*2))
+				local X,Y,Z = DirectionCFrame:ToOrientation()
+				local CompleteOrientation = CFrame.fromOrientation(0,Y,0) * CFrame.Angles(0,Y_OFFSET,0)
+				local CompleteCFrame = CFrame.new(ViewSphere.Position + (CompleteOrientation.RightVector * POINTER_RADIUS_OFFSET))
+				CompleteCFrame *= CompleteOrientation
+				
+				PointerClone.Parent = Pointers
+				PointerClone.Name = StringLocation
+				PointerClone:SetAttribute("CFrame",CompleteCFrame)
+				
+				local ClickDetector = PointerClone:WaitForChild("ClickDetector")
+				local CurrentPointerTween : Tween = nil
+				local OriginalSize = PointerClone.Size
+				
+				local Preview = PointerClone:WaitForChild("Preview"):WaitForChild("Image")
+				Preview.Image = Textures[1]
+				
+				ClickDetector.MouseHoverEnter:Connect(function()
+					if CurrentPointerTween ~= nil then
+						CurrentPointerTween:Cancel()
+					end
+					
+					Preview.Visible = true
+					CurrentPointerTween = TweenService:Create(PointerClone,ANIMATION_INFO,{Size = OriginalSize * SIZE_MULTIPLIER})
+					CurrentPointerTween:Play()
+				end)
+				ClickDetector.MouseHoverLeave:Connect(function()
+					if CurrentPointerTween ~= nil then
+						CurrentPointerTween:Cancel()
+					end
+					
+					Preview.Visible = false
+					CurrentPointerTween = TweenService:Create(PointerClone,ANIMATION_INFO,{Size = OriginalSize})
+					CurrentPointerTween:Play()
+				end)
+				ClickDetector.MouseClick:Connect(function()
+					Client.MoveToIndex(StringLocation,false)
+				end)
+			end
+		end
+	end
+
+	Camera:SetAttribute("CurrentPosition",ActualPosition)
+	if Rigid then
+		UpdateViewSphere.ForceUpdate(Textures[Position])
+	else
+		UpdateViewSphere.UpdateSmooth(Textures[Position])
+	end
+end
+
+function Client.Init()
+	SyncGame.AttachToSelectedGame(function(Details)
+		CurrentDetails = Details
+		
+		local FirstPosition = Details.FirstTexture
+		
+		Pointers:ClearAllChildren()
+		Client.MoveToIndex(FirstPosition)
+	end)
+end
+
+return Client
+                        </code></pre>
+                    </div>
+                </div>
+
+                <!-- Below: Description -->
+                <p class="description">
+					Uncomplete prototype for my own studio, couldn't secure funding so no longer working on this project.
+                </p>
+            </div>
+
+
+			<div class="portfolio-item">
+                <h3>Drone Obby Prototype</h3>
+                
+                <div class="portfolio-content">
+                    <!-- Left: Image/Video -->
+                    <video src="Portfolio/drone obby.mp4" controls class="portfolio-media"></video>
+
+                    <!-- Right: Code Section -->
+                    <div class="portfolio-code">
+                        <pre><code class="language-lua">
+local Obstacles = require(script.Parent)
+local Player = game.Players.LocalPlayer
+local RunService = game:GetService("RunService")
+local Movement = require(game.ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Client"):WaitForChild("Movement"):WaitForChild("Walk"))
+local FAN_SPEED = 100
+local WIND_SPEED = vector.create(300,160,300)
+
+local module = {}
+
+function module:Load(WindTunnel)
+	self.WindTunnel = WindTunnel
+	local Hitbox : Part = WindTunnel:WaitForChild("Hitbox")
+	
+	local NewWindAudio = game.ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Sounds"):WaitForChild("Wind"):Clone()
+	NewWindAudio.Parent = Hitbox
+	NewWindAudio:Play()
+	
+	local NewWindVFX = script:WaitForChild("Part"):WaitForChild("Attachment"):Clone()
+	NewWindVFX.Parent = WindTunnel:WaitForChild("Part")
+	self.VFX = NewWindVFX
+	
+	self.Audio = NewWindAudio
+	
+	self.TouchConnection = Hitbox.Touched:Connect(function(Hit)
+		if Hit.Name ~= "HumanoidRootPart" then return end
+		if Hit.Parent:FindFirstChild("Humanoid") then
+			local HitPlayer = game.Players:GetPlayerFromCharacter(Hit.Parent)
+			if HitPlayer == Player then
+				Obstacles.SharedData.LastEffect = WindTunnel
+				Movement.ChangeAddition("WindTunnel",-Hitbox.CFrame.LookVector * WIND_SPEED)
+			end
+		end
+	end)
+	
+	self.TouchEndedConnection = Hitbox.TouchEnded:Connect(function(Hit)
+		if Hit.Name ~= "HumanoidRootPart" then return end
+		if Hit.Parent:FindFirstChild("Humanoid") then
+			local HitPlayer = game.Players:GetPlayerFromCharacter(Hit.Parent)
+			if HitPlayer == Player then
+				if Obstacles.SharedData.LastEffect == WindTunnel then
+					Movement.ChangeAddition("WindTunnel",nil)
+				end
+			end
+		end
+	end)
+	
+	if Obstacles.SharedData.AccessedWindTunnel == nil then
+		Obstacles.SharedData.AccessedWindTunnel = true
+		Obstacles.SharedData.WindTunnels = {}
+		
+		RunService:BindToRenderStep("WindTunnel",4,function(DT)
+			local AllTunnels = Obstacles.SharedData.WindTunnels
+			
+			for _, Tunnel in pairs(AllTunnels) do
+				local Fan = Tunnel.BoxFan.Fan
+				
+				Fan.CFrame *= CFrame.Angles(0,math.rad(15 * DT * FAN_SPEED),0)
+			end
+		end)
+	end
+	table.insert(Obstacles.SharedData.WindTunnels,WindTunnel)
+end
+
+function module:Unload()
+	self.TouchEndedConnection:Disconnect()
+	self.TouchConnection:Disconnect()
+	self.Audio:Destroy()
+	self.VFX:Destroy()
+	
+	if Obstacles.SharedData.AccessedWindTunnel ~= nil then
+		Movement.ChangeAddition("WindTunnel", nil)
+		RunService:UnbindFromRenderStep("WindTunnel")
+	end
+	
+	self.Finished:Fire()
+end
+
+return module
+                        </code></pre>
+                    </div>
+                </div>
+
+                <!-- Below: Description -->
+                <p class="description">
+                    This is a prototype I made by myself of a drone obby, this project is no longer in the works.
+                </p>
+            </div>
+
+
+			
             <div class="portfolio-item">
                 <h3>Doomed 2 Die</h3>
                 
@@ -603,7 +857,7 @@
                 <!-- Below: Description -->
                 <p class="description">
                     https://www.roblox.com/games/86340697076369/DOOMED-2-DIE
-                    I worked on updates for Doomed 2 Die, helping the CCU grow steadily, whenever I left this project the game started to die down.
+                    I worked on updates for Doomed 2 Die, helping the CCU grow steadily up to 1.2K, whenever I left this project the game started to die down.
                 </p>
             </div>
 
@@ -663,12 +917,272 @@ return progressionFunnel
                 <!-- Below: Description -->
                 <p class="description">
                     https://www.roblox.com/games/110345898280451/Semi-Truck-Obby
-                    I worked on updates for Semi Truck Obby, helping the CCU grow steadily. I no longer work on this project.
+                    I worked on updates for Semi Truck Obby, helping the CCU grow steadily to around 300. I no longer work on this project.
                 </p>
             </div>
 
 			            <!-- Portfolio Item Template -->
+
+			            <!-- Portfolio Item Template -->
             <div class="portfolio-item">
+                <h3>Terrain + Camera System</h3>
+                
+                <div class="portfolio-content">
+                    <!-- Left: Image/Video -->
+                    <video src="Portfolio/camera test.mp4" controls class="portfolio-media"></video>
+
+                    <!-- Right: Code Section -->
+                    <div class="portfolio-code">
+                        <pre><code class="language-lua">
+							local Helpers = game.ReplicatedStorage.Modules.Terrain.Helpers
+local T = require(Helpers.T)
+local TerrainService = workspace.Terrain
+local RunService = game:GetService("RunService")
+
+local AllBiomes : {[number] : {
+	Name : string,
+	HeatThresholds : Vector2,
+	HumidityThresholds : Vector2,
+	LightThresholds : Vector2,
+	Callback : (X : number, Y : number, Z : number, Settings : T.GenerationSettings) -> nil	
+}} = {}
+for _, Biome in pairs(script:GetChildren()) do
+	table.insert(AllBiomes,require(Biome))
+end
+
+return function(Terrain : T.Terrain, BiomeSettings : T.BiomeSettings) : T.MaterialisedTerrain
+	local PerlinNoise = require(Helpers.PerlinNoise)
+	
+	local HeatNoise = PerlinNoise("3D")
+	local HumidityNoise = PerlinNoise("3D")
+	local LightNoise = PerlinNoise("3D")
+	
+	for X = 1, #Terrain do
+		for Y = 1, #Terrain[X] do
+			for Z = 1, #Terrain[X][Y] do
+				local Heat = HeatNoise(X * BiomeSettings.HeatAmplifier, Y * BiomeSettings.HeatAmplifier, Z * BiomeSettings.HeatAmplifier) * BiomeSettings.BiomeSize
+				local Humidity = HumidityNoise(X * BiomeSettings.HumidityAmplifier, Y * BiomeSettings.HumidityAmplifier, Z * BiomeSettings.HumidityAmplifier) * BiomeSettings.BiomeSize
+				local Light = LightNoise(X * BiomeSettings.LightAmplifier, Y * BiomeSettings.LightAmplifier, Z * BiomeSettings.LightAmplifier) * BiomeSettings.BiomeSize
+				
+				local BiomeChosen = nil
+				for _, Biome in pairs(AllBiomes) do
+					local MinHeat = Biome.HeatThresholds.X
+					local MaxHeat = Biome.HeatThresholds.Y
+					local MinHumidity = Biome.HumidityThresholds.X
+					local MaxHumidity = Biome.HumidityThresholds.Y
+					local MinLight = Biome.LightThresholds.X
+					local MaxLight = Biome.LightThresholds.Y
+					
+					local HeatThreshold = (Heat >= MinHeat and Heat <= MaxHeat)
+					local HumidityThreshold = (Humidity >= MinHumidity and Humidity <= MaxHumidity)
+					local LightThreshold = (Light >= MinLight and Light <= MaxLight)
+					
+					if HeatThreshold and HumidityThreshold and LightThreshold then
+						BiomeChosen = Biome
+						break
+					end
+				end
+				
+				if BiomeChosen then  
+					BiomeChosen.Callback(X,Y,Z,BiomeSettings)
+				end
+			end
+		end
+	end
+	
+	return Terrain
+end
+                        </code></pre>
+                    </div>
+                </div>
+
+                <!-- Below: Description -->
+                <p class="description">
+					Hired short-term to script a procedural terrain generation system for underground caves along with a camera system that works alongside the terrain system.
+                </p>
+            </div>
+			
+			
+
+            <!-- Add more portfolio items by copying the template above -->
+
+
+            <div class="portfolio-item">
+                <h3>Sessions</h3>
+                
+                <div class="portfolio-content">
+                    <!-- Right: Code Section -->
+					<div class="portfolio-code">
+                        <pre><code class="language-lua">
+-- Services
+local Players = game:GetService("Players")
+local SessionManager = require(script.Parent.SessionManager)
+local PlayerManager = require(script.Parent.PlayerManager)
+local HTTPS = game:GetService("HttpService")
+
+-- Variables
+local PlayerRanks : {[Player] : string} = {}
+local AllRanks : {[string] : Rank} = {}
+local LastOwner : Player = nil
+
+-- Constants
+local DEFAULT_RANK = "Visitor"
+local DEFAULT_OWNER_RANK = "Owner"
+
+-- Default/Base rank
+local BaseRank : Rank = {}
+BaseRank.PermissionLevel = 0
+BaseRank.Name = ""
+function BaseRank:Apply(Player : Player)
+	Player:SetAttribute("PermissionLevel",self.PermissionLevel)
+	Player:SetAttribute("Rank",self.Name)
+	
+	PlayerManager.UpdateData(Player,{Rank = self.Name})
+	PlayerRanks[Player] = self.Name
+end
+function BaseRank:Remove(Player : Player)
+	
+end
+
+
+local Ranks = {}
+
+local function New(Rank)
+	return setmetatable(Rank,{__index = BaseRank})
+end
+
+function Ranks.GetPlayersRank(Player : Player) : string
+	return PlayerRanks[Player]
+end
+
+function Ranks.ChangePlayerRank(Player : Player, Rank : string)
+	PlayerRanks[Player] = Rank
+end
+
+function Ranks.RankPlayer(Player : Player, Rank : string)
+	if PlayerRanks[Player] ~= nil then
+		local OldPlayerRank = PlayerRanks[Player]
+		AllRanks[OldPlayerRank]:Remove(Player)
+	end
+	AllRanks[Rank]:Apply(Player)
+end
+
+function Ranks.Initialize()
+	for _, Module in pairs(script:GetChildren()) do
+		local RequiredRank = require(Module)
+		RequiredRank = New(RequiredRank)
+		RequiredRank.Name = Module.Name
+		AllRanks[Module.Name] = RequiredRank
+	end
+	
+	PlayerManager.BindToData({"JoinTime","Rank"},function(Player, Key, NewData)
+		if NewData == nil then return end
+		local SessionData = SessionManager.GetSessionData()
+		if SessionData == nil then return end
+		
+		if Key == "Rank" then
+			SessionData.Ranks[Player.UserId] = NewData
+			
+			if NewData == DEFAULT_OWNER_RANK then
+				SessionData.Host = {
+					DisplayName = Player.DisplayName,
+					UserId = Player.UserId,
+					Name = Player.Name,
+					HasVerifiedBadge = Player.HasVerifiedBadge
+				}
+				SessionManager.UpdateSession(SessionData)
+			end
+		elseif Key == "JoinTime" then
+			if SessionData.Host.UserId == Player.UserId then
+				Ranks.RankPlayer(Player,DEFAULT_OWNER_RANK)
+			else
+				Ranks.RankPlayer(Player,DEFAULT_RANK)
+			end
+		end
+	end)
+	Players.PlayerRemoving:Connect(function(Player)
+		if SessionManager.GetSessionData() == nil then return end
+		if SessionManager.GetSessionData().Host.UserId == Player.UserId then
+			LastOwner = nil
+			
+			local HighestPermissionPlayer = {
+				Player = nil,
+				PermissionLevel = 0,
+				JoinTime = nil,
+			}
+			for Player, Rank in pairs(PlayerRanks) do
+				if Rank == DEFAULT_OWNER_RANK then continue end
+				local PlayerRank = AllRanks[Rank]
+				local PlayerPermissionLevel = PlayerRank.PermissionLevel
+				
+				if PlayerPermissionLevel >= HighestPermissionPlayer.PermissionLevel then
+					local PlayerJoinTime = PlayerManager.GetProfile(Player).JoinTime
+					if PlayerJoinTime < (HighestPermissionPlayer.JoinTime or os.time()) then
+						HighestPermissionPlayer = {
+							JoinTime = PlayerJoinTime,
+							Player = Player,
+							PermissionLevel = PlayerPermissionLevel
+						}
+					end
+				end
+			end
+			
+			if HighestPermissionPlayer.Player then
+				LastOwner = HighestPermissionPlayer.Player
+				Ranks.RankPlayer(HighestPermissionPlayer.Player,DEFAULT_OWNER_RANK)
+			else
+				warn("Closing session -- no player to inherit session.")
+			end
+		end
+	end)
+	SessionManager.BindToSessionData(function(NewSessionData)
+		if NewSessionData == nil then return end
+		if NewSessionData.Host == nil then return end
+		
+		local OwnerID = NewSessionData.Host.UserId or 0
+		local Owner = Players:GetPlayerByUserId(OwnerID)
+		
+		if LastOwner ~= Owner then
+			if LastOwner then
+				Ranks.RankPlayer(LastOwner,DEFAULT_RANK)
+			end
+			if Owner then
+				LastOwner = Owner
+				Ranks.RankPlayer(Owner,DEFAULT_OWNER_RANK)
+			end
+		end
+	end)
+end
+
+
+export type Rank = {
+	PermissionLevel : number,
+	Apply : (self : {}, Player : Player) -> nil,
+	Remove : (self : {}, Player : Player) -> nil
+}
+return Ranks
+                        </code></pre>
+                    </div>
+                </div>
+
+                <!-- Below: Description -->
+                <p class="description">
+					This is a project I no longer work on, left the project after owner and I had some disputes. This was meant to be a social game where players can join sessions with other users.
+                </p>
+            </div>
+
+			
+						                        <!-- Portfolio Item Template -->
+            
+
+
+			
+                        <!-- Portfolio Item Template -->
+            
+
+
+
+			<div class="portfolio-item">
                 <h3>Pet Simulator System</h3>
                 
                 <div class="portfolio-content">
@@ -1051,430 +1565,6 @@ return InventoryHandler
                 <!-- Below: Description -->
                 <p class="description">
 					Got hired short-term to make a pet simulator inventory and egg system.
-                </p>
-            </div>
-
-            <!-- Add more portfolio items by copying the template above -->
-
-
-            <div class="portfolio-item">
-                <h3>Sessions</h3>
-                
-                <div class="portfolio-content">
-                    <!-- Right: Code Section -->
-					<div class="portfolio-code">
-                        <pre><code class="language-lua">
--- Services
-local Players = game:GetService("Players")
-local SessionManager = require(script.Parent.SessionManager)
-local PlayerManager = require(script.Parent.PlayerManager)
-local HTTPS = game:GetService("HttpService")
-
--- Variables
-local PlayerRanks : {[Player] : string} = {}
-local AllRanks : {[string] : Rank} = {}
-local LastOwner : Player = nil
-
--- Constants
-local DEFAULT_RANK = "Visitor"
-local DEFAULT_OWNER_RANK = "Owner"
-
--- Default/Base rank
-local BaseRank : Rank = {}
-BaseRank.PermissionLevel = 0
-BaseRank.Name = ""
-function BaseRank:Apply(Player : Player)
-	Player:SetAttribute("PermissionLevel",self.PermissionLevel)
-	Player:SetAttribute("Rank",self.Name)
-	
-	PlayerManager.UpdateData(Player,{Rank = self.Name})
-	PlayerRanks[Player] = self.Name
-end
-function BaseRank:Remove(Player : Player)
-	
-end
-
-
-local Ranks = {}
-
-local function New(Rank)
-	return setmetatable(Rank,{__index = BaseRank})
-end
-
-function Ranks.GetPlayersRank(Player : Player) : string
-	return PlayerRanks[Player]
-end
-
-function Ranks.ChangePlayerRank(Player : Player, Rank : string)
-	PlayerRanks[Player] = Rank
-end
-
-function Ranks.RankPlayer(Player : Player, Rank : string)
-	if PlayerRanks[Player] ~= nil then
-		local OldPlayerRank = PlayerRanks[Player]
-		AllRanks[OldPlayerRank]:Remove(Player)
-	end
-	AllRanks[Rank]:Apply(Player)
-end
-
-function Ranks.Initialize()
-	for _, Module in pairs(script:GetChildren()) do
-		local RequiredRank = require(Module)
-		RequiredRank = New(RequiredRank)
-		RequiredRank.Name = Module.Name
-		AllRanks[Module.Name] = RequiredRank
-	end
-	
-	PlayerManager.BindToData({"JoinTime","Rank"},function(Player, Key, NewData)
-		if NewData == nil then return end
-		local SessionData = SessionManager.GetSessionData()
-		if SessionData == nil then return end
-		
-		if Key == "Rank" then
-			SessionData.Ranks[Player.UserId] = NewData
-			
-			if NewData == DEFAULT_OWNER_RANK then
-				SessionData.Host = {
-					DisplayName = Player.DisplayName,
-					UserId = Player.UserId,
-					Name = Player.Name,
-					HasVerifiedBadge = Player.HasVerifiedBadge
-				}
-				SessionManager.UpdateSession(SessionData)
-			end
-		elseif Key == "JoinTime" then
-			if SessionData.Host.UserId == Player.UserId then
-				Ranks.RankPlayer(Player,DEFAULT_OWNER_RANK)
-			else
-				Ranks.RankPlayer(Player,DEFAULT_RANK)
-			end
-		end
-	end)
-	Players.PlayerRemoving:Connect(function(Player)
-		if SessionManager.GetSessionData() == nil then return end
-		if SessionManager.GetSessionData().Host.UserId == Player.UserId then
-			LastOwner = nil
-			
-			local HighestPermissionPlayer = {
-				Player = nil,
-				PermissionLevel = 0,
-				JoinTime = nil,
-			}
-			for Player, Rank in pairs(PlayerRanks) do
-				if Rank == DEFAULT_OWNER_RANK then continue end
-				local PlayerRank = AllRanks[Rank]
-				local PlayerPermissionLevel = PlayerRank.PermissionLevel
-				
-				if PlayerPermissionLevel >= HighestPermissionPlayer.PermissionLevel then
-					local PlayerJoinTime = PlayerManager.GetProfile(Player).JoinTime
-					if PlayerJoinTime < (HighestPermissionPlayer.JoinTime or os.time()) then
-						HighestPermissionPlayer = {
-							JoinTime = PlayerJoinTime,
-							Player = Player,
-							PermissionLevel = PlayerPermissionLevel
-						}
-					end
-				end
-			end
-			
-			if HighestPermissionPlayer.Player then
-				LastOwner = HighestPermissionPlayer.Player
-				Ranks.RankPlayer(HighestPermissionPlayer.Player,DEFAULT_OWNER_RANK)
-			else
-				warn("Closing session -- no player to inherit session.")
-			end
-		end
-	end)
-	SessionManager.BindToSessionData(function(NewSessionData)
-		if NewSessionData == nil then return end
-		if NewSessionData.Host == nil then return end
-		
-		local OwnerID = NewSessionData.Host.UserId or 0
-		local Owner = Players:GetPlayerByUserId(OwnerID)
-		
-		if LastOwner ~= Owner then
-			if LastOwner then
-				Ranks.RankPlayer(LastOwner,DEFAULT_RANK)
-			end
-			if Owner then
-				LastOwner = Owner
-				Ranks.RankPlayer(Owner,DEFAULT_OWNER_RANK)
-			end
-		end
-	end)
-end
-
-
-export type Rank = {
-	PermissionLevel : number,
-	Apply : (self : {}, Player : Player) -> nil,
-	Remove : (self : {}, Player : Player) -> nil
-}
-return Ranks
-                        </code></pre>
-                    </div>
-                </div>
-
-                <!-- Below: Description -->
-                <p class="description">
-					This is a project I no longer work on, left the project after owner and I had some disputes. This was meant to be a social game where players can join sessions with other users.
-                </p>
-            </div>
-
-			
-
-
-
-			
-                        <!-- Portfolio Item Template -->
-            <div class="portfolio-item">
-                <h3>Drone Obby Prototype</h3>
-                
-                <div class="portfolio-content">
-                    <!-- Left: Image/Video -->
-                    <video src="Portfolio/drone obby.mp4" controls class="portfolio-media"></video>
-
-                    <!-- Right: Code Section -->
-                    <div class="portfolio-code">
-                        <pre><code class="language-lua">
-local Obstacles = require(script.Parent)
-local Player = game.Players.LocalPlayer
-local RunService = game:GetService("RunService")
-local Movement = require(game.ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Client"):WaitForChild("Movement"):WaitForChild("Walk"))
-local FAN_SPEED = 100
-local WIND_SPEED = vector.create(300,160,300)
-
-local module = {}
-
-function module:Load(WindTunnel)
-	self.WindTunnel = WindTunnel
-	local Hitbox : Part = WindTunnel:WaitForChild("Hitbox")
-	
-	local NewWindAudio = game.ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Sounds"):WaitForChild("Wind"):Clone()
-	NewWindAudio.Parent = Hitbox
-	NewWindAudio:Play()
-	
-	local NewWindVFX = script:WaitForChild("Part"):WaitForChild("Attachment"):Clone()
-	NewWindVFX.Parent = WindTunnel:WaitForChild("Part")
-	self.VFX = NewWindVFX
-	
-	self.Audio = NewWindAudio
-	
-	self.TouchConnection = Hitbox.Touched:Connect(function(Hit)
-		if Hit.Name ~= "HumanoidRootPart" then return end
-		if Hit.Parent:FindFirstChild("Humanoid") then
-			local HitPlayer = game.Players:GetPlayerFromCharacter(Hit.Parent)
-			if HitPlayer == Player then
-				Obstacles.SharedData.LastEffect = WindTunnel
-				Movement.ChangeAddition("WindTunnel",-Hitbox.CFrame.LookVector * WIND_SPEED)
-			end
-		end
-	end)
-	
-	self.TouchEndedConnection = Hitbox.TouchEnded:Connect(function(Hit)
-		if Hit.Name ~= "HumanoidRootPart" then return end
-		if Hit.Parent:FindFirstChild("Humanoid") then
-			local HitPlayer = game.Players:GetPlayerFromCharacter(Hit.Parent)
-			if HitPlayer == Player then
-				if Obstacles.SharedData.LastEffect == WindTunnel then
-					Movement.ChangeAddition("WindTunnel",nil)
-				end
-			end
-		end
-	end)
-	
-	if Obstacles.SharedData.AccessedWindTunnel == nil then
-		Obstacles.SharedData.AccessedWindTunnel = true
-		Obstacles.SharedData.WindTunnels = {}
-		
-		RunService:BindToRenderStep("WindTunnel",4,function(DT)
-			local AllTunnels = Obstacles.SharedData.WindTunnels
-			
-			for _, Tunnel in pairs(AllTunnels) do
-				local Fan = Tunnel.BoxFan.Fan
-				
-				Fan.CFrame *= CFrame.Angles(0,math.rad(15 * DT * FAN_SPEED),0)
-			end
-		end)
-	end
-	table.insert(Obstacles.SharedData.WindTunnels,WindTunnel)
-end
-
-function module:Unload()
-	self.TouchEndedConnection:Disconnect()
-	self.TouchConnection:Disconnect()
-	self.Audio:Destroy()
-	self.VFX:Destroy()
-	
-	if Obstacles.SharedData.AccessedWindTunnel ~= nil then
-		Movement.ChangeAddition("WindTunnel", nil)
-		RunService:UnbindFromRenderStep("WindTunnel")
-	end
-	
-	self.Finished:Fire()
-end
-
-return module
-                        </code></pre>
-                    </div>
-                </div>
-
-                <!-- Below: Description -->
-                <p class="description">
-                    This is a prototype I made by myself of a drone obby, this project is no longer in the works.
-                </p>
-            </div>
-
-
-
-
-			
-
-						                        <!-- Portfolio Item Template -->
-            <div class="portfolio-item">
-                <h3>RoGuessr</h3>
-                
-                <div class="portfolio-content">
-                    <!-- Left: Image/Video -->
-                    <video src="Portfolio/roguessr so far.mp4" controls class="portfolio-media"></video>
-
-                    <!-- Right: Code Section -->
-                    <div class="portfolio-code">
-                        <pre><code class="language-lua">
--- Services
-local Rep = game:GetService("ReplicatedStorage")
-local UpdateViewSphere = require(script.Parent:WaitForChild("UpdateViewSphere"))
-local SyncGame = require(script.Parent:WaitForChild("SyncGame"))
-local ViewSphere = workspace.ViewSphere.PrimaryPart
-local TweenService = game:GetService("TweenService")
-
-local Camera = workspace.CurrentCamera
-local Pointer = script:WaitForChild("Pointer")
-local Pointers = workspace:WaitForChild("Pointers")
-
-local RANDOM_INSTANCE = Random.new()
-local POINTER_RADIUS_OFFSET = 20
-local Y_OFFSET = 45
-local ANIMATION_INFO = TweenInfo.new(0.22,Enum.EasingStyle.Sine,Enum.EasingDirection.Out)
-local SIZE_MULTIPLIER = 1.1
-local VECTOR_MAP = {
-	[1] = "X",
-	[2] = "Y",
-	[3] = "Z"
-}
-
-local CurrentDetails = nil
-
--- Client
-local Client = {}
-
-local function StringToVector(String : string)
-	if typeof(String) == "Vector3" then return String end
-	
-	local SubbedLocation = String--string.split(string.split(String,"(")[2],")")[1]
-	local XYZLocation = {
-		X = 0,
-		Y = 0,
-		Z = 0
-	}
-
-	for CoordinateIndex, Coordinate in pairs(string.split(SubbedLocation,",")) do
-		local XYZ = VECTOR_MAP[CoordinateIndex]
-		local Number = tonumber(Coordinate)
-
-		XYZLocation[XYZ] = Number
-	end
-
-	return vector.create(XYZLocation.X,XYZLocation.Y,XYZLocation.Z)
-end
-
-function Client.MoveToIndex(Position : string, Rigid : boolean?)
-	Pointers:ClearAllChildren()
-	
-	local Textures = CurrentDetails.CurrentGame.Textures
-	local ActualPosition = StringToVector(Position)
-	
-	for StringLocation : string, Textures : {[number] : string} in pairs(Textures) do
-		local Location = StringToVector(StringLocation)
-		
-		if StringLocation ~= Position then
-			if not Pointers:FindFirstChild(StringLocation) then
-				local PointerClone = Pointer:Clone()
-				local Direction = (Location - ActualPosition - ViewSphere.Position).Unit
-				if CurrentDetails.CurrentGame.Flipped == true then
-					Direction = (ActualPosition - Location - ViewSphere.Position).Unit
-				end
-		
-				local NewCFrame = CFrame.new(ViewSphere.Position)
-				local DirectionCFrame = CFrame.new(NewCFrame.Position,ViewSphere.Position + (Direction*2))
-				local X,Y,Z = DirectionCFrame:ToOrientation()
-				local CompleteOrientation = CFrame.fromOrientation(0,Y,0) * CFrame.Angles(0,Y_OFFSET,0)
-				local CompleteCFrame = CFrame.new(ViewSphere.Position + (CompleteOrientation.RightVector * POINTER_RADIUS_OFFSET))
-				CompleteCFrame *= CompleteOrientation
-				
-				PointerClone.Parent = Pointers
-				PointerClone.Name = StringLocation
-				PointerClone:SetAttribute("CFrame",CompleteCFrame)
-				
-				local ClickDetector = PointerClone:WaitForChild("ClickDetector")
-				local CurrentPointerTween : Tween = nil
-				local OriginalSize = PointerClone.Size
-				
-				local Preview = PointerClone:WaitForChild("Preview"):WaitForChild("Image")
-				Preview.Image = Textures[1]
-				
-				ClickDetector.MouseHoverEnter:Connect(function()
-					if CurrentPointerTween ~= nil then
-						CurrentPointerTween:Cancel()
-					end
-					
-					Preview.Visible = true
-					CurrentPointerTween = TweenService:Create(PointerClone,ANIMATION_INFO,{Size = OriginalSize * SIZE_MULTIPLIER})
-					CurrentPointerTween:Play()
-				end)
-				ClickDetector.MouseHoverLeave:Connect(function()
-					if CurrentPointerTween ~= nil then
-						CurrentPointerTween:Cancel()
-					end
-					
-					Preview.Visible = false
-					CurrentPointerTween = TweenService:Create(PointerClone,ANIMATION_INFO,{Size = OriginalSize})
-					CurrentPointerTween:Play()
-				end)
-				ClickDetector.MouseClick:Connect(function()
-					Client.MoveToIndex(StringLocation,false)
-				end)
-			end
-		end
-	end
-
-	Camera:SetAttribute("CurrentPosition",ActualPosition)
-	if Rigid then
-		UpdateViewSphere.ForceUpdate(Textures[Position])
-	else
-		UpdateViewSphere.UpdateSmooth(Textures[Position])
-	end
-end
-
-function Client.Init()
-	SyncGame.AttachToSelectedGame(function(Details)
-		CurrentDetails = Details
-		
-		local FirstPosition = Details.FirstTexture
-		
-		Pointers:ClearAllChildren()
-		Client.MoveToIndex(FirstPosition)
-	end)
-end
-
-return Client
-                        </code></pre>
-                    </div>
-                </div>
-
-                <!-- Below: Description -->
-                <p class="description">
-					Uncomplete prototype for my own studio, couldn't secure funding so no longer working on this project.
                 </p>
             </div>
 
