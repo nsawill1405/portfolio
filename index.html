@@ -863,6 +863,10 @@ return PlayerData
     </main>
 
     <script>
+        // Force scroll to top on load/refresh
+        history.scrollRestoration = 'manual';
+        window.scrollTo(0, 0);
+
         const LenisClass = window.Lenis || window.lenis?.Lenis;
         let lenis;
         if (LenisClass) {
