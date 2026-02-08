@@ -414,6 +414,18 @@
             margin-bottom: 1rem;
         }
 
+        .robux-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            margin: 0 auto 1rem auto;
+            color: #9b59b6;
+        }
+
+        .robux-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
         .payment-card h4 {
             color: #ffffff;
             font-size: 1.2rem;
@@ -528,15 +540,15 @@
                         projects that reached millions of players.
                     </p>
                     <p style="margin-bottom: 1rem;">
-                        I code in <strong>Luau, Python, C#, HTML, CSS, JavaScript, and Java</strong>, basically whatever 
+                        I code in <strong>Luau, Python, C#, HTML, CSS, JavaScript, and Java</strong>, whatever 
                         the project needs. I can handle everything from game mechanics and UI to backend systems.
                     </p>
                     <p style="margin-bottom: 1rem;">
                         I put in <strong>5+ hours every day</strong> on development work. Available for both long-term partnerships 
-                        and quick one-off projects.
+                        and one-off projects.
                     </p>
                     <p>
-                        Flexible with payment — I accept <strong>percentage deals, Robux, or USD through PayPal</strong>. 
+                        Flexible with payment, I accept <strong>percentage deals, Robux, or USD through PayPal</strong>. 
                         Hit me up if you want to work together.
                     </p>
                 </div>
@@ -557,7 +569,14 @@
                         <p>Revenue share partnerships for long-term projects</p>
                     </div>
                     <div class="payment-card">
-                        <i class="fa-solid fa-coins"></i>
+                        <div class="robux-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="currentColor">
+                                <g transform="rotate(25 50 50)">
+                                    <rect x="15" y="15" width="70" height="70" fill="currentColor"/>
+                                    <rect x="35" y="35" width="30" height="30" fill="#0a0a0f"/>
+                                </g>
+                            </svg>
+                        </div>
                         <h4>Robux</h4>
                         <p>Direct payment through Roblox platform</p>
                     </div>
@@ -845,6 +864,30 @@ greet("Developer")</code></pre>
             
             // Helper function to setup model
             function setupModel(model) {
+                // Apply materials to all meshes to avoid wireframe
+                model.traverse((child) => {
+                    if (child.isMesh) {
+                        // Ensure materials are properly rendered
+                        if (!child.material) {
+                            child.material = new THREE.MeshStandardMaterial({
+                                color: 0x9b59b6,
+                                roughness: 0.5,
+                                metalness: 0.2
+                            });
+                        }
+                        // Force materials to be non-wireframe
+                        if (Array.isArray(child.material)) {
+                            child.material.forEach(mat => {
+                                mat.wireframe = false;
+                            });
+                        } else {
+                            child.material.wireframe = false;
+                        }
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                });
+                
                 // Center the model
                 const box = new THREE.Box3().setFromObject(model);
                 const center = box.getCenter(new THREE.Vector3());
