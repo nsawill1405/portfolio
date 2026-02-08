@@ -624,11 +624,116 @@ return progressionFunnel
 
                 <!-- Below: Description -->
                 <p class="description">
-                    Semi Truck Obby
+                    https://www.roblox.com/games/110345898280451/Semi-Truck-Obby
+                    I worked on updates for Semi Truck Obby, helping the CCU grow steadily. I no longer work on this project.
                 </p>
             </div>
 
             <!-- Add more portfolio items by copying the template above -->
+
+                        <!-- Portfolio Item Template -->
+            <div class="portfolio-item">
+                <h3>Drone Obby Prototype</h3>
+                
+                <div class="portfolio-content">
+                    <!-- Left: Image/Video -->
+                    <video src="Portfolio/drone obby.mp4" controls class="portfolio-media"></video>
+
+                    <!-- Right: Code Section -->
+                    <div class="portfolio-code">
+                        <pre><code class="language-lua">
+local Obstacles = require(script.Parent)
+local Player = game.Players.LocalPlayer
+local RunService = game:GetService("RunService")
+local Movement = require(game.ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Client"):WaitForChild("Movement"):WaitForChild("Walk"))
+local FAN_SPEED = 100
+local WIND_SPEED = vector.create(300,160,300)
+
+local module = {}
+
+function module:Load(WindTunnel)
+	self.WindTunnel = WindTunnel
+	local Hitbox : Part = WindTunnel:WaitForChild("Hitbox")
+	
+	local NewWindAudio = game.ReplicatedStorage:WaitForChild("Assets"):WaitForChild("Sounds"):WaitForChild("Wind"):Clone()
+	NewWindAudio.Parent = Hitbox
+	NewWindAudio:Play()
+	
+	local NewWindVFX = script:WaitForChild("Part"):WaitForChild("Attachment"):Clone()
+	NewWindVFX.Parent = WindTunnel:WaitForChild("Part")
+	self.VFX = NewWindVFX
+	
+	self.Audio = NewWindAudio
+	
+	self.TouchConnection = Hitbox.Touched:Connect(function(Hit)
+		if Hit.Name ~= "HumanoidRootPart" then return end
+		if Hit.Parent:FindFirstChild("Humanoid") then
+			local HitPlayer = game.Players:GetPlayerFromCharacter(Hit.Parent)
+			if HitPlayer == Player then
+				Obstacles.SharedData.LastEffect = WindTunnel
+				Movement.ChangeAddition("WindTunnel",-Hitbox.CFrame.LookVector * WIND_SPEED)
+			end
+		end
+	end)
+	
+	self.TouchEndedConnection = Hitbox.TouchEnded:Connect(function(Hit)
+		if Hit.Name ~= "HumanoidRootPart" then return end
+		if Hit.Parent:FindFirstChild("Humanoid") then
+			local HitPlayer = game.Players:GetPlayerFromCharacter(Hit.Parent)
+			if HitPlayer == Player then
+				if Obstacles.SharedData.LastEffect == WindTunnel then
+					Movement.ChangeAddition("WindTunnel",nil)
+				end
+			end
+		end
+	end)
+	
+	if Obstacles.SharedData.AccessedWindTunnel == nil then
+		Obstacles.SharedData.AccessedWindTunnel = true
+		Obstacles.SharedData.WindTunnels = {}
+		
+		RunService:BindToRenderStep("WindTunnel",4,function(DT)
+			local AllTunnels = Obstacles.SharedData.WindTunnels
+			
+			for _, Tunnel in pairs(AllTunnels) do
+				local Fan = Tunnel.BoxFan.Fan
+				
+				Fan.CFrame *= CFrame.Angles(0,math.rad(15 * DT * FAN_SPEED),0)
+			end
+		end)
+	end
+	table.insert(Obstacles.SharedData.WindTunnels,WindTunnel)
+end
+
+function module:Unload()
+	self.TouchEndedConnection:Disconnect()
+	self.TouchConnection:Disconnect()
+	self.Audio:Destroy()
+	self.VFX:Destroy()
+	
+	if Obstacles.SharedData.AccessedWindTunnel ~= nil then
+		Movement.ChangeAddition("WindTunnel", nil)
+		RunService:UnbindFromRenderStep("WindTunnel")
+	end
+	
+	self.Finished:Fire()
+end
+
+return module
+                        </code></pre>
+                    </div>
+                </div>
+
+                <!-- Below: Description -->
+                <p class="description">
+                    This is a prototype I made by myself of a drone obby, this project is no longer in the works.
+                </p>
+            </div>
+
+
+
+
+            
         </div>
 
         <div class="content-section" id="contact">
