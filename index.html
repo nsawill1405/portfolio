@@ -730,6 +730,392 @@ return module
                 </p>
             </div>
 
+						                        <!-- Portfolio Item Template -->
+            <div class="portfolio-item">
+                <h3>RoGuessr</h3>
+                
+                <div class="portfolio-content">
+                    <!-- Left: Image/Video -->
+                    <video src="Portfolio/roguessr so far.mp4" controls class="portfolio-media"></video>
+
+                    <!-- Right: Code Section -->
+                    <div class="portfolio-code">
+                        <pre><code class="language-lua">
+-- Services
+local Rep = game:GetService("ReplicatedStorage")
+local UpdateViewSphere = require(script.Parent:WaitForChild("UpdateViewSphere"))
+local SyncGame = require(script.Parent:WaitForChild("SyncGame"))
+local ViewSphere = workspace.ViewSphere.PrimaryPart
+local TweenService = game:GetService("TweenService")
+
+local Camera = workspace.CurrentCamera
+local Pointer = script:WaitForChild("Pointer")
+local Pointers = workspace:WaitForChild("Pointers")
+
+local RANDOM_INSTANCE = Random.new()
+local POINTER_RADIUS_OFFSET = 20
+local Y_OFFSET = 45
+local ANIMATION_INFO = TweenInfo.new(0.22,Enum.EasingStyle.Sine,Enum.EasingDirection.Out)
+local SIZE_MULTIPLIER = 1.1
+local VECTOR_MAP = {
+	[1] = "X",
+	[2] = "Y",
+	[3] = "Z"
+}
+
+local CurrentDetails = nil
+
+-- Client
+local Client = {}
+
+local function StringToVector(String : string)
+	if typeof(String) == "Vector3" then return String end
+	
+	local SubbedLocation = String--string.split(string.split(String,"(")[2],")")[1]
+	local XYZLocation = {
+		X = 0,
+		Y = 0,
+		Z = 0
+	}
+
+	for CoordinateIndex, Coordinate in pairs(string.split(SubbedLocation,",")) do
+		local XYZ = VECTOR_MAP[CoordinateIndex]
+		local Number = tonumber(Coordinate)
+
+		XYZLocation[XYZ] = Number
+	end
+
+	return vector.create(XYZLocation.X,XYZLocation.Y,XYZLocation.Z)
+end
+
+function Client.MoveToIndex(Position : string, Rigid : boolean?)
+	Pointers:ClearAllChildren()
+	
+	local Textures = CurrentDetails.CurrentGame.Textures
+	local ActualPosition = StringToVector(Position)
+	
+	for StringLocation : string, Textures : {[number] : string} in pairs(Textures) do
+		local Location = StringToVector(StringLocation)
+		
+		if StringLocation ~= Position then
+			if not Pointers:FindFirstChild(StringLocation) then
+				local PointerClone = Pointer:Clone()
+				local Direction = (Location - ActualPosition - ViewSphere.Position).Unit
+				if CurrentDetails.CurrentGame.Flipped == true then
+					Direction = (ActualPosition - Location - ViewSphere.Position).Unit
+				end
+		
+				local NewCFrame = CFrame.new(ViewSphere.Position)
+				local DirectionCFrame = CFrame.new(NewCFrame.Position,ViewSphere.Position + (Direction*2))
+				local X,Y,Z = DirectionCFrame:ToOrientation()
+				local CompleteOrientation = CFrame.fromOrientation(0,Y,0) * CFrame.Angles(0,Y_OFFSET,0)
+				local CompleteCFrame = CFrame.new(ViewSphere.Position + (CompleteOrientation.RightVector * POINTER_RADIUS_OFFSET))
+				CompleteCFrame *= CompleteOrientation
+				
+				PointerClone.Parent = Pointers
+				PointerClone.Name = StringLocation
+				PointerClone:SetAttribute("CFrame",CompleteCFrame)
+				
+				local ClickDetector = PointerClone:WaitForChild("ClickDetector")
+				local CurrentPointerTween : Tween = nil
+				local OriginalSize = PointerClone.Size
+				
+				local Preview = PointerClone:WaitForChild("Preview"):WaitForChild("Image")
+				Preview.Image = Textures[1]
+				
+				ClickDetector.MouseHoverEnter:Connect(function()
+					if CurrentPointerTween ~= nil then
+						CurrentPointerTween:Cancel()
+					end
+					
+					Preview.Visible = true
+					CurrentPointerTween = TweenService:Create(PointerClone,ANIMATION_INFO,{Size = OriginalSize * SIZE_MULTIPLIER})
+					CurrentPointerTween:Play()
+				end)
+				ClickDetector.MouseHoverLeave:Connect(function()
+					if CurrentPointerTween ~= nil then
+						CurrentPointerTween:Cancel()
+					end
+					
+					Preview.Visible = false
+					CurrentPointerTween = TweenService:Create(PointerClone,ANIMATION_INFO,{Size = OriginalSize})
+					CurrentPointerTween:Play()
+				end)
+				ClickDetector.MouseClick:Connect(function()
+					Client.MoveToIndex(StringLocation,false)
+				end)
+			end
+		end
+	end
+
+	Camera:SetAttribute("CurrentPosition",ActualPosition)
+	if Rigid then
+		UpdateViewSphere.ForceUpdate(Textures[Position])
+	else
+		UpdateViewSphere.UpdateSmooth(Textures[Position])
+	end
+end
+
+function Client.Init()
+	SyncGame.AttachToSelectedGame(function(Details)
+		CurrentDetails = Details
+		
+		local FirstPosition = Details.FirstTexture
+		
+		Pointers:ClearAllChildren()
+		Client.MoveToIndex(FirstPosition)
+	end)
+end
+
+return Client
+                        </code></pre>
+                    </div>
+                </div>
+
+                <!-- Below: Description -->
+                <p class="description">
+					Uncomplete prototype for my own studio, couldn't secure funding so no longer working on this project.
+                </p>
+            </div>
+
+
+			                        <!-- Portfolio Item Template -->
+            <div class="portfolio-item">
+                <h3>Uncomplete Brainrot Game</h3>
+                
+                <div class="portfolio-content">
+                    <!-- Left: Image/Video -->
+                    <video src="Portfolio/brainrot.mp4" controls class="portfolio-media"></video>
+
+                    <!-- Right: Code Section -->
+                    <div class="portfolio-code">
+                        <pre><code class="language-lua">
+-- Services
+local Players = game:GetService("Players")
+local Rep = game:GetService("ReplicatedStorage")
+local Communication = Rep.Communication
+local AllInventoryModules = {
+	Eggs = "nil",
+	Brainrots = "nil"
+}
+
+local RetrieveData = Communication.Player.RetrieveData
+local ChangedData = Communication.Player.UpdateData
+
+local ProfileStore = require(game.ServerStorage.Modules.ProfileStore)
+local ProfileTemplate = {
+	Cash = 0,
+	Wave = 0,
+	WaveSpeed = 1,
+	Id = 0,
+	Storage = {},
+	MaxStorage = 6,
+	Index = {},
+	Inventory = {},
+	LastLogin = 0
+}
+
+local PlayerDataStore = ProfileStore.New("PlayerData4", ProfileTemplate)
+local Profiles : {[Player]: typeof(PlayerDataStore:StartSessionAsync())} = {}
+
+local PlayerData = {}
+PlayerData.Profiles = Profiles
+
+function PlayerData:PlayerLoaded(Player : Player)
+	local Profile = PlayerDataStore:StartSessionAsync(`{Player.UserId}`, {
+		Cancel = function()
+			return Player.Parent ~= Players
+		end,
+	})
+	if Profile ~= nil then
+		Profile:AddUserId(Player.UserId)
+		Profile:Reconcile()
+
+		Profile.OnSessionEnd:Connect(function()
+			self.Profiles[Player] = nil
+			Player:Kick(`Profile session end - Please rejoin`)
+		end)
+
+		if Player.Parent == Players then
+			Profile.Data.Cash = 5000
+			self.Profiles[Player] = Profile
+			
+			local FriendBoost = Instance.new("IntValue")
+			FriendBoost.Value = 0
+			FriendBoost.Name = "FriendBoost"
+			FriendBoost.Parent = Player
+			
+			local SpawnPart = nil
+			for _, Slot in pairs(workspace.Players:GetChildren()) do
+				if Slot:GetAttribute("Occupied") == nil then
+					Slot:SetAttribute("Occupied",Player.Name)
+					SpawnPart = Slot:FindFirstChild("Spawn")
+					Player:SetAttribute("Slot",Slot.Name)
+					break
+				end
+			end
+			
+			for _, Friend in pairs(Players:GetPlayers()) do
+				if Player:IsFriendsWith(Friend.UserId) and Friend ~= Player then
+					Player:SetAttribute(Friend.Name,true)
+					Friend:SetAttribute(Player.Name,true)
+					--print(Player,"is friends with",Friend)
+					FriendBoost.Value += 10
+					Friend:WaitForChild("FriendBoost",2).Value += 10
+				end
+			end
+			
+			local Root = Player.Character:WaitForChild("HumanoidRootPart",1)
+			if Root then
+				Root.CFrame = SpawnPart.CFrame
+			end
+			for _, Item in pairs(Profile.Data.Inventory) do
+				local Type = Item.Type
+				if Type then
+					if AllInventoryModules[Type] ~= nil then
+						AllInventoryModules[Type].All[Item.Item]:InventorySpawn(Player,Item.Id)
+					end
+				end
+			end
+			
+			Player.CharacterAdded:Connect(function(Character)
+				local Root = Character:WaitForChild("HumanoidRootPart",1)
+				
+				if Root then
+					Root.CFrame = SpawnPart.CFrame
+				end
+				
+				for _, Item in pairs(Profile.Data.Inventory) do
+					local Type = Item.Type
+					if Type then
+						if AllInventoryModules[Type] ~= nil then
+							AllInventoryModules[Type].All[Item.Item]:InventorySpawn(Player,Item.Id)
+						end
+					end
+				end
+			end)
+			print(Profile)
+		else
+			Profile:EndSession()
+		end
+	else
+		Player:Kick(`Profile load fail - Please rejoin`)
+	end
+end
+
+function PlayerData:PlayerRemoved(Player : Player)
+	local Profile = self.Profiles[Player]
+	Profile.Data.LastLogin = os.clock()
+	
+	local Success, Error = pcall(function()
+		for _, Friend in pairs(Players:GetPlayers()) do
+			if Friend:GetAttribute(Player.Name) == true then
+				Friend:SetAttribute(Player.Name, nil)
+				Friend.FriendBoost.Value -= 10
+			end
+		end
+	end)
+	
+	for _, Slot in pairs(workspace.Players:GetChildren()) do
+		if Slot:GetAttribute("Occupied") == Player.Name then
+			Slot:SetAttribute("Occupied",nil)
+			return
+		end
+	end
+	
+	if Profile ~= nil then
+		Profile:EndSession()
+	end
+end
+
+function PlayerData:ChangeData(Player : Player, Data : {})
+	local Profile = self.Profiles[Player]
+	if Profile ~= nil then
+		for Key, Value in pairs(Data) do
+			Profile.Data[Key] = Value
+		end
+	end
+	
+	self.Profiles[Player] = Profile
+	ChangedData:FireClient(Player, Profile.Data)
+end
+
+function PlayerData:InsertValue(Player : Player, Key : string, Value : any)
+	local Profile = self.Profiles[Player]
+	
+	if Key == "Inventory" then
+		Value.Id = Profile.Data.Id + 1
+		Profile.Data.Id += 1
+		
+		local Type = Value.Type
+		if Type then
+			if AllInventoryModules[Type] ~= nil then
+				AllInventoryModules[Type].All[Value.Item]:InventorySpawn(Player,Value.Id)
+			end
+		end
+	end
+	if Profile ~= nil then
+		table.insert(Profile.Data[Key],Value)
+	end
+
+	self.Profiles[Player] = Profile
+	ChangedData:FireClient(Player, Profile.Data)
+end
+
+function PlayerData:RemoveValue(Player : Player, Key : string, Value : any, ExtraKey : string)
+	local Profile = self.Profiles[Player]
+	if Profile ~= nil then
+		for Index, Val in pairs(Profile.Data[Key]) do
+			if Val[ExtraKey] == Value then
+				Profile.Data[Key][Index] = nil
+			end
+		end
+	end
+	
+	self.Profiles[Player] = Profile
+	ChangedData:FireClient(Player, Profile.Data)
+end
+
+function PlayerData:RetrieveData(Player : Player)
+	return self.Profiles[Player]
+end
+
+function PlayerData:Load()
+	for Key, _ in pairs(AllInventoryModules) do
+		AllInventoryModules[Key] = require(Rep.Modules.ServerModules:FindFirstChild(Key))
+	end
+	
+	
+	for _, Player in pairs(Players:GetPlayers()) do
+		self:PlayerLoaded(Player)
+	end
+	
+	Players.PlayerAdded:Connect(function(Player)
+		self:PlayerLoaded(Player)
+	end)
+	Players.PlayerRemoving:Connect(function(Player)
+		self:PlayerRemoved(Player)
+	end)
+	RetrieveData.OnServerInvoke = function(Player)
+		local Success, Data = pcall(function()
+			return self:RetrieveData(Player).Data
+		end)
+		return if Success then Data else nil
+	end
+end
+
+return PlayerData
+                        </code></pre>
+                    </div>
+                </div>
+
+                <!-- Below: Description -->
+                <p class="description">
+                    This is an uncomplete project for the group OwlVision (https://www.roblox.com/communities/33741749/OwlVision#!/about).
+					No longer work on this project as the owner quit.
+                </p>
+            </div>
+			
 
 
 
