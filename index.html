@@ -216,6 +216,14 @@
             font-size: 1.1rem;
         }
 
+        .contact-icon-img {
+            width: 1.3rem;
+            height: 1.3rem;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+            filter: brightness(0) saturate(100%) invert(49%) sepia(45%) saturate(1200%) hue-rotate(240deg) brightness(90%) contrast(90%);
+        }
+
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -536,7 +544,7 @@
                         projects that reached millions of players.
                     </p>
                     <p style="margin-bottom: 1rem;">
-                        I code in <strong>Luau, Python, C#, HTML, CSS, JavaScript, and Java</strong> — basically whatever 
+                        I code in <strong>Luau, Python, C#, HTML, CSS, JavaScript, and Java</strong>, basically whatever 
                         the project needs. I can handle everything from game mechanics and UI to backend systems.
                     </p>
                     <p style="margin-bottom: 1rem;">
@@ -544,7 +552,7 @@
                         and quick one-off projects.
                     </p>
                     <p>
-                        Flexible with payment — I accept <strong>percentage deals, Robux, or USD through PayPal</strong>. 
+                        Flexible with payment, I accept <strong>percentage deals, Robux, or USD through PayPal</strong>. 
                         Hit me up if you want to work together.
                     </p>
                 </div>
@@ -580,15 +588,10 @@
 
         <div class="content-section" id="portfolio">
             <h2>Portfolio</h2>
-            <p>
-                Showcase your projects, achievements, and creative works here. 
-                This section is perfect for highlighting your best work and demonstrating 
-                your capabilities to potential clients or employers.
-            </p>
 
             <!-- Portfolio Item Template -->
             <div class="portfolio-item">
-                <h3>Project Title</h3>
+                <h3>Semi Truck Obby</h3>
                 
                 <div class="portfolio-content">
                     <!-- Left: Image/Video -->
@@ -600,35 +603,32 @@
 
                     <!-- Right: Code Section -->
                     <div class="portfolio-code">
-                        <pre><code class="language-lua">-- Example Lua code
-local function greet(name)
-    print("Hello, " .. name .. "!")
+                        <pre><code class="language-lua">
+                            local progressionFunnel = {}
+
+local AnalyticsService = game:GetService("AnalyticsService")
+local Players = game:GetService("Players")
+
+Players.PlayerAdded:Connect(function(player)
+    AnalyticsService:LogOnboardingFunnelStepEvent(
+        player, 1, "Player Joined"
+    )
+end)
+
+function progressionFunnel.LogCheckpointStep(player, checkpointIndex)
+    AnalyticsService:LogOnboardingFunnelStepEvent(
+        player, checkpointIndex, "Checkpoint " .. checkpointIndex .. " Unlocked"
+    )
 end
 
--- Game loop example
-local player = {
-    health = 100,
-    position = Vector3.new(0, 0, 0),
-    speed = 16
-}
-
-function updatePlayer(deltaTime)
-    if player.health > 0 then
-        -- Move player
-        local direction = getUserInput()
-        player.position = player.position + (direction * player.speed * deltaTime)
-    end
-end
-
-greet("Developer")</code></pre>
+return progressionFunnel
+                        </code></pre>
                     </div>
                 </div>
 
                 <!-- Below: Description -->
                 <p class="description">
-                    Add your project description here. Explain what the project is about, 
-                    what technologies you used, what challenges you faced, and what you learned. 
-                    The code section will automatically highlight Lua syntax.
+                    Semi Truck Obby
                 </p>
             </div>
 
@@ -653,7 +653,7 @@ greet("Developer")</code></pre>
                 </a>
 
                 <a href="https://www.roblox.com/users/8284290795/profile" target="_blank" rel="noopener noreferrer" class="contact-item">
-                    <h3><i class="fa-solid fa-gamepad"></i> Roblox</h3>
+                    <h3><img src="roblox.png" alt="Roblox" class="contact-icon-img"> Roblox</h3>
                     <span>https://www.roblox.com/users/8284290795/profile</span>
                 </a>
             </div>
