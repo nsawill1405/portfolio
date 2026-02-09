@@ -191,6 +191,31 @@
         .portfolio-item .description { color: #c0c0c0; line-height: 1.6; position: relative; z-index: 1; }
         .portfolio-item .description a { color: #9b59b6; text-decoration: none; transition: color 0.3s ease; border-bottom: 1px solid rgba(138, 43, 226, 0.3); }
         .portfolio-item .description a:hover { color: #b07ce0; border-bottom-color: #b07ce0; }
+        
+        .portfolio-stats {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem;
+        }
+        .portfolio-stat-card {
+            background: rgba(20, 20, 25, 0.8); padding: 1.25rem; border-radius: 8px;
+            border: 1px solid rgba(138, 43, 226, 0.25); text-align: center;
+            transition: all 0.3s ease; position: relative; overflow: hidden;
+        }
+        .portfolio-stat-card::before {
+            content: ''; position: absolute; top: -50%; left: -75%; width: 50%; height: 200%;
+            background: linear-gradient(90deg, transparent, rgba(138,43,226,0.06), transparent);
+            transform: skewX(-20deg); transition: left 0.6s ease; pointer-events: none;
+        }
+        .portfolio-stat-card:hover::before { left: 125%; }
+        .portfolio-stat-card:hover {
+            border-color: rgba(138, 43, 226, 0.5); box-shadow: 0 3px 15px rgba(138, 43, 226, 0.2);
+        }
+        .portfolio-stat-number {
+            font-size: 1.8rem; font-weight: 700;
+            background: linear-gradient(135deg, #9b59b6 0%, #8a2be2 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            margin-bottom: 0.3rem;
+        }
+        .portfolio-stat-label { color: #b0b0b0; font-size: 0.9rem; }
 
         .contact-grid { display: grid; gap: 1.5rem; margin-top: 2rem; }
         .contact-item {
@@ -271,6 +296,8 @@
             .portfolio-item h3 { font-size: 1.25rem; }
             .portfolio-media, .portfolio-code pre { height: 220px; }
             .portfolio-code code { font-size: 0.8rem; }
+            .portfolio-stat-number { font-size: 1.5rem; }
+            .portfolio-stat-label { font-size: 0.85rem; }
             .payment-grid { grid-template-columns: 1fr; gap: 1rem; }
             .contact-item { padding: 1.25rem; }
             .contact-item:hover { transform: translateY(-3px); }
@@ -281,6 +308,7 @@
             .stat-number { font-size: 1.75rem; }
             .stat-label { font-size: 0.85rem; }
             .portfolio-media, .portfolio-code pre { height: 180px; }
+            .portfolio-stat-number { font-size: 1.3rem; }
             .avatar-container { height: 260px; }
         }
         @media (prefers-reduced-motion: reduce) {
@@ -321,8 +349,8 @@
 
         <div class="stats-grid">
             <div class="stat-card reveal" style="transition-delay:0.1s">
-                <div class="stat-number" data-target="30000000">0+</div>
-                <div class="stat-label">Contributed to 30M+ visits</div>
+                <div class="stat-number" data-target="40000000">0+</div>
+                <div class="stat-label">Contributed to 40M+ visits</div>
             </div>
             <div class="stat-card reveal" style="transition-delay:0.2s">
                 <div class="stat-number" data-target="5">0+</div>
@@ -509,6 +537,16 @@ return module
                     <video src="Portfolio/bezier curve.mp4" controls class="portfolio-media"></video>
                 </div>
                 <p class="description"><a href="https://www.roblox.com/games/86340697076369/DOOMED-2-DIE" target="_blank" rel="noopener noreferrer">DOOMED 2 DIE</a> &mdash; I worked on updates for Doomed 2 Die, helping the CCU grow steadily up to 1.2K, whenever I left this project the game started to die down.</p>
+                <div class="portfolio-stats">
+                    <div class="portfolio-stat-card reveal-scale" style="transition-delay:0.1s">
+                        <div class="portfolio-stat-number" data-target="1200">0</div>
+                        <div class="portfolio-stat-label">Peak CCU</div>
+                    </div>
+                    <div class="portfolio-stat-card reveal-scale" style="transition-delay:0.15s">
+                        <div class="portfolio-stat-number" data-target="7200000">0</div>
+                        <div class="portfolio-stat-label">Visits</div>
+                    </div>
+                </div>
             </div>
 
             <div class="portfolio-item reveal" style="transition-delay:0.05s">
@@ -546,6 +584,16 @@ return progressionFunnel
 </code></pre></div>
                 </div>
                 <p class="description"><a href="https://www.roblox.com/games/110345898280451/Semi-Truck-Obby" target="_blank" rel="noopener noreferrer">Semi Truck Obby</a> &mdash; I worked on updates for Semi Truck Obby, helping the CCU grow steadily to around 300. I no longer work on this project.</p>
+                <div class="portfolio-stats">
+                    <div class="portfolio-stat-card reveal-scale" style="transition-delay:0.1s">
+                        <div class="portfolio-stat-number" data-target="300">0</div>
+                        <div class="portfolio-stat-label">Peak CCU</div>
+                    </div>
+                    <div class="portfolio-stat-card reveal-scale" style="transition-delay:0.15s">
+                        <div class="portfolio-stat-number" data-target="24500000">0</div>
+                        <div class="portfolio-stat-label">Visits</div>
+                    </div>
+                </div>
             </div>
 
             <div class="portfolio-item reveal" style="transition-delay:0.05s">
@@ -987,13 +1035,17 @@ return PlayerData
 
         function animateCounter(el, target, duration) {
             duration = duration || 2000;
+            if (target === 0) {
+                el.textContent = '-';
+                return;
+            }
             const inc = target / (duration / 16); let cur = 0;
             const timer = setInterval(() => {
                 cur += inc; if (cur >= target) { cur = target; clearInterval(timer); }
                 var dv;
                 if (target >= 1000000) dv = (cur / 1000000).toFixed(1) + 'M+';
                 else if (target >= 1000) dv = (cur / 1000).toFixed(1) + 'K+';
-                else dv = Math.floor(cur) + '+';
+                else dv = Math.floor(cur) + '';
                 el.textContent = dv;
             }, 16);
         }
@@ -1005,7 +1057,7 @@ return PlayerData
                 }
             });
         }, { threshold: 0.5 });
-        document.querySelectorAll('.stat-number').forEach(s => counterObserver.observe(s));
+        document.querySelectorAll('.stat-number, .portfolio-stat-number').forEach(s => counterObserver.observe(s));
 
         document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());
 
