@@ -9,8 +9,8 @@
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/lua.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/lua.min.js" defer></script>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
     <script>if(!window.Lenis)document.write('<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"><\/script>')</script>
@@ -327,7 +327,7 @@
     <nav id="mainNav">
         <div class="nav-container">
             <div class="logo">
-                <img src="icon.png" alt="Logo" class="logo-icon">
+                <img src="icon.png" alt="Logo" class="logo-icon" loading="lazy" decoding="async">
                 nsawill's Portfolio
             </div>
             <button class="hamburger" id="hamburger" aria-label="Toggle menu">
@@ -372,7 +372,7 @@
                     <p>Flexible with payment, I accept <strong>percentage deals, Robux, or USD through PayPal</strong>. Hit me up if you want to work together.</p>
                 </div>
                 <div class="avatar-container reveal-right" style="transition-delay:0.25s">
-                    <model-viewer src="preview.glb" alt="3D Avatar" auto-rotate auto-rotate-delay="0" camera-controls disable-zoom interaction-prompt="none" touch-action="pan-y" rotation-per-second="30deg" camera-orbit="180deg 75deg 12m" min-camera-orbit="auto auto 12m" max-camera-orbit="auto auto 12m" shadow-intensity="0.8" exposure="1.0" tone-mapping="commerce" style="background-color:#0a0a0f;">
+                    <model-viewer loading="lazy" src="preview.glb" alt="3D Avatar" auto-rotate auto-rotate-delay="0" camera-controls disable-zoom interaction-prompt="none" touch-action="pan-y" rotation-per-second="30deg" camera-orbit="180deg 75deg 12m" min-camera-orbit="auto auto 12m" max-camera-orbit="auto auto 12m" shadow-intensity="0.8" exposure="1.0" tone-mapping="commerce" style="background-color:#0a0a0f;">
                         <div slot="poster" style="display:flex;align-items:center;justify-content:center;height:100%;color:#9b59b6;font-size:1rem;">Loading 3D Model...</div>
                     </model-viewer>
                     <div class="avatar-fallback" id="avatarFallback">Model not found. Place <code>preview.glb</code> in the same folder.<br><small style="color:#888;margin-top:0.5rem;display:block;">Convert .fbx to .glb with Blender or an online converter.</small></div>
@@ -382,7 +382,7 @@
                 <h3 style="color:#9b59b6;margin:2rem 0 1rem 0;font-size:1.3rem;">Payment Methods Accepted</h3>
                 <div class="payment-grid">
                     <div class="payment-card reveal-scale" style="transition-delay:0.1s"><i class="fa-solid fa-percent"></i><h4>Percentage</h4><p>Revenue share partnerships for long-term projects</p></div>
-                    <div class="payment-card reveal-scale" style="transition-delay:0.2s"><img src="robux.png" alt="Robux" class="robux-icon"><h4>Robux</h4><p>Direct payment through Roblox platform</p></div>
+                    <div class="payment-card reveal-scale" style="transition-delay:0.2s"><img src="robux.png" alt="Robux" class="robux-icon" loading="lazy" decoding="async"><h4>Robux</h4><p>Direct payment through Roblox platform</p></div>
                     <div class="payment-card reveal-scale" style="transition-delay:0.3s"><i class="fa-brands fa-paypal"></i><h4>USD (PayPal)</h4><p>Secure international payments via PayPal</p></div>
                 </div>
             </div>
@@ -394,7 +394,7 @@
             <div class="portfolio-item reveal" style="transition-delay:0.05s">
                 <h3>RoGuessr</h3>
                 <div class="portfolio-content">
-                    <video src="Portfolio/roguessr so far.mp4" controls class="portfolio-media"></video>
+                    <video data-src="Portfolio/roguessr so far.mp4" controls class="portfolio-media" preload="none" playsinline></video>
                     <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
 -- Services
 local Rep = game:GetService("ReplicatedStorage")
@@ -466,7 +466,7 @@ return Client
             <div class="portfolio-item reveal" style="transition-delay:0.05s">
                 <h3>Drone Obby Prototype</h3>
                 <div class="portfolio-content">
-                    <video src="Portfolio/drone obby.mp4" controls class="portfolio-media"></video>
+                    <video data-src="Portfolio/drone obby.mp4" controls class="portfolio-media" preload="none" playsinline></video>
                     <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
 local Obstacles = require(script.Parent)
 local Player = game.Players.LocalPlayer
@@ -533,8 +533,8 @@ return module
             <div class="portfolio-item reveal" style="transition-delay:0.05s">
                 <h3>Doomed 2 Die</h3>
                 <div class="portfolio-content">
-                    <img src="Portfolio/doomed 2 die.webp" alt="Doomed 2 Die's Thumbnail" class="portfolio-media">
-                    <video src="Portfolio/bezier curve.mp4" controls class="portfolio-media"></video>
+                    <img src="Portfolio/doomed 2 die.webp" alt="Doomed 2 Die's Thumbnail" class="portfolio-media" loading="lazy" decoding="async">
+                    <video data-src="Portfolio/bezier curve.mp4" controls class="portfolio-media" preload="none" playsinline></video>
                 </div>
                 <p class="description"><a href="https://www.roblox.com/games/86340697076369/DOOMED-2-DIE" target="_blank" rel="noopener noreferrer">DOOMED 2 DIE</a> &mdash; I worked on updates for Doomed 2 Die, helping the CCU grow steadily up to 1.2K, whenever I left this project the game started to die down.</p>
                 <div class="portfolio-stats">
@@ -552,7 +552,7 @@ return module
             <div class="portfolio-item reveal" style="transition-delay:0.05s">
                 <h3>Movement System</h3>
                 <div class="portfolio-content">
-                    <video src="Portfolio/movement system.mp4" controls class="portfolio-media"></video>
+                    <video data-src="Portfolio/movement system.mp4" controls class="portfolio-media" preload="none" playsinline></video>
                 </div>
                 <p class="description">Hired short-term to make a movement system for an asymmetrical horror game.</p>
             </div>
@@ -560,7 +560,7 @@ return module
             <div class="portfolio-item reveal" style="transition-delay:0.05s">
                 <h3>Semi Truck Obby</h3>
                 <div class="portfolio-content">
-                    <img src="Portfolio/sto.webp" alt="STO's Thumbnail" class="portfolio-media">
+                    <img src="Portfolio/sto.webp" alt="STO's Thumbnail" class="portfolio-media" loading="lazy" decoding="async">
                     <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
 local progressionFunnel = {}
 
@@ -599,7 +599,7 @@ return progressionFunnel
             <div class="portfolio-item reveal" style="transition-delay:0.05s">
                 <h3>Terrain + Camera System</h3>
                 <div class="portfolio-content">
-                    <video src="Portfolio/camera test.mp4" controls class="portfolio-media"></video>
+                    <video data-src="Portfolio/camera test.mp4" controls class="portfolio-media" preload="none" playsinline></video>
                     <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
 local Helpers = game.ReplicatedStorage.Modules.Terrain.Helpers
 local T = require(Helpers.T)
@@ -744,7 +744,7 @@ return Ranks
             <div class="portfolio-item reveal" style="transition-delay:0.05s">
                 <h3>Pet Simulator System</h3>
                 <div class="portfolio-content">
-                    <video src="Portfolio/petsim.mp4" controls class="portfolio-media"></video>
+                    <video data-src="Portfolio/petsim.mp4" controls class="portfolio-media" preload="none" playsinline></video>
                     <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
 --Services
 local Knit = require(game.ReplicatedStorage.Packages.Knit)
@@ -819,7 +819,7 @@ return InventoryHandler
             <div class="portfolio-item reveal" style="transition-delay:0.05s">
                 <h3>Uncomplete Brainrot Game</h3>
                 <div class="portfolio-content">
-                    <video src="Portfolio/brainrot.mp4" controls class="portfolio-media"></video>
+                    <video data-src="Portfolio/brainrot.mp4" controls class="portfolio-media" preload="none" playsinline></video>
                     <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
 -- Services
 local Players = game:GetService("Players")
@@ -903,186 +903,338 @@ return PlayerData
                     <span>nsawill</span>
                 </a>
                 <a href="https://www.roblox.com/users/8284290795/profile" target="_blank" rel="noopener noreferrer" class="contact-item reveal" style="transition-delay:0.3s">
-                    <h3><img src="roblox.png" alt="Roblox" class="contact-icon-img"> Roblox</h3>
+                    <h3><img src="roblox.png" alt="Roblox" class="contact-icon-img" loading="lazy" decoding="async"> Roblox</h3>
                     <span>https://www.roblox.com/users/8284290795/profile</span>
                 </a>
             </div>
         </div>
     </main>
 
-    <script>
-        // Force scroll to top on load/refresh
-        history.scrollRestoration = 'manual';
-        window.scrollTo(0, 0);
+<script>
+(() => {
+  const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
-        const LenisClass = window.Lenis || window.lenis?.Lenis;
-        let lenis;
-        if (LenisClass) {
-            lenis = new LenisClass({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smoothWheel: true, touchMultiplier: 1.5 });
-            function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
-            requestAnimationFrame(raf);
-        } else { console.warn('Lenis not loaded, falling back to CSS smooth scroll'); }
+  const LenisClass = window.Lenis || window.lenis?.Lenis;
+  let lenis = null;
 
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) { if (lenis) lenis.scrollTo(target, { offset: -90 }); else target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-            });
-        });
+  if (LenisClass && !reducedMotion) {
+    lenis = new LenisClass({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      touchMultiplier: 1.5
+    });
+    const raf = (t) => { lenis?.raf(t); requestAnimationFrame(raf); };
+    requestAnimationFrame(raf);
+  }
 
-        const hamburger = document.getElementById('hamburger');
-        const navLinks = document.getElementById('navLinks');
-        const navOverlay = document.getElementById('navOverlay');
-        function toggleMenu() {
-            hamburger.classList.toggle('active'); navLinks.classList.toggle('open'); navOverlay.classList.toggle('active');
-            document.body.style.overflow = navLinks.classList.contains('open') ? 'hidden' : '';
+  document.querySelectorAll('a[href^="#"]').forEach((a) => {
+    a.addEventListener('click', function (e) {
+      const href = this.getAttribute('href');
+      const target = href ? document.querySelector(href) : null;
+      if (!target) return;
+      e.preventDefault();
+      if (lenis) lenis.scrollTo(target, { offset: -90 });
+      else target.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });
+    });
+  });
+
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.getElementById('navLinks');
+  const navOverlay = document.getElementById('navOverlay');
+
+  const setMenu = (open) => {
+    if (!hamburger || !navLinks || !navOverlay) return;
+    hamburger.classList.toggle('active', open);
+    navLinks.classList.toggle('open', open);
+    navOverlay.classList.toggle('active', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+    hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    hamburger.setAttribute('aria-controls', 'navLinks');
+  };
+
+  if (hamburger && navLinks && navOverlay) {
+    hamburger.addEventListener('click', () => setMenu(!navLinks.classList.contains('open')));
+    navOverlay.addEventListener('click', () => setMenu(false));
+    navLinks.querySelectorAll('a').forEach((l) => l.addEventListener('click', () => setMenu(false)));
+    setMenu(false);
+  }
+
+  const mainNav = document.getElementById('mainNav');
+  if (mainNav) {
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        mainNav.classList.toggle('scrolled', window.scrollY > 50);
+        ticking = false;
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  const cursorGlow = document.getElementById('cursorGlow');
+  if (!reducedMotion && cursorGlow && window.matchMedia('(pointer: fine)').matches) {
+    let mouseX = 0, mouseY = 0, glowX = 0, glowY = 0, visible = false;
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX; mouseY = e.clientY;
+      if (!visible) { cursorGlow.classList.add('visible'); visible = true; }
+    }, { passive: true });
+
+    document.addEventListener('mouseleave', () => {
+      cursorGlow.classList.remove('visible'); visible = false;
+    });
+
+    const loop = () => {
+      glowX += (mouseX - glowX) * 0.12;
+      glowY += (mouseY - glowY) * 0.12;
+      cursorGlow.style.left = glowX + 'px';
+      cursorGlow.style.top = glowY + 'px';
+      requestAnimationFrame(loop);
+    };
+    loop();
+  }
+
+  const shootingStarsContainer = document.getElementById('shootingStars');
+  let shootingStarTimer = null;
+
+  const createShootingStar = () => {
+    if (!shootingStarsContainer) return;
+
+    const star = document.createElement('div');
+    star.className = 'shooting-star';
+    star.style.left = (Math.random() * window.innerWidth * 0.7) + 'px';
+    star.style.top = (Math.random() * window.innerHeight * 0.4) + 'px';
+    star.style.width = (100 + Math.random() * 80) + 'px';
+
+    const angle = 25 + Math.random() * 20;
+    const dist = 500 + Math.random() * 400;
+    const dur = 1400 + Math.random() * 800;
+
+    shootingStarsContainer.appendChild(star);
+
+    const t = 'rotate(' + angle + 'deg) translateX(';
+    const anim = star.animate([
+      { opacity: 0, transform: t + '0px)' },
+      { opacity: 0.3, transform: t + (dist * 0.08) + 'px)', offset: 0.08 },
+      { opacity: 0.7, transform: t + (dist * 0.18) + 'px)', offset: 0.18 },
+      { opacity: 1, transform: t + (dist * 0.55) + 'px)', offset: 0.55 },
+      { opacity: 0.4, transform: t + (dist * 0.8) + 'px)', offset: 0.8 },
+      { opacity: 0, transform: t + dist + 'px)' }
+    ], { duration: dur, easing: 'linear', fill: 'forwards' });
+
+    anim.onfinish = () => star.remove();
+  };
+
+  const stopShootingStars = () => {
+    if (shootingStarTimer) clearTimeout(shootingStarTimer);
+    shootingStarTimer = null;
+  };
+
+  const scheduleShootingStar = () => {
+    stopShootingStars();
+    shootingStarTimer = setTimeout(() => {
+      createShootingStar();
+      scheduleShootingStar();
+    }, 3000 + Math.random() * 6000);
+  };
+
+  if (!reducedMotion) scheduleShootingStar();
+
+  const revealObserver = new IntersectionObserver((entries, obs) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      e.target.classList.add('visible');
+      obs.unobserve(e.target);
+    }
+  }, { threshold: 0.02, rootMargin: '0px 0px -20px 0px' });
+
+  document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale')
+    .forEach((el) => revealObserver.observe(el));
+
+  const titleObserver = new IntersectionObserver((entries, obs) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      e.target.classList.add('line-visible');
+      obs.unobserve(e.target);
+    }
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('.content-section h2').forEach((h2) => titleObserver.observe(h2));
+
+  const lazyVideoObserver = new IntersectionObserver((entries, obs) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      const v = e.target;
+      const src = v.getAttribute('data-src');
+      if (src && !v.src) { v.src = src; v.load(); }
+      obs.unobserve(v);
+    }
+  }, { threshold: 0.15, rootMargin: '300px 0px' });
+
+  document.querySelectorAll('video[data-src]').forEach((v) => lazyVideoObserver.observe(v));
+
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas ? canvas.getContext('2d') : null;
+
+  let stars = [];
+  let scrollOffset = 0;
+  let starRAF = 0;
+  let running = false;
+  let lastFrame = 0;
+
+  const FPS = 30;
+  const FRAME_MS = 1000 / FPS;
+
+  function resizeCanvas() {
+    if (!canvas) return;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const count = window.innerWidth < 768 ? 100 : 200;
+    stars = [];
+    for (let i = 0; i < count; i++) stars.push(new Star());
+  }
+
+  class Star {
+    constructor() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.size = Math.random() * 2 + 0.5;
+      this.speedX = (Math.random() - 0.5) * 0.3;
+      this.speedY = (Math.random() - 0.5) * 0.3;
+      this.opacity = Math.random();
+      this.opacityChange = (Math.random() - 0.5) * 0.02;
+      this.depth = 0.5 + Math.random() * 0.5;
+    }
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+      this.opacity += this.opacityChange;
+
+      if (this.x > canvas.width) this.x = 0;
+      if (this.x < 0) this.x = canvas.width;
+      if (this.y > canvas.height) this.y = 0;
+      if (this.y < 0) this.y = canvas.height;
+
+      if (this.opacity >= 1 || this.opacity <= 0) this.opacityChange = -this.opacityChange;
+    }
+    draw() {
+      const py = (this.y - scrollOffset * this.depth + canvas.height) % canvas.height;
+      ctx.fillStyle = 'rgba(255,255,255,' + this.opacity + ')';
+      ctx.beginPath();
+      ctx.arc(this.x, py, this.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function startStarfield() {
+    if (!canvas || !ctx || reducedMotion || running) return;
+    running = true;
+    lastFrame = 0;
+
+    const loop = (ts) => {
+      if (!running) return;
+      if (!lastFrame) lastFrame = ts;
+      const delta = ts - lastFrame;
+
+      if (delta >= FRAME_MS) {
+        lastFrame = ts - (delta % FRAME_MS);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (const s of stars) { s.update(); s.draw(); }
+      }
+      starRAF = requestAnimationFrame(loop);
+    };
+
+    starRAF = requestAnimationFrame(loop);
+  }
+
+  function stopStarfield() {
+    running = false;
+    if (starRAF) cancelAnimationFrame(starRAF);
+    starRAF = 0;
+  }
+
+  if (canvas && ctx && !reducedMotion) {
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas, { passive: true });
+    window.addEventListener('scroll', () => { scrollOffset = window.scrollY * 0.03; }, { passive: true });
+    startStarfield();
+  }
+
+  const animateCounter = (el, target, duration = 2000) => {
+    const start = performance.now();
+    const format = (val) => {
+      if (target >= 1000000) return (val / 1000000).toFixed(1) + 'M+';
+      if (target >= 1000) return (val / 1000).toFixed(1) + 'K+';
+      return Math.floor(val) + '+';
+    };
+
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      el.textContent = format(target * eased);
+      if (t < 1) requestAnimationFrame(tick);
+      else el.textContent = format(target);
+    };
+    requestAnimationFrame(tick);
+  };
+
+  const counterObserver = new IntersectionObserver((entries, obs) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      const el = e.target;
+      if (el.classList.contains('animated')) continue;
+      animateCounter(el, parseInt(el.dataset.target || '0', 10));
+      el.classList.add('animated');
+      obs.unobserve(el);
+    }
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('.stat-number, .portfolio-stat-number').forEach((s) => counterObserver.observe(s));
+
+  window.addEventListener('load', () => {
+    if (window.hljs?.highlightAll) window.hljs.highlightAll();
+
+    const mv = document.querySelector('model-viewer');
+    const fb = document.getElementById('avatarFallback');
+    if (mv) {
+      mv.addEventListener('error', () => {
+        mv.style.display = 'none';
+        if (fb) fb.style.display = 'block';
+      });
+
+      mv.addEventListener('load', () => {
+        const model = mv.model;
+        if (model?.materials) {
+          for (const mat of model.materials) {
+            mat.setDoubleSided(true);
+            mat.setAlphaMode('OPAQUE');
+            mat.pbrMetallicRoughness.setBaseColorFactor([
+              mat.pbrMetallicRoughness.baseColorFactor[0],
+              mat.pbrMetallicRoughness.baseColorFactor[1],
+              mat.pbrMetallicRoughness.baseColorFactor[2],
+              1.0
+            ]);
+          }
         }
-        hamburger.addEventListener('click', toggleMenu);
-        navOverlay.addEventListener('click', toggleMenu);
-        navLinks.querySelectorAll('a').forEach(link => { link.addEventListener('click', () => { if (navLinks.classList.contains('open')) toggleMenu(); }); });
+      });
+    }
+  });
 
-        const mainNav = document.getElementById('mainNav');
-        window.addEventListener('scroll', () => { mainNav.classList.toggle('scrolled', window.scrollY > 50); }, { passive: true });
-
-        const cursorGlow = document.getElementById('cursorGlow');
-        if (window.matchMedia('(pointer: fine)').matches) {
-            let mouseX = 0, mouseY = 0, glowX = 0, glowY = 0;
-            document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; if (!cursorGlow.classList.contains('visible')) cursorGlow.classList.add('visible'); });
-            document.addEventListener('mouseleave', () => cursorGlow.classList.remove('visible'));
-            function updateGlow() { glowX += (mouseX - glowX) * 0.12; glowY += (mouseY - glowY) * 0.12; cursorGlow.style.left = glowX + 'px'; cursorGlow.style.top = glowY + 'px'; requestAnimationFrame(updateGlow); }
-            updateGlow();
-        }
-
-        const shootingStarsContainer = document.getElementById('shootingStars');
-        let shootingStarTimer = null;
-        function createShootingStar() {
-            const star = document.createElement('div'); star.className = 'shooting-star';
-            star.style.left = (Math.random() * window.innerWidth * 0.7) + 'px';
-            star.style.top = (Math.random() * window.innerHeight * 0.4) + 'px';
-            star.style.width = (100 + Math.random() * 80) + 'px';
-            // Random flight angle (degrees below horizontal)
-            const angle = 25 + Math.random() * 20;
-            const dist = 500 + Math.random() * 400;
-            const dur = 1400 + Math.random() * 800;
-            shootingStarsContainer.appendChild(star);
-            const t = 'rotate(' + angle + 'deg) translateX(';
-            const anim = star.animate([
-                { opacity: 0, transform: t + '0px)' },
-                { opacity: 0.3, transform: t + (dist * 0.08) + 'px)', offset: 0.08 },
-                { opacity: 0.7, transform: t + (dist * 0.18) + 'px)', offset: 0.18 },
-                { opacity: 1, transform: t + (dist * 0.55) + 'px)', offset: 0.55 },
-                { opacity: 0.4, transform: t + (dist * 0.8) + 'px)', offset: 0.8 },
-                { opacity: 0, transform: t + dist + 'px)' }
-            ], { duration: dur, easing: 'linear', fill: 'forwards' });
-            anim.onfinish = () => star.remove();
-        }
-        function scheduleShootingStar() {
-            shootingStarTimer = setTimeout(() => { createShootingStar(); scheduleShootingStar(); }, 3000 + Math.random() * 6000);
-        }
-        scheduleShootingStar();
-        // Pause when tab hidden to prevent bunching on return
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                clearTimeout(shootingStarTimer);
-            } else {
-                scheduleShootingStar();
-            }
-        });
-
-        // SCROLL REVEAL - lower threshold so tall sections and individual items trigger properly
-        const revealObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
-        }, { threshold: 0.02, rootMargin: '0px 0px -20px 0px' });
-        document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => revealObserver.observe(el));
-
-        const titleObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('line-visible'); });
-        }, { threshold: 0.5 });
-        document.querySelectorAll('.content-section h2').forEach(h2 => titleObserver.observe(h2));
-
-        const canvas = document.getElementById('starfield');
-        const ctx = canvas.getContext('2d');
-        let scrollOffset = 0;
-        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        resizeCanvas();
-        window.addEventListener('scroll', () => { scrollOffset = window.scrollY * 0.03; }, { passive: true });
-
-        class Star {
-            constructor() {
-                this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 0.5; this.speedX = (Math.random() - 0.5) * 0.3;
-                this.speedY = (Math.random() - 0.5) * 0.3; this.opacity = Math.random();
-                this.opacityChange = (Math.random() - 0.5) * 0.02; this.depth = 0.5 + Math.random() * 0.5;
-            }
-            update() {
-                this.x += this.speedX; this.y += this.speedY; this.opacity += this.opacityChange;
-                if (this.x > canvas.width) this.x = 0; if (this.x < 0) this.x = canvas.width;
-                if (this.y > canvas.height) this.y = 0; if (this.y < 0) this.y = canvas.height;
-                if (this.opacity >= 1 || this.opacity <= 0) this.opacityChange = -this.opacityChange;
-            }
-            draw() {
-                const py = (this.y - scrollOffset * this.depth + canvas.height) % canvas.height;
-                ctx.fillStyle = 'rgba(255, 255, 255, ' + this.opacity + ')';
-                ctx.beginPath(); ctx.arc(this.x, py, this.size, 0, Math.PI * 2); ctx.fill();
-            }
-        }
-        const stars = []; const starCount = window.innerWidth < 768 ? 100 : 200;
-        for (let i = 0; i < starCount; i++) stars.push(new Star());
-        function animateStarfield() { ctx.clearRect(0, 0, canvas.width, canvas.height); stars.forEach(s => { s.update(); s.draw(); }); requestAnimationFrame(animateStarfield); }
-        animateStarfield();
-        window.addEventListener('resize', resizeCanvas);
-
-        function animateCounter(el, target, duration) {
-            duration = duration || 2000;
-            if (target === 0) {
-                el.textContent = '-';
-                return;
-            }
-            const inc = target / (duration / 16); let cur = 0;
-            const timer = setInterval(() => {
-                cur += inc; if (cur >= target) { cur = target; clearInterval(timer); }
-                var dv;
-                if (target >= 1000000) dv = (cur / 1000000).toFixed(1) + 'M+';
-                else if (target >= 1000) dv = (cur / 1000).toFixed(1) + 'K+';
-                else dv = Math.floor(cur) + '';
-                el.textContent = dv;
-            }, 16);
-        }
-        const counterObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
-                    animateCounter(entry.target, parseInt(entry.target.dataset.target));
-                    entry.target.classList.add('animated');
-                }
-            });
-        }, { threshold: 0.5 });
-        document.querySelectorAll('.stat-number, .portfolio-stat-number').forEach(s => counterObserver.observe(s));
-
-        document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const mv = document.querySelector('model-viewer');
-            const fb = document.getElementById('avatarFallback');
-            if (mv) {
-                mv.addEventListener('error', () => { mv.style.display = 'none'; if (fb) fb.style.display = 'block'; });
-                mv.addEventListener('load', () => {
-                    const model = mv.model;
-                    if (model && model.materials) {
-                        for (const mat of model.materials) {
-                            mat.setDoubleSided(true);
-                            mat.setAlphaMode('OPAQUE');
-                            mat.pbrMetallicRoughness.setBaseColorFactor([
-                                mat.pbrMetallicRoughness.baseColorFactor[0],
-                                mat.pbrMetallicRoughness.baseColorFactor[1],
-                                mat.pbrMetallicRoughness.baseColorFactor[2],
-                                1.0
-                            ]);
-                        }
-                    }
-                });
-            }
-        });
-    </script>
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      stopShootingStars();
+      stopStarfield();
+    } else {
+      if (!reducedMotion) scheduleShootingStar();
+      startStarfield();
+    }
+  });
+})();
+</script>
 </body>
 </html>
