@@ -401,6 +401,144 @@
                     <p style="margin-bottom:1rem">I code in <strong>Luau, Python, C#, HTML, CSS, JavaScript, and Java</strong>, basically whatever the project needs. I can handle everything from game mechanics and UI to backend systems.</p>
                     <p style="margin-bottom:1rem">I put in <strong>5+ hours every day</strong> on development work. Available for both long-term partnerships and quick one-off projects.</p>
                     <p>Flexible with payment, I accept <strong>percentage deals, Robux, or USD through PayPal</strong>. Hit me up if you want to work together.</p>
+
+					<div id='product-component-1770825446530'></div>
+<script type="text/javascript">
+/*<![CDATA[*/
+(function () {
+  var scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
+  if (window.ShopifyBuy) {
+    if (window.ShopifyBuy.UI) {
+      ShopifyBuyInit();
+    } else {
+      loadScript();
+    }
+  } else {
+    loadScript();
+  }
+  function loadScript() {
+    var script = document.createElement('script');
+    script.async = true;
+    script.src = scriptURL;
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);
+    script.onload = ShopifyBuyInit;
+  }
+  function ShopifyBuyInit() {
+    var client = ShopifyBuy.buildClient({
+      domain: 'hjycc3-xm.myshopify.com',
+      storefrontAccessToken: 'cb9682dde1455a32d8b472429b28efe4',
+    });
+    ShopifyBuy.UI.onReady(client).then(function (ui) {
+      ui.createComponent('product', {
+        id: '10563302949207',
+        node: document.getElementById('product-component-1770825446530'),
+        moneyFormat: '%C2%A3%7B%7Bamount%7D%7D',
+        options: {
+  "product": {
+    "styles": {
+      "product": {
+        "@media (min-width: 601px)": {
+          "max-width": "calc(25% - 20px)",
+          "margin-left": "20px",
+          "margin-bottom": "50px"
+        }
+      },
+      "button": {
+        ":hover": {
+          "background-color": "#7760c9"
+        },
+        "background-color": "#846bdf",
+        ":focus": {
+          "background-color": "#7760c9"
+        }
+      }
+    },
+    "contents": {
+      "img": false,
+      "title": false,
+      "price": false
+    },
+    "text": {
+      "button": "Add to cart"
+    }
+  },
+  "productSet": {
+    "styles": {
+      "products": {
+        "@media (min-width: 601px)": {
+          "margin-left": "-20px"
+        }
+      }
+    }
+  },
+  "modalProduct": {
+    "contents": {
+      "img": false,
+      "imgWithCarousel": true,
+      "button": false,
+      "buttonWithQuantity": true
+    },
+    "styles": {
+      "product": {
+        "@media (min-width: 601px)": {
+          "max-width": "100%",
+          "margin-left": "0px",
+          "margin-bottom": "0px"
+        }
+      },
+      "button": {
+        ":hover": {
+          "background-color": "#7760c9"
+        },
+        "background-color": "#846bdf",
+        ":focus": {
+          "background-color": "#7760c9"
+        }
+      }
+    },
+    "text": {
+      "button": "Add to cart"
+    }
+  },
+  "option": {},
+  "cart": {
+    "styles": {
+      "button": {
+        ":hover": {
+          "background-color": "#7760c9"
+        },
+        "background-color": "#846bdf",
+        ":focus": {
+          "background-color": "#7760c9"
+        }
+      }
+    },
+    "text": {
+      "total": "Subtotal",
+      "button": "Checkout"
+    },
+    "popup": false
+  },
+  "toggle": {
+    "styles": {
+      "toggle": {
+        "background-color": "#846bdf",
+        ":hover": {
+          "background-color": "#7760c9"
+        },
+        ":focus": {
+          "background-color": "#7760c9"
+        }
+      }
+    }
+  }
+},
+      });
+    });
+  }
+})();
+/*]]>*/
+</script>
                 </div>
                 <div class="avatar-container reveal-right" style="transition-delay:0.25s">
                     <model-viewer loading="lazy" src="preview.glb" alt="3D Avatar" auto-rotate auto-rotate-delay="0" camera-controls disable-zoom interaction-prompt="none" touch-action="pan-y" rotation-per-second="30deg" camera-orbit="180deg 75deg 12m" min-camera-orbit="auto auto 12m" max-camera-orbit="auto auto 12m" shadow-intensity="0.8" exposure="1.0" tone-mapping="commerce" style="background-color:#0a0a0f;">
