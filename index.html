@@ -115,6 +115,29 @@
         .nav-links a.nav-cta::after { display: none !important; }
         .nav-links a.nav-cta:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(138, 43, 226, 0.5); color: #fff !important; }
 
+        .pay-dropdown {
+            position: relative;
+        }
+        .pay-dropdown-menu {
+            position: absolute; top: calc(100% + 10px); right: 0; min-width: 260px;
+            background: rgba(15, 15, 20, 0.98); backdrop-filter: blur(20px);
+            border: 1px solid rgba(138, 43, 226, 0.4); border-radius: 10px;
+            padding: 0.5rem; opacity: 0; visibility: hidden;
+            transform: translateY(-8px); transition: all 0.25s ease;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5); z-index: 200;
+        }
+        .pay-dropdown-menu.open { opacity: 1; visibility: visible; transform: translateY(0); }
+        .pay-dropdown-option {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.85rem 1rem; border-radius: 8px; text-decoration: none;
+            color: #d0d0d0; transition: all 0.2s ease; cursor: pointer; border: none;
+            background: none; width: 100%; font-size: 0.95rem; font-family: inherit;
+        }
+        .pay-dropdown-option:hover { background: rgba(138, 43, 226, 0.15); color: #fff; }
+        .pay-dropdown-option i { font-size: 1.2rem; color: #9b59b6; width: 20px; text-align: center; }
+        .pay-dropdown-label { font-weight: 600; }
+        .pay-dropdown-hint { font-size: 0.8rem; color: #888; margin-top: 0.15rem; }
+
         .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; z-index: 110; background: none; border: none; }
         .hamburger span { display: block; width: 26px; height: 2px; background: #fff; border-radius: 2px; transition: all 0.3s ease; }
         .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
@@ -454,7 +477,25 @@
                 <li><a href="#studios">Studios</a></li>
                 <li><a href="#projects">Projects</a></li>
                 <li><a href="#contact">Contact</a></li>
-                <li><a href="https://buy.stripe.com/9B65kD69Yavt088dULeZ203" target="_blank" rel="noopener noreferrer" class="nav-cta"><i class="fa-solid fa-bolt"></i> Pay Me</a></li>
+                <li class="pay-dropdown">
+                    <a href="#" class="nav-cta" id="payMeBtn" onclick="event.preventDefault();document.getElementById('payDropdown').classList.toggle('open')"><i class="fa-solid fa-bolt"></i> Pay Me</a>
+                    <div class="pay-dropdown-menu" id="payDropdown">
+                        <a href="https://buy.stripe.com/9B65kD69Yavt088dULeZ203" target="_blank" rel="noopener noreferrer" class="pay-dropdown-option">
+                            <i class="fa-brands fa-stripe-s"></i>
+                            <div>
+                                <div class="pay-dropdown-label">Stripe</div>
+                                <div class="pay-dropdown-hint">Secure checkout</div>
+                            </div>
+                        </a>
+                        <a href="https://www.xoom.com" target="_blank" rel="noopener noreferrer" class="pay-dropdown-option">
+                            <i class="fa-brands fa-paypal"></i>
+                            <div>
+                                <div class="pay-dropdown-label">PayPal (xoom.com)</div>
+                                <div class="pay-dropdown-hint">Must ask personally for bank details</div>
+                            </div>
+                        </a>
+                    </div>
+                </li>
             </ul>
         </div>
     </nav>
@@ -495,7 +536,7 @@
                     <p style="margin-bottom:1rem">I'm <strong>nsawill</strong>, a full-stack developer who has been building games since 2017. I started playing Roblox in 2015 and have since worked with major studios on projects reaching millions of players.</p>
                     <p style="margin-bottom:1rem">I specialise in <strong>Luau, Python, C#, HTML, CSS, JavaScript, and Java</strong> &mdash; whatever the project requires. From game mechanics and UI design to backend systems and procedural generation, I deliver end-to-end solutions.</p>
                     <p style="margin-bottom:1rem">I dedicate <strong>5+ hours daily</strong> to development work and am available for both long-term partnerships and short-term contracts.</p>
-                    <p>Flexible on payment &mdash; I accept <strong>percentage deals, Robux, or USD via Stripe</strong>. Interested in working together? Let's connect.</p>
+                    <p>Flexible on payment &mdash; I accept <strong>percentage deals, Robux, or USD via Stripe or PayPal (xoom.com)</strong>. Interested in working together? Let's connect.</p>
 
                     <div class="skills-section" style="margin-top:1.5rem">
                         <h3>Technical Skills</h3>
@@ -527,7 +568,7 @@
                 <div class="payment-grid">
                     <div class="payment-card reveal-scale" style="transition-delay:0.1s"><i class="fa-solid fa-percent"></i><h4>Percentage</h4><p>Revenue share partnerships for long-term projects</p></div>
                     <div class="payment-card reveal-scale" style="transition-delay:0.2s"><img src="robux.png" alt="Robux" class="robux-icon" loading="lazy" decoding="async"><h4>Robux</h4><p>Direct payment through the Roblox platform</p></div>
-                    <div class="payment-card reveal-scale" style="transition-delay:0.3s"><i class="fa-brands fa-stripe-s"></i><h4>USD (Stripe)</h4><p>Secure payments via <a href="https://buy.stripe.com/9B65kD69Yavt088dULeZ203" target="_blank" rel="noopener noreferrer" style="color:#9b59b6;text-decoration:underline;text-underline-offset:2px;">Stripe checkout</a></p></div>
+                    <div class="payment-card reveal-scale" style="transition-delay:0.3s"><i class="fa-solid fa-dollar-sign"></i><h4>USD</h4><p>Secure payments via <a href="https://buy.stripe.com/9B65kD69Yavt088dULeZ203" target="_blank" rel="noopener noreferrer" style="color:#9b59b6;text-decoration:underline;text-underline-offset:2px;">Stripe</a> or <a href="https://www.xoom.com" target="_blank" rel="noopener noreferrer" style="color:#9b59b6;text-decoration:underline;text-underline-offset:2px;">PayPal (xoom.com)</a></p></div>
                 </div>
             </div>
         </div>
@@ -1092,12 +1133,8 @@ return Ranks
 
         <div class="content-section reveal" id="contact">
             <h2>Let's Work Together</h2>
-            <p>Ready to start a project? Reach out through any of the platforms below, or pay directly via Stripe.</p>
+            <p>Ready to start a project? Reach out through any of the platforms below.</p>
             <div class="contact-grid">
-                <a href="https://buy.stripe.com/9B65kD69Yavt088dULeZ203" target="_blank" rel="noopener noreferrer" class="contact-item reveal" style="transition-delay:0.05s; border-color: rgba(138, 43, 226, 0.5);">
-                    <h3><i class="fa-brands fa-stripe-s"></i> Pay via Stripe</h3>
-                    <span>Secure checkout for commissions &mdash; click to pay</span>
-                </a>
                 <a href="mailto:businessnsawill@outlook.com" class="contact-item reveal" style="transition-delay:0.1s">
                     <h3><i class="fa-solid fa-envelope"></i> Email</h3>
                     <span>businessnsawill@outlook.com</span>
@@ -1131,6 +1168,16 @@ return Ranks
     const raf = (t) => { lenis?.raf(t); requestAnimationFrame(raf); };
     requestAnimationFrame(raf);
   }
+
+  document.addEventListener('click', (e) => {
+    const dropdown = document.getElementById('payDropdown');
+    const btn = document.getElementById('payMeBtn');
+    if (!dropdown || !btn) return;
+    if (e.target.closest('.pay-dropdown-option')) { dropdown.classList.remove('open'); return; }
+    if (!dropdown.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
+      dropdown.classList.remove('open');
+    }
+  });
 
   document.querySelectorAll('a[href^="#"]').forEach((a) => {
     a.addEventListener('click', function (e) {
