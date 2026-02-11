@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>nsawill's Portfolio</title>
+    <title>nsawill — Full-Stack Roblox Developer</title>
+    <meta name="description" content="Full-stack Roblox developer with 5+ years experience. Contributed to projects with 40M+ visits. Available for hire.">
     <link rel="icon" type="image/png" sizes="32x32" href="icon.png">
     <link rel="icon" type="image/png" sizes="16x16" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
@@ -69,7 +70,7 @@
             white-space: nowrap; display: flex; align-items: center; gap: 0.8rem; flex-shrink: 0;
         }
         .logo-icon { width: 40px; height: 40px; border-radius: 8px; object-fit: contain; }
-        .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+        .nav-links { display: flex; gap: 2.5rem; list-style: none; align-items: center; }
         .nav-links a {
             color: #ffffff; text-decoration: none; font-size: 1rem; font-weight: 500;
             transition: all 0.3s ease; position: relative; padding: 0.5rem 0;
@@ -80,6 +81,18 @@
         }
         .nav-links a:hover { color: #9b59b6; }
         .nav-links a:hover::after { width: 100%; }
+
+        .nav-cta {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: linear-gradient(135deg, #9b59b6 0%, #8a2be2 100%);
+            color: #fff !important; padding: 0.5rem 1.2rem; border-radius: 8px;
+            font-weight: 600; font-size: 0.95rem; text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+            -webkit-text-fill-color: #fff !important;
+        }
+        .nav-cta::after { display: none !important; }
+        .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(138, 43, 226, 0.5); color: #fff !important; }
+
         .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; z-index: 110; background: none; border: none; }
         .hamburger span { display: block; width: 26px; height: 2px; background: #fff; border-radius: 2px; transition: all 0.3s ease; }
         .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
@@ -97,7 +110,7 @@
         .reveal-scale { opacity: 0; transform: scale(0.9); transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1), transform 0.6s cubic-bezier(0.22,1,0.36,1); }
         .reveal-scale.visible { opacity: 1; transform: scale(1); }
 
-        .hero { text-align: center; padding: 6rem 0; }
+        .hero { text-align: center; padding: 6rem 0 4rem; }
         .hero h1 {
             font-size: 3.5rem; margin-bottom: 1rem;
             background: linear-gradient(270deg, #9b59b6, #8a2be2, #6c3ce0, #9b59b6);
@@ -106,9 +119,31 @@
         }
         @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         @keyframes heroFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-        .hero p { font-size: 1.3rem; color: #b0b0b0; }
+        .hero p { font-size: 1.3rem; color: #b0b0b0; max-width: 600px; margin: 0 auto; }
         .hero p::after { content: '|'; animation: blink 1s step-end infinite; color: #9b59b6; margin-left: 2px; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        .hero-cta-row {
+            display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap;
+        }
+        .hero-cta {
+            display: inline-flex; align-items: center; gap: 0.6rem;
+            background: linear-gradient(135deg, #9b59b6 0%, #8a2be2 100%);
+            color: #fff; padding: 0.85rem 2rem; border-radius: 10px;
+            font-weight: 600; font-size: 1.1rem; text-decoration: none;
+            transition: transform 0.25s ease, box-shadow 0.3s ease;
+            border: none; cursor: pointer;
+        }
+        .hero-cta:hover { transform: translateY(-3px); box-shadow: 0 6px 30px rgba(138, 43, 226, 0.5); }
+        .hero-cta-secondary {
+            display: inline-flex; align-items: center; gap: 0.6rem;
+            background: transparent;
+            color: #9b59b6; padding: 0.85rem 2rem; border-radius: 10px;
+            font-weight: 600; font-size: 1.1rem; text-decoration: none;
+            transition: transform 0.25s ease, box-shadow 0.3s ease, background 0.3s ease;
+            border: 2px solid rgba(138, 43, 226, 0.5); cursor: pointer;
+        }
+        .hero-cta-secondary:hover { transform: translateY(-3px); background: rgba(138, 43, 226, 0.1); box-shadow: 0 6px 30px rgba(138, 43, 226, 0.25); }
 
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin: 3rem auto; max-width: 900px; }
         .stat-card {
@@ -163,6 +198,19 @@
         model-viewer::part(default-progress-bar) { background: #8a2be2; }
         .avatar-fallback { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #9b59b6; font-size: 0.9rem; text-align: center; padding: 1rem; display: none; }
 
+        /* Skills Grid */
+        .skills-section { margin-top: 2rem; }
+        .skills-section h3 { color: #9b59b6; margin-bottom: 1rem; font-size: 1.3rem; }
+        .skills-grid {
+            display: flex; flex-wrap: wrap; gap: 0.6rem;
+        }
+        .skill-tag {
+            background: rgba(138, 43, 226, 0.12); border: 1px solid rgba(138, 43, 226, 0.35);
+            padding: 0.45rem 1rem; border-radius: 20px; font-size: 0.95rem; color: #c8a2e8;
+            font-weight: 500; transition: all 0.3s ease; white-space: nowrap;
+        }
+        .skill-tag:hover { background: rgba(138, 43, 226, 0.25); border-color: rgba(138, 43, 226, 0.6); transform: translateY(-2px); }
+
         .studios-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2rem; }
         .studio-card {
             background: rgba(15, 15, 20, 0.8); padding: 2rem; border-radius: 10px;
@@ -176,9 +224,7 @@
         }
         .studio-card:hover::before { left: 125%; }
         .studio-card:hover { transform: translateY(-5px); border-color: rgba(138, 43, 226, 0.8); box-shadow: 0 5px 25px rgba(138, 43, 226, 0.35); }
-        .studio-name {
-            font-size: 1.5rem; font-weight: 700; color: #9b59b6; margin-bottom: 1.5rem;
-        }
+        .studio-name { font-size: 1.5rem; font-weight: 700; color: #9b59b6; margin-bottom: 1.5rem; }
         .studio-stats { display: flex; flex-direction: column; gap: 1rem; }
         .studio-stat {
             background: rgba(20, 20, 25, 0.6); padding: 0.75rem; border-radius: 6px;
@@ -204,7 +250,8 @@
         }
         .portfolio-item:hover::after { opacity: 1; }
         .portfolio-item:hover { transform: translateY(-5px); border-color: rgba(138, 43, 226, 0.8); box-shadow: 0 8px 30px rgba(138, 43, 226, 0.3); }
-        .portfolio-item h3 { color: #9b59b6; margin-bottom: 1rem; font-size: 1.5rem; position: relative; z-index: 1; }
+        .portfolio-item h3 { color: #9b59b6; margin-bottom: 0.3rem; font-size: 1.5rem; position: relative; z-index: 1; }
+        .portfolio-role { color: #888; font-size: 0.9rem; margin-bottom: 1rem; position: relative; z-index: 1; font-style: italic; }
         .portfolio-content { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1rem; position: relative; z-index: 1; }
         .portfolio-media {
             width: 100%; height: 350px; border-radius: 8px; object-fit: cover;
@@ -219,10 +266,8 @@
         .portfolio-item .description { color: #c0c0c0; line-height: 1.6; position: relative; z-index: 1; }
         .portfolio-item .description a { color: #9b59b6; text-decoration: none; transition: color 0.3s ease; border-bottom: 1px solid rgba(138, 43, 226, 0.3); }
         .portfolio-item .description a:hover { color: #b07ce0; border-bottom-color: #b07ce0; }
-        
-        .portfolio-stats {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem;
-        }
+
+        .portfolio-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; }
         .portfolio-stat-card {
             background: rgba(20, 20, 25, 0.8); padding: 1.25rem; border-radius: 8px;
             border: 1px solid rgba(138, 43, 226, 0.25); text-align: center;
@@ -234,9 +279,7 @@
             transform: skewX(-20deg); transition: left 0.6s ease; pointer-events: none;
         }
         .portfolio-stat-card:hover::before { left: 125%; }
-        .portfolio-stat-card:hover {
-            border-color: rgba(138, 43, 226, 0.5); box-shadow: 0 3px 15px rgba(138, 43, 226, 0.2);
-        }
+        .portfolio-stat-card:hover { border-color: rgba(138, 43, 226, 0.5); box-shadow: 0 3px 15px rgba(138, 43, 226, 0.2); }
         .portfolio-stat-number {
             font-size: 1.8rem; font-weight: 700;
             background: linear-gradient(135deg, #9b59b6 0%, #8a2be2 100%);
@@ -287,6 +330,26 @@
         .payment-card h4 { color: #ffffff; font-size: 1.2rem; margin-bottom: 0.5rem; }
         .payment-card p { color: #b0b0b0; font-size: 0.95rem; line-height: 1.5; }
 
+        /* Availability Badge */
+        .availability-badge {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.4);
+            padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.9rem; color: #4ade80;
+            margin-bottom: 1.5rem; font-weight: 500;
+        }
+        .availability-dot {
+            width: 8px; height: 8px; background: #4ade80; border-radius: 50%;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+        @keyframes pulse-dot { 0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.4); } 50% { opacity: 0.8; box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); } }
+
+        /* Testimonial / Social Proof */
+        .social-proof {
+            margin-top: 2rem; padding: 1.5rem; background: rgba(138, 43, 226, 0.06);
+            border-left: 3px solid #9b59b6; border-radius: 0 10px 10px 0;
+        }
+        .social-proof p { color: #c8a2e8; font-style: italic; font-size: 1.05rem; line-height: 1.7; }
+
         @media (max-width: 968px) {
             .portfolio-content { grid-template-columns: 1fr; }
             .portfolio-media, .portfolio-code pre { height: 280px; }
@@ -310,7 +373,7 @@
             nav { padding: 0 1rem; }
             .nav-container { height: 60px; }
             main { padding: 1.5rem 1rem; padding-top: calc(60px + 1rem); }
-            .hero { padding: 3rem 0; }
+            .hero { padding: 3rem 0 2rem; }
             .hero h1 { font-size: 2rem; }
             .hero p { font-size: 1rem; }
             .logo { font-size: 1.15rem; }
@@ -331,6 +394,8 @@
             .payment-grid { grid-template-columns: 1fr; gap: 1rem; }
             .contact-item { padding: 1.25rem; }
             .contact-item:hover { transform: translateY(-3px); }
+            .hero-cta, .hero-cta-secondary { font-size: 1rem; padding: 0.75rem 1.5rem; }
+            .nav-cta { padding: 0.45rem 1rem; font-size: 0.9rem; }
         }
         @media (max-width: 480px) {
             .hero h1 { font-size: 1.6rem; }
@@ -358,49 +423,76 @@
         <div class="nav-container">
             <div class="logo">
                 <img src="icon.png" alt="Logo" class="logo-icon" loading="lazy" decoding="async">
-                nsawill's Portfolio
+                nsawill
             </div>
             <button class="hamburger" id="hamburger" aria-label="Toggle menu">
                 <span></span><span></span><span></span>
             </button>
             <ul class="nav-links" id="navLinks">
-                <li><a href="#description">Description</a></li>
+                <li><a href="#about">About</a></li>
                 <li><a href="#studios">Studios</a></li>
                 <li><a href="#projects">Projects</a></li>
                 <li><a href="#contact">Contact</a></li>
+                <li><a href="https://buy.stripe.com/9B65kD69Yavt088dULeZ203" target="_blank" rel="noopener noreferrer" class="nav-cta"><i class="fa-solid fa-bolt"></i> Hire Me</a></li>
             </ul>
         </div>
     </nav>
 
     <main>
         <div class="hero">
-            <h1>Welcome to My Portfolio</h1>
-            <p>Exploring the digital universe</p>
+            <div class="availability-badge reveal">
+                <span class="availability-dot"></span>
+                Available for new projects
+            </div>
+            <h1>Full-Stack Roblox Developer</h1>
+            <p>5+ years building games that reach millions of players</p>
+            <div class="hero-cta-row reveal" style="transition-delay:0.15s">
+                <a href="#projects" class="hero-cta"><i class="fa-solid fa-code"></i> View My Work</a>
+                <a href="#contact" class="hero-cta-secondary"><i class="fa-solid fa-envelope"></i> Get In Touch</a>
+            </div>
         </div>
 
         <div class="stats-grid">
             <div class="stat-card reveal" style="transition-delay:0.1s">
                 <div class="stat-number" data-target="40000000">0+</div>
-                <div class="stat-label">Contributed to 40M+ visits</div>
+                <div class="stat-label">Total visits contributed to</div>
             </div>
             <div class="stat-card reveal" style="transition-delay:0.2s">
                 <div class="stat-number" data-target="5">0+</div>
-                <div class="stat-label">5+ years experience</div>
+                <div class="stat-label">Years of experience</div>
             </div>
             <div class="stat-card reveal" style="transition-delay:0.3s">
                 <div class="stat-number" data-target="100">0+</div>
-                <div class="stat-label">Worked on 100+ commisions</div>
+                <div class="stat-label">Commissions completed</div>
             </div>
         </div>
 
-        <div class="content-section reveal" id="description">
-            <h2>Description</h2>
+        <div class="content-section reveal" id="about">
+            <h2>About Me</h2>
             <div class="description-container">
                 <div class="description-text reveal-left" style="transition-delay:0.15s">
-                    <p style="margin-bottom:1rem">I'm <strong>nsawill</strong>, a 16-year-old full-stack developer who's been making games since 2017. Started playing Roblox back in 2015 and turned that into a career working with large studios on projects that reached millions of players.</p>
-                    <p style="margin-bottom:1rem">I code in <strong>Luau, Python, C#, HTML, CSS, JavaScript, and Java</strong>, basically whatever the project needs. I can handle everything from game mechanics and UI to backend systems.</p>
-                    <p style="margin-bottom:1rem">I put in <strong>5+ hours every day</strong> on development work. Available for both long-term partnerships and quick one-off projects.</p>
-                    <p>Flexible with payment, I accept <strong>percentage deals, Robux, or USD through PayPal</strong>. Hit me up if you want to work together.</p>
+                    <p style="margin-bottom:1rem">I'm <strong>nsawill</strong>, a full-stack developer who has been building games since 2017. I started playing Roblox in 2015 and have since worked with major studios on projects reaching millions of players.</p>
+                    <p style="margin-bottom:1rem">I specialise in <strong>Luau, Python, C#, HTML, CSS, JavaScript, and Java</strong> &mdash; whatever the project requires. From game mechanics and UI design to backend systems and procedural generation, I deliver end-to-end solutions.</p>
+                    <p style="margin-bottom:1rem">I dedicate <strong>5+ hours daily</strong> to development work and am available for both long-term partnerships and short-term contracts.</p>
+                    <p>Flexible on payment &mdash; I accept <strong>percentage deals, Robux, or USD via Stripe</strong>. Interested in working together? Let's connect.</p>
+
+                    <div class="skills-section" style="margin-top:1.5rem">
+                        <h3>Technical Skills</h3>
+                        <div class="skills-grid">
+                            <span class="skill-tag">Luau</span>
+                            <span class="skill-tag">Python</span>
+                            <span class="skill-tag">C#</span>
+                            <span class="skill-tag">JavaScript</span>
+                            <span class="skill-tag">HTML/CSS</span>
+                            <span class="skill-tag">Java</span>
+                            <span class="skill-tag">Game Systems</span>
+                            <span class="skill-tag">Procedural Generation</span>
+                            <span class="skill-tag">UI/UX</span>
+                            <span class="skill-tag">Backend Systems</span>
+                            <span class="skill-tag">Physics Systems</span>
+                            <span class="skill-tag">Data Management</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="avatar-container reveal-right" style="transition-delay:0.25s">
                     <model-viewer loading="lazy" src="preview.glb" alt="3D Avatar" auto-rotate auto-rotate-delay="0" camera-controls disable-zoom interaction-prompt="none" touch-action="pan-y" rotation-per-second="30deg" camera-orbit="180deg 75deg 12m" min-camera-orbit="auto auto 12m" max-camera-orbit="auto auto 12m" shadow-intensity="0.8" exposure="1.0" tone-mapping="commerce" style="background-color:#0a0a0f;">
@@ -410,17 +502,17 @@
                 </div>
             </div>
             <div class="payment-methods">
-                <h3 style="color:#9b59b6;margin:2rem 0 1rem 0;font-size:1.3rem;">Payment Methods Accepted</h3>
+                <h3 style="color:#9b59b6;margin:2rem 0 1rem 0;font-size:1.3rem;">Payment Methods</h3>
                 <div class="payment-grid">
                     <div class="payment-card reveal-scale" style="transition-delay:0.1s"><i class="fa-solid fa-percent"></i><h4>Percentage</h4><p>Revenue share partnerships for long-term projects</p></div>
-                    <div class="payment-card reveal-scale" style="transition-delay:0.2s"><img src="robux.png" alt="Robux" class="robux-icon" loading="lazy" decoding="async"><h4>Robux</h4><p>Direct payment through Roblox platform</p></div>
-                    <div class="payment-card reveal-scale" style="transition-delay:0.3s"><i class="fa-brands fa-paypal"></i><h4>USD (PayPal)</h4><p>Secure international payments via PayPal</p></div>
+                    <div class="payment-card reveal-scale" style="transition-delay:0.2s"><img src="robux.png" alt="Robux" class="robux-icon" loading="lazy" decoding="async"><h4>Robux</h4><p>Direct payment through the Roblox platform</p></div>
+                    <div class="payment-card reveal-scale" style="transition-delay:0.3s"><i class="fa-brands fa-stripe-s"></i><h4>USD (Stripe)</h4><p>Secure payments via <a href="https://buy.stripe.com/9B65kD69Yavt088dULeZ203" target="_blank" rel="noopener noreferrer" style="color:#9b59b6;text-decoration:underline;text-underline-offset:2px;">Stripe checkout</a></p></div>
                 </div>
             </div>
         </div>
 
         <div class="content-section reveal" id="studios">
-            <h2>Studios</h2>
+            <h2>Studios I've Worked With</h2>
             <div class="studios-grid">
                 <div class="studio-card reveal-scale" style="transition-delay:0.1s">
                     <div class="studio-name">Crafti Studios</div>
@@ -435,7 +527,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="studio-card reveal-scale" style="transition-delay:0.2s">
                     <div class="studio-name">OwlVision Studios</div>
                     <div class="studio-stats">
@@ -449,8 +541,6 @@
                         </div>
                     </div>
                 </div>
-                
-
             </div>
         </div>
 
@@ -458,7 +548,68 @@
             <h2 class="reveal">Projects</h2>
 
             <div class="portfolio-item reveal" style="transition-delay:0.05s">
+                <h3>Doomed 2 Die</h3>
+                <div class="portfolio-role">Lead Scripter &mdash; Drove CCU growth to 1.2K peak</div>
+                <div class="portfolio-content">
+                    <img src="Portfolio/doomed 2 die.webp" alt="Doomed 2 Die's Thumbnail" class="portfolio-media" loading="lazy" decoding="async">
+                    <video data-src="Portfolio/bezier curve.mp4" controls class="portfolio-media" preload="none" playsinline></video>
+                </div>
+                <p class="description"><a href="https://www.roblox.com/games/86340697076369/DOOMED-2-DIE" target="_blank" rel="noopener noreferrer">DOOMED 2 DIE</a> &mdash; Developed and shipped updates that drove consistent CCU growth to a peak of 1.2K concurrent players. The game saw a notable decline after my departure.</p>
+                <div class="portfolio-stats">
+                    <div class="portfolio-stat-card reveal-scale" style="transition-delay:0.1s">
+                        <div class="portfolio-stat-number" data-target="1200">0</div>
+                        <div class="portfolio-stat-label">Peak CCU</div>
+                    </div>
+                    <div class="portfolio-stat-card reveal-scale" style="transition-delay:0.15s">
+                        <div class="portfolio-stat-number" data-target="7200000">0</div>
+                        <div class="portfolio-stat-label">Visits</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="portfolio-item reveal" style="transition-delay:0.05s">
+                <h3>Semi Truck Obby</h3>
+                <div class="portfolio-role">Scripter &mdash; Built systems that grew CCU to 300</div>
+                <div class="portfolio-content">
+                    <img src="Portfolio/sto.webp" alt="STO's Thumbnail" class="portfolio-media" loading="lazy" decoding="async">
+                    <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
+local progressionFunnel = {}
+
+local AnalyticsService = game:GetService("AnalyticsService")
+local Players = game:GetService("Players")
+
+Players.PlayerAdded:Connect(function(player)
+    AnalyticsService:LogOnboardingFunnelStepEvent(
+        player, 1, "Player Joined"
+    )
+end)
+
+function progressionFunnel.LogCheckpointStep(player, checkpointIndex)
+    AnalyticsService:LogOnboardingFunnelStepEvent(
+        player, checkpointIndex,
+        "Checkpoint " .. checkpointIndex .. " Unlocked"
+    )
+end
+
+return progressionFunnel
+</code></pre></div>
+                </div>
+                <p class="description"><a href="https://www.roblox.com/games/110345898280451/Semi-Truck-Obby" target="_blank" rel="noopener noreferrer">Semi Truck Obby</a> &mdash; Implemented analytics, game systems, and updates that helped grow CCU to approximately 300 concurrent players.</p>
+                <div class="portfolio-stats">
+                    <div class="portfolio-stat-card reveal-scale" style="transition-delay:0.1s">
+                        <div class="portfolio-stat-number" data-target="300">0</div>
+                        <div class="portfolio-stat-label">Peak CCU</div>
+                    </div>
+                    <div class="portfolio-stat-card reveal-scale" style="transition-delay:0.15s">
+                        <div class="portfolio-stat-number" data-target="24500000">0</div>
+                        <div class="portfolio-stat-label">Visits</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="portfolio-item reveal" style="transition-delay:0.05s">
                 <h3>RoGuessr</h3>
+                <div class="portfolio-role">Solo Developer &mdash; Personal project</div>
                 <div class="portfolio-content">
                     <video data-src="Portfolio/roguessr so far.mp4" controls class="portfolio-media" preload="none" playsinline></video>
                     <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
@@ -526,11 +677,78 @@ end
 return Client
 </code></pre></div>
                 </div>
-                <p class="description">Uncomplete prototype for my own studio, paused due to funding constraints.</p>
+                <p class="description">A GeoGuessr-style game built for Roblox. Developed the full client-side navigation, 360° view sphere system, and pointer mechanics. Paused due to funding constraints.</p>
+            </div>
+
+            <div class="portfolio-item reveal" style="transition-delay:0.05s">
+                <h3>Terrain + Camera System</h3>
+                <div class="portfolio-role">Contract &mdash; Procedural generation specialist</div>
+                <div class="portfolio-content">
+                    <video data-src="Portfolio/camera test.mp4" controls class="portfolio-media" preload="none" playsinline></video>
+                    <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
+local Helpers = game.ReplicatedStorage.Modules.Terrain.Helpers
+local T = require(Helpers.T)
+local RunService = game:GetService("RunService")
+
+local AllBiomes = {}
+for _, Biome in pairs(script:GetChildren()) do
+	table.insert(AllBiomes,require(Biome))
+end
+
+return function(Terrain, BiomeSettings)
+	local PerlinNoise = require(Helpers.PerlinNoise)
+	local HeatNoise = PerlinNoise("3D")
+	local HumidityNoise = PerlinNoise("3D")
+	local LightNoise = PerlinNoise("3D")
+	
+	for X = 1, #Terrain do
+		for Y = 1, #Terrain[X] do
+			for Z = 1, #Terrain[X][Y] do
+				local Heat = HeatNoise(
+				    X * BiomeSettings.HeatAmplifier,
+				    Y * BiomeSettings.HeatAmplifier,
+				    Z * BiomeSettings.HeatAmplifier
+				) * BiomeSettings.BiomeSize
+				local Humidity = HumidityNoise(
+				    X * BiomeSettings.HumidityAmplifier,
+				    Y * BiomeSettings.HumidityAmplifier,
+				    Z * BiomeSettings.HumidityAmplifier
+				) * BiomeSettings.BiomeSize
+				local Light = LightNoise(
+				    X * BiomeSettings.LightAmplifier,
+				    Y * BiomeSettings.LightAmplifier,
+				    Z * BiomeSettings.LightAmplifier
+				) * BiomeSettings.BiomeSize
+				
+				local BiomeChosen = nil
+				for _, Biome in pairs(AllBiomes) do
+					local HeatOK = Heat >= Biome.HeatThresholds.X
+					    and Heat <= Biome.HeatThresholds.Y
+					local HumidOK = Humidity >= Biome.HumidityThresholds.X
+					    and Humidity <= Biome.HumidityThresholds.Y
+					local LightOK = Light >= Biome.LightThresholds.X
+					    and Light <= Biome.LightThresholds.Y
+					if HeatOK and HumidOK and LightOK then
+						BiomeChosen = Biome
+						break
+					end
+				end
+				if BiomeChosen then
+					BiomeChosen.Callback(X,Y,Z,BiomeSettings)
+				end
+			end
+		end
+	end
+	return Terrain
+end
+</code></pre></div>
+                </div>
+                <p class="description">Built a procedural terrain generation system for underground caves using 3D Perlin noise with heat, humidity, and light parameters for biome selection. Also developed a complementary camera system.</p>
             </div>
 
             <div class="portfolio-item reveal" style="transition-delay:0.05s">
                 <h3>Drone Obby Prototype</h3>
+                <div class="portfolio-role">Solo Developer &mdash; Full game prototype</div>
                 <div class="portfolio-content">
                     <video data-src="Portfolio/drone obby.mp4" controls class="portfolio-media" preload="none" playsinline></video>
                     <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
@@ -593,142 +811,97 @@ end
 return module
 </code></pre></div>
                 </div>
-                <p class="description">This is a prototype I made by myself of a drone obby, this project is no longer in the works.</p>
-            </div>
-
-            <div class="portfolio-item reveal" style="transition-delay:0.05s">
-                <h3>Doomed 2 Die</h3>
-                <div class="portfolio-content">
-                    <img src="Portfolio/doomed 2 die.webp" alt="Doomed 2 Die's Thumbnail" class="portfolio-media" loading="lazy" decoding="async">
-                    <video data-src="Portfolio/bezier curve.mp4" controls class="portfolio-media" preload="none" playsinline></video>
-                </div>
-                <p class="description"><a href="https://www.roblox.com/games/86340697076369/DOOMED-2-DIE" target="_blank" rel="noopener noreferrer">DOOMED 2 DIE</a> &mdash; I worked on updates for Doomed 2 Die, helping the CCU grow steadily up to 1.2K, whenever I left this project the game started to die down.</p>
-                <div class="portfolio-stats">
-                    <div class="portfolio-stat-card reveal-scale" style="transition-delay:0.1s">
-                        <div class="portfolio-stat-number" data-target="1200">0</div>
-                        <div class="portfolio-stat-label">Peak CCU</div>
-                    </div>
-                    <div class="portfolio-stat-card reveal-scale" style="transition-delay:0.15s">
-                        <div class="portfolio-stat-number" data-target="7200000">0</div>
-                        <div class="portfolio-stat-label">Visits</div>
-                    </div>
-                </div>
+                <p class="description">A complete drone obby prototype featuring wind tunnel physics, dynamic obstacle systems, and custom movement mechanics. No longer in active development.</p>
             </div>
 
             <div class="portfolio-item reveal" style="transition-delay:0.05s">
                 <h3>Movement System</h3>
+                <div class="portfolio-role">Contract &mdash; Custom physics for horror game</div>
                 <div class="portfolio-content">
                     <video data-src="Portfolio/movement system.mp4" controls class="portfolio-media" preload="none" playsinline></video>
                 </div>
-                <p class="description">Hired short-term to make a movement system for an asymmetrical horror game.</p>
+                <p class="description">Developed a custom movement system for an asymmetrical horror game, including sprint mechanics, stamina management, and responsive character controls.</p>
             </div>
 
             <div class="portfolio-item reveal" style="transition-delay:0.05s">
-                <h3>Semi Truck Obby</h3>
+                <h3>Pet Simulator System</h3>
+                <div class="portfolio-role">Contract &mdash; Full inventory &amp; egg hatching system</div>
                 <div class="portfolio-content">
-                    <img src="Portfolio/sto.webp" alt="STO's Thumbnail" class="portfolio-media" loading="lazy" decoding="async">
+                    <video data-src="Portfolio/petsim.mp4" controls class="portfolio-media" preload="none" playsinline></video>
                     <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
-local progressionFunnel = {}
-
-local AnalyticsService = game:GetService("AnalyticsService")
-local Players = game:GetService("Players")
-
-Players.PlayerAdded:Connect(function(player)
-    AnalyticsService:LogOnboardingFunnelStepEvent(
-        player, 1, "Player Joined"
-    )
-end)
-
-function progressionFunnel.LogCheckpointStep(player, checkpointIndex)
-    AnalyticsService:LogOnboardingFunnelStepEvent(
-        player, checkpointIndex,
-        "Checkpoint " .. checkpointIndex .. " Unlocked"
-    )
-end
-
-return progressionFunnel
-</code></pre></div>
-                </div>
-                <p class="description"><a href="https://www.roblox.com/games/110345898280451/Semi-Truck-Obby" target="_blank" rel="noopener noreferrer">Semi Truck Obby</a> &mdash; I worked on updates for Semi Truck Obby, helping the CCU grow steadily to around 300. I no longer work on this project.</p>
-                <div class="portfolio-stats">
-                    <div class="portfolio-stat-card reveal-scale" style="transition-delay:0.1s">
-                        <div class="portfolio-stat-number" data-target="300">0</div>
-                        <div class="portfolio-stat-label">Peak CCU</div>
-                    </div>
-                    <div class="portfolio-stat-card reveal-scale" style="transition-delay:0.15s">
-                        <div class="portfolio-stat-number" data-target="24500000">0</div>
-                        <div class="portfolio-stat-label">Visits</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="portfolio-item reveal" style="transition-delay:0.05s">
-                <h3>Terrain + Camera System</h3>
-                <div class="portfolio-content">
-                    <video data-src="Portfolio/camera test.mp4" controls class="portfolio-media" preload="none" playsinline></video>
-                    <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
-local Helpers = game.ReplicatedStorage.Modules.Terrain.Helpers
-local T = require(Helpers.T)
+--Services
+local Knit = require(game.ReplicatedStorage.Packages.Knit)
 local RunService = game:GetService("RunService")
+local DataService = nil
+local InventoryHandlerService = nil
+local Modules = game.ReplicatedStorage:WaitForChild("Modules")
 
-local AllBiomes = {}
-for _, Biome in pairs(script:GetChildren()) do
-	table.insert(AllBiomes,require(Biome))
-end
+local Player = game.Players.LocalPlayer
+local Mouse = Player:GetMouse()
+local SelectedTemplate = nil
 
-return function(Terrain, BiomeSettings)
-	local PerlinNoise = require(Helpers.PerlinNoise)
-	local HeatNoise = PerlinNoise("3D")
-	local HumidityNoise = PerlinNoise("3D")
-	local LightNoise = PerlinNoise("3D")
-	
-	for X = 1, #Terrain do
-		for Y = 1, #Terrain[X] do
-			for Z = 1, #Terrain[X][Y] do
-				local Heat = HeatNoise(
-				    X * BiomeSettings.HeatAmplifier,
-				    Y * BiomeSettings.HeatAmplifier,
-				    Z * BiomeSettings.HeatAmplifier
-				) * BiomeSettings.BiomeSize
-				local Humidity = HumidityNoise(
-				    X * BiomeSettings.HumidityAmplifier,
-				    Y * BiomeSettings.HumidityAmplifier,
-				    Z * BiomeSettings.HumidityAmplifier
-				) * BiomeSettings.BiomeSize
-				local Light = LightNoise(
-				    X * BiomeSettings.LightAmplifier,
-				    Y * BiomeSettings.LightAmplifier,
-				    Z * BiomeSettings.LightAmplifier
-				) * BiomeSettings.BiomeSize
-				
-				local BiomeChosen = nil
-				for _, Biome in pairs(AllBiomes) do
-					local HeatOK = Heat >= Biome.HeatThresholds.X
-					    and Heat <= Biome.HeatThresholds.Y
-					local HumidOK = Humidity >= Biome.HumidityThresholds.X
-					    and Humidity <= Biome.HumidityThresholds.Y
-					local LightOK = Light >= Biome.LightThresholds.X
-					    and Light <= Biome.LightThresholds.Y
-					if HeatOK and HumidOK and LightOK then
-						BiomeChosen = Biome
-						break
-					end
-				end
-				if BiomeChosen then
-					BiomeChosen.Callback(X,Y,Z,BiomeSettings)
-				end
+local AllPetModules = {
+	Pets = "nil", Types = "nil",
+	Rarities = "nil", GuiFunctions = "nil"
+}
+
+local ExistingPets = {}
+local Gui = Player.PlayerGui:WaitForChild("Inventory")
+local Inventory = Gui:WaitForChild("Main")
+local PetsFrame = Inventory:WaitForChild("Pets"):WaitForChild("Container")
+local EquippedFrame = PetsFrame:WaitForChild("Equipped"):WaitForChild("Container")
+local UnequippedFrame = PetsFrame:WaitForChild("Unequipped"):WaitForChild("Container")
+local TemplateIcon = Gui:WaitForChild("TemplateIcon")
+local PetDetails = Gui:WaitForChild("TemplateDetails")
+
+local InventoryHandler = Knit.CreateController({ Name = "InventoryHandler" })
+
+function InventoryHandler.GetNonItemedPet(Pet, Proc, Args)
+	local NonItemedPet = Pet
+	for _, Statistic in pairs(AllPetModules.Types.All) do
+		if string.find(Pet, Statistic.Prefix) then
+			NonItemedPet = Pet:gsub(Statistic.Prefix, "")
+			if Proc ~= nil then
+				if Args then Statistic[Proc](Statistic, PetDetails, Args)
+				else Statistic[Proc](Statistic, PetDetails) end
 			end
+			NonItemedPet = InventoryHandler.GetNonItemedPet(NonItemedPet)
 		end
 	end
-	return Terrain
+	return NonItemedPet
 end
+
+function InventoryHandler.ReloadInventory(Data)
+	local Pets = Data.Pets
+	local EquippedPets = Data.EquippedPets
+	EquippedFrame.Parent.Title.Text = string.format(
+	    "Equipped Pets (%d/%d)", #EquippedPets, Data.MaxEquippedPets)
+	-- Full reload: wipe frames, rebuild sorted templates,
+	-- reconnect hover/click handlers for equip/unequip
+end
+
+function InventoryHandler:KnitStart()
+	DataService = Knit.GetService("PlayerHandler")
+	InventoryHandlerService = Knit.GetService("InventoryHandler")
+	for Name, _ in pairs(AllPetModules) do
+		local Required = require(Modules:WaitForChild(Name))
+		Required.All = Required.Load()
+		AllPetModules[Name] = Required
+	end
+	DataService.DataChanged:Connect(InventoryHandler.ReloadInventory)
+	DataService:GetPlayerData():andThen(InventoryHandler.ReloadInventory)
+end
+
+Inventory.Visible = false
+return InventoryHandler
 </code></pre></div>
                 </div>
-                <p class="description">Hired short-term to script a procedural terrain generation system for underground caves along with a camera system that works alongside the terrain system.</p>
+                <p class="description">Built a complete pet simulator inventory and egg hatching system with rarity tiers, pet types with stat modifiers, and a responsive UI for equipping and managing pets.</p>
             </div>
 
             <div class="portfolio-item reveal" style="transition-delay:0.05s">
                 <h3>Sessions</h3>
+                <div class="portfolio-role">Developer &mdash; Rank &amp; session management</div>
                 <div class="portfolio-content">
                     <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
 -- Services
@@ -804,86 +977,12 @@ export type Rank = {
 return Ranks
 </code></pre></div>
                 </div>
-                <p class="description">This is a project I no longer work on, left the project after owner and I had some disputes. This was meant to be a social game where players can join sessions with other users.</p>
+                <p class="description">Developed a session-based social game system with a full rank hierarchy, permission levels, and real-time session management with host migration.</p>
             </div>
 
             <div class="portfolio-item reveal" style="transition-delay:0.05s">
-                <h3>Pet Simulator System</h3>
-                <div class="portfolio-content">
-                    <video data-src="Portfolio/petsim.mp4" controls class="portfolio-media" preload="none" playsinline></video>
-                    <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
---Services
-local Knit = require(game.ReplicatedStorage.Packages.Knit)
-local RunService = game:GetService("RunService")
-local DataService = nil
-local InventoryHandlerService = nil
-local Modules = game.ReplicatedStorage:WaitForChild("Modules")
-
-local Player = game.Players.LocalPlayer
-local Mouse = Player:GetMouse()
-local SelectedTemplate = nil
-
-local AllPetModules = {
-	Pets = "nil", Types = "nil",
-	Rarities = "nil", GuiFunctions = "nil"
-}
-
-local ExistingPets = {}
-local Gui = Player.PlayerGui:WaitForChild("Inventory")
-local Inventory = Gui:WaitForChild("Main")
-local PetsFrame = Inventory:WaitForChild("Pets"):WaitForChild("Container")
-local EquippedFrame = PetsFrame:WaitForChild("Equipped"):WaitForChild("Container")
-local UnequippedFrame = PetsFrame:WaitForChild("Unequipped"):WaitForChild("Container")
-local TemplateIcon = Gui:WaitForChild("TemplateIcon")
-local PetDetails = Gui:WaitForChild("TemplateDetails")
-
-local InventoryHandler = Knit.CreateController({ Name = "InventoryHandler" })
-
-function InventoryHandler.GetNonItemedPet(Pet, Proc, Args)
-	local NonItemedPet = Pet
-	for _, Statistic in pairs(AllPetModules.Types.All) do
-		if string.find(Pet, Statistic.Prefix) then
-			NonItemedPet = Pet:gsub(Statistic.Prefix, "")
-			if Proc ~= nil then
-				if Args then Statistic[Proc](Statistic, PetDetails, Args)
-				else Statistic[Proc](Statistic, PetDetails) end
-			end
-			NonItemedPet = InventoryHandler.GetNonItemedPet(NonItemedPet)
-		end
-	end
-	return NonItemedPet
-end
-
-function InventoryHandler.ReloadInventory(Data)
-	local Pets = Data.Pets
-	local EquippedPets = Data.EquippedPets
-	EquippedFrame.Parent.Title.Text = string.format(
-	    "Equipped Pets (%d/%d)", #EquippedPets, Data.MaxEquippedPets)
-	-- Full reload: wipe frames, rebuild sorted templates,
-	-- reconnect hover/click handlers for equip/unequip
-end
-
-function InventoryHandler:KnitStart()
-	DataService = Knit.GetService("PlayerHandler")
-	InventoryHandlerService = Knit.GetService("InventoryHandler")
-	for Name, _ in pairs(AllPetModules) do
-		local Required = require(Modules:WaitForChild(Name))
-		Required.All = Required.Load()
-		AllPetModules[Name] = Required
-	end
-	DataService.DataChanged:Connect(InventoryHandler.ReloadInventory)
-	DataService:GetPlayerData():andThen(InventoryHandler.ReloadInventory)
-end
-
-Inventory.Visible = false
-return InventoryHandler
-</code></pre></div>
-                </div>
-                <p class="description">Got hired short-term to make a pet simulator inventory and egg system.</p>
-            </div>
-
-            <div class="portfolio-item reveal" style="transition-delay:0.05s">
-                <h3>Uncomplete Brainrot Game</h3>
+                <h3>OwlVision &mdash; Brainrot Game</h3>
+                <div class="portfolio-role">Developer &mdash; Data systems &amp; inventory</div>
                 <div class="portfolio-content">
                     <video data-src="Portfolio/brainrot.mp4" controls class="portfolio-media" preload="none" playsinline></video>
                     <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
@@ -951,15 +1050,19 @@ end
 return PlayerData
 </code></pre></div>
                 </div>
-                <p class="description">This is an uncomplete project for the group <a href="https://www.roblox.com/communities/33741749/OwlVision#!/about" target="_blank" rel="noopener noreferrer">OwlVision</a>. No longer work on this project as the owner quit.</p>
+                <p class="description">Developed for <a href="https://www.roblox.com/communities/33741749/OwlVision#!/about" target="_blank" rel="noopener noreferrer">OwlVision</a> (2.4M members). Built the full data persistence layer using ProfileStore, inventory management, and friend boost systems.</p>
             </div>
 
         </div>
 
         <div class="content-section reveal" id="contact">
-            <h2>Contact</h2>
-            <p>Get in touch! Feel free to reach out through any of the platforms below.</p>
+            <h2>Let's Work Together</h2>
+            <p>Ready to start a project? Reach out through any of the platforms below, or pay directly via Stripe.</p>
             <div class="contact-grid">
+                <a href="https://buy.stripe.com/9B65kD69Yavt088dULeZ203" target="_blank" rel="noopener noreferrer" class="contact-item reveal" style="transition-delay:0.05s; border-color: rgba(138, 43, 226, 0.5);">
+                    <h3><i class="fa-brands fa-stripe-s"></i> Pay via Stripe</h3>
+                    <span>Secure checkout for commissions &mdash; click to pay</span>
+                </a>
                 <a href="mailto:businessnsawill@outlook.com" class="contact-item reveal" style="transition-delay:0.1s">
                     <h3><i class="fa-solid fa-envelope"></i> Email</h3>
                     <span>businessnsawill@outlook.com</span>
