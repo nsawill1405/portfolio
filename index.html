@@ -484,7 +484,7 @@
             </div>
             <div class="stat-card reveal" style="transition-delay:0.3s">
                 <div class="stat-number" data-target="100">0+</div>
-                <div class="stat-label">Commissions completed</div>
+                <div class="stat-label">Projects delivered</div>
             </div>
         </div>
 
@@ -589,7 +589,7 @@
                     <img src="Portfolio/doomed 2 die.webp" alt="Doomed 2 Die's Thumbnail" class="portfolio-media" loading="lazy" decoding="async">
                     <video data-src="Portfolio/bezier curve.mp4" controls class="portfolio-media" preload="none" playsinline></video>
                 </div>
-                <p class="description"><a href="https://www.roblox.com/games/86340697076369/DOOMED-2-DIE" target="_blank" rel="noopener noreferrer">DOOMED 2 DIE</a> &mdash; Developed and shipped updates that drove consistent CCU growth to a peak of 1.2K concurrent players. The game saw a notable decline after my departure.</p>
+                <p class="description"><a href="https://www.roblox.com/games/86340697076369/DOOMED-2-DIE" target="_blank" rel="noopener noreferrer">DOOMED 2 DIE</a> &mdash; Developed and shipped updates that drove consistent CCU growth to a peak of 1.2K concurrent players.</p>
                 <div class="portfolio-stats">
                     <div class="portfolio-stat-card reveal-scale" style="transition-delay:0.1s">
                         <div class="portfolio-stat-number" data-target="1200">0</div>
@@ -643,219 +643,76 @@ return progressionFunnel
             </div>
 
             <div class="portfolio-item reveal" style="transition-delay:0.05s">
-                <h3>RoGuessr</h3>
-                <div class="portfolio-role">Solo Developer &mdash; Personal project</div>
+                <h3>OwlVision &mdash; Brainrot Game</h3>
+                <div class="portfolio-role">Developer &mdash; Data systems &amp; inventory for 2.4M member studio</div>
                 <div class="portfolio-content">
-                    <video data-src="Portfolio/roguessr so far.mp4" controls class="portfolio-media" preload="none" playsinline></video>
+                    <video data-src="Portfolio/brainrot.mp4" controls class="portfolio-media" preload="none" playsinline></video>
                     <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
 -- Services
+local Players = game:GetService("Players")
 local Rep = game:GetService("ReplicatedStorage")
-local UpdateViewSphere = require(script.Parent:WaitForChild("UpdateViewSphere"))
-local SyncGame = require(script.Parent:WaitForChild("SyncGame"))
-local ViewSphere = workspace.ViewSphere.PrimaryPart
-local TweenService = game:GetService("TweenService")
+local Communication = Rep.Communication
+local AllInventoryModules = { Eggs = "nil", Brainrots = "nil" }
 
-local Camera = workspace.CurrentCamera
-local Pointer = script:WaitForChild("Pointer")
-local Pointers = workspace:WaitForChild("Pointers")
-
-local RANDOM_INSTANCE = Random.new()
-local POINTER_RADIUS_OFFSET = 20
-local Y_OFFSET = 45
-local ANIMATION_INFO = TweenInfo.new(0.22,Enum.EasingStyle.Sine,Enum.EasingDirection.Out)
-local SIZE_MULTIPLIER = 1.1
-local VECTOR_MAP = {
-	[1] = "X",
-	[2] = "Y",
-	[3] = "Z"
+local ProfileStore = require(game.ServerStorage.Modules.ProfileStore)
+local ProfileTemplate = {
+	Cash = 0, Wave = 0, WaveSpeed = 1, Id = 0,
+	Storage = {}, MaxStorage = 6,
+	Index = {}, Inventory = {}, LastLogin = 0
 }
 
-local CurrentDetails = nil
-local Client = {}
+local PlayerDataStore = ProfileStore.New("PlayerData4", ProfileTemplate)
+local Profiles = {}
+local PlayerData = {}
+PlayerData.Profiles = Profiles
 
-local function StringToVector(String : string)
-	if typeof(String) == "Vector3" then return String end
-	local SubbedLocation = String
-	local XYZLocation = { X = 0, Y = 0, Z = 0 }
-	for CoordinateIndex, Coordinate in pairs(string.split(SubbedLocation,",")) do
-		local XYZ = VECTOR_MAP[CoordinateIndex]
-		XYZLocation[XYZ] = tonumber(Coordinate)
-	end
-	return vector.create(XYZLocation.X,XYZLocation.Y,XYZLocation.Z)
-end
-
-function Client.MoveToIndex(Position, Rigid)
-	Pointers:ClearAllChildren()
-	local Textures = CurrentDetails.CurrentGame.Textures
-	local ActualPosition = StringToVector(Position)
-	for StringLocation, Textures in pairs(Textures) do
-		local Location = StringToVector(StringLocation)
-		if StringLocation ~= Position then
-			if not Pointers:FindFirstChild(StringLocation) then
-				local PointerClone = Pointer:Clone()
-				PointerClone.Parent = Pointers
-				PointerClone.Name = StringLocation
-			end
-		end
-	end
-	Camera:SetAttribute("CurrentPosition",ActualPosition)
-end
-
-function Client.Init()
-	SyncGame.AttachToSelectedGame(function(Details)
-		CurrentDetails = Details
-		Pointers:ClearAllChildren()
-		Client.MoveToIndex(Details.FirstTexture)
-	end)
-end
-
-return Client
-</code></pre></div>
-                </div>
-                <p class="description">A GeoGuessr-style game built for Roblox. Developed the full client-side navigation, 360° view sphere system, and pointer mechanics. Paused due to funding constraints.</p>
-            </div>
-
-            <div class="portfolio-item reveal" style="transition-delay:0.05s">
-                <h3>Terrain + Camera System</h3>
-                <div class="portfolio-role">Contract &mdash; Procedural generation specialist</div>
-                <div class="portfolio-content">
-                    <video data-src="Portfolio/camera test.mp4" controls class="portfolio-media" preload="none" playsinline></video>
-                    <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
-local Helpers = game.ReplicatedStorage.Modules.Terrain.Helpers
-local T = require(Helpers.T)
-local RunService = game:GetService("RunService")
-
-local AllBiomes = {}
-for _, Biome in pairs(script:GetChildren()) do
-	table.insert(AllBiomes,require(Biome))
-end
-
-return function(Terrain, BiomeSettings)
-	local PerlinNoise = require(Helpers.PerlinNoise)
-	local HeatNoise = PerlinNoise("3D")
-	local HumidityNoise = PerlinNoise("3D")
-	local LightNoise = PerlinNoise("3D")
-	
-	for X = 1, #Terrain do
-		for Y = 1, #Terrain[X] do
-			for Z = 1, #Terrain[X][Y] do
-				local Heat = HeatNoise(
-				    X * BiomeSettings.HeatAmplifier,
-				    Y * BiomeSettings.HeatAmplifier,
-				    Z * BiomeSettings.HeatAmplifier
-				) * BiomeSettings.BiomeSize
-				local Humidity = HumidityNoise(
-				    X * BiomeSettings.HumidityAmplifier,
-				    Y * BiomeSettings.HumidityAmplifier,
-				    Z * BiomeSettings.HumidityAmplifier
-				) * BiomeSettings.BiomeSize
-				local Light = LightNoise(
-				    X * BiomeSettings.LightAmplifier,
-				    Y * BiomeSettings.LightAmplifier,
-				    Z * BiomeSettings.LightAmplifier
-				) * BiomeSettings.BiomeSize
-				
-				local BiomeChosen = nil
-				for _, Biome in pairs(AllBiomes) do
-					local HeatOK = Heat >= Biome.HeatThresholds.X
-					    and Heat <= Biome.HeatThresholds.Y
-					local HumidOK = Humidity >= Biome.HumidityThresholds.X
-					    and Humidity <= Biome.HumidityThresholds.Y
-					local LightOK = Light >= Biome.LightThresholds.X
-					    and Light <= Biome.LightThresholds.Y
-					if HeatOK and HumidOK and LightOK then
-						BiomeChosen = Biome
-						break
-					end
-				end
-				if BiomeChosen then
-					BiomeChosen.Callback(X,Y,Z,BiomeSettings)
-				end
-			end
-		end
-	end
-	return Terrain
-end
-</code></pre></div>
-                </div>
-                <p class="description">Built a procedural terrain generation system for underground caves using 3D Perlin noise with heat, humidity, and light parameters for biome selection. Also developed a complementary camera system.</p>
-            </div>
-
-            <div class="portfolio-item reveal" style="transition-delay:0.05s">
-                <h3>Drone Obby Prototype</h3>
-                <div class="portfolio-role">Solo Developer &mdash; Full game prototype</div>
-                <div class="portfolio-content">
-                    <video data-src="Portfolio/drone obby.mp4" controls class="portfolio-media" preload="none" playsinline></video>
-                    <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
-local Obstacles = require(script.Parent)
-local Player = game.Players.LocalPlayer
-local RunService = game:GetService("RunService")
-local Movement = require(game.ReplicatedStorage:WaitForChild("Modules")
-    :WaitForChild("Client"):WaitForChild("Movement"):WaitForChild("Walk"))
-local FAN_SPEED = 100
-local WIND_SPEED = vector.create(300,160,300)
-
-local module = {}
-
-function module:Load(WindTunnel)
-	self.WindTunnel = WindTunnel
-	local Hitbox = WindTunnel:WaitForChild("Hitbox")
-	
-	local NewWindAudio = game.ReplicatedStorage:WaitForChild("Assets")
-	    :WaitForChild("Sounds"):WaitForChild("Wind"):Clone()
-	NewWindAudio.Parent = Hitbox
-	NewWindAudio:Play()
-	
-	self.TouchConnection = Hitbox.Touched:Connect(function(Hit)
-		if Hit.Name ~= "HumanoidRootPart" then return end
-		if Hit.Parent:FindFirstChild("Humanoid") then
-			local HitPlayer = game.Players:GetPlayerFromCharacter(Hit.Parent)
-			if HitPlayer == Player then
-				Obstacles.SharedData.LastEffect = WindTunnel
-				Movement.ChangeAddition("WindTunnel",
-				    -Hitbox.CFrame.LookVector * WIND_SPEED)
-			end
-		end
-	end)
-	
-	if Obstacles.SharedData.AccessedWindTunnel == nil then
-		Obstacles.SharedData.AccessedWindTunnel = true
-		Obstacles.SharedData.WindTunnels = {}
-		RunService:BindToRenderStep("WindTunnel",4,function(DT)
-			for _, Tunnel in pairs(Obstacles.SharedData.WindTunnels) do
-				local Fan = Tunnel.BoxFan.Fan
-				Fan.CFrame *= CFrame.Angles(0,math.rad(15 * DT * FAN_SPEED),0)
-			end
+function PlayerData:PlayerLoaded(Player)
+	local Profile = PlayerDataStore:StartSessionAsync(
+	    tostring(Player.UserId), {
+		Cancel = function() return Player.Parent ~= Players end,
+	})
+	if Profile ~= nil then
+		Profile:AddUserId(Player.UserId)
+		Profile:Reconcile()
+		Profile.OnSessionEnd:Connect(function()
+			self.Profiles[Player] = nil
+			Player:Kick("Profile session end - Please rejoin")
 		end)
+		if Player.Parent == Players then
+			Profile.Data.Cash = 5000
+			self.Profiles[Player] = Profile
+			-- Setup friend boosts, spawn slots, inventory
+		else
+			Profile:EndSession()
+		end
+	else
+		Player:Kick("Profile load fail - Please rejoin")
 	end
-	table.insert(Obstacles.SharedData.WindTunnels,WindTunnel)
 end
 
-function module:Unload()
-	self.TouchEndedConnection:Disconnect()
-	self.TouchConnection:Disconnect()
-	self.Audio:Destroy()
-	self.VFX:Destroy()
-	if Obstacles.SharedData.AccessedWindTunnel ~= nil then
-		Movement.ChangeAddition("WindTunnel", nil)
-		RunService:UnbindFromRenderStep("WindTunnel")
+function PlayerData:ChangeData(Player, Data)
+	local Profile = self.Profiles[Player]
+	if Profile then
+		for Key, Value in pairs(Data) do
+			Profile.Data[Key] = Value
+		end
 	end
-	self.Finished:Fire()
+	Communication.Player.UpdateData:FireClient(Player, Profile.Data)
 end
 
-return module
+function PlayerData:Load()
+	for Key, _ in pairs(AllInventoryModules) do
+		AllInventoryModules[Key] = require(
+		    Rep.Modules.ServerModules:FindFirstChild(Key))
+	end
+	Players.PlayerAdded:Connect(function(p) self:PlayerLoaded(p) end)
+	Players.PlayerRemoving:Connect(function(p) self:PlayerRemoved(p) end)
+end
+
+return PlayerData
 </code></pre></div>
                 </div>
-                <p class="description">A complete drone obby prototype featuring wind tunnel physics, dynamic obstacle systems, and custom movement mechanics. No longer in active development.</p>
-            </div>
-
-            <div class="portfolio-item reveal" style="transition-delay:0.05s">
-                <h3>Movement System</h3>
-                <div class="portfolio-role">Contract &mdash; Custom physics for horror game</div>
-                <div class="portfolio-content">
-                    <video data-src="Portfolio/movement system.mp4" controls class="portfolio-media" preload="none" playsinline></video>
-                </div>
-                <p class="description">Developed a custom movement system for an asymmetrical horror game, including sprint mechanics, stamina management, and responsive character controls.</p>
+                <p class="description">Developed for <a href="https://www.roblox.com/communities/33741749/OwlVision#!/about" target="_blank" rel="noopener noreferrer">OwlVision</a> (2.4M members). Built the full data persistence layer using ProfileStore, inventory management, and friend boost systems.</p>
             </div>
 
             <div class="portfolio-item reveal" style="transition-delay:0.05s">
@@ -935,8 +792,224 @@ return InventoryHandler
             </div>
 
             <div class="portfolio-item reveal" style="transition-delay:0.05s">
+                <h3>Terrain + Camera System</h3>
+                <div class="portfolio-role">Contract &mdash; Procedural generation specialist</div>
+                <div class="portfolio-content">
+                    <video data-src="Portfolio/camera test.mp4" controls class="portfolio-media" preload="none" playsinline></video>
+                    <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
+local Helpers = game.ReplicatedStorage.Modules.Terrain.Helpers
+local T = require(Helpers.T)
+local RunService = game:GetService("RunService")
+
+local AllBiomes = {}
+for _, Biome in pairs(script:GetChildren()) do
+	table.insert(AllBiomes,require(Biome))
+end
+
+return function(Terrain, BiomeSettings)
+	local PerlinNoise = require(Helpers.PerlinNoise)
+	local HeatNoise = PerlinNoise("3D")
+	local HumidityNoise = PerlinNoise("3D")
+	local LightNoise = PerlinNoise("3D")
+	
+	for X = 1, #Terrain do
+		for Y = 1, #Terrain[X] do
+			for Z = 1, #Terrain[X][Y] do
+				local Heat = HeatNoise(
+				    X * BiomeSettings.HeatAmplifier,
+				    Y * BiomeSettings.HeatAmplifier,
+				    Z * BiomeSettings.HeatAmplifier
+				) * BiomeSettings.BiomeSize
+				local Humidity = HumidityNoise(
+				    X * BiomeSettings.HumidityAmplifier,
+				    Y * BiomeSettings.HumidityAmplifier,
+				    Z * BiomeSettings.HumidityAmplifier
+				) * BiomeSettings.BiomeSize
+				local Light = LightNoise(
+				    X * BiomeSettings.LightAmplifier,
+				    Y * BiomeSettings.LightAmplifier,
+				    Z * BiomeSettings.LightAmplifier
+				) * BiomeSettings.BiomeSize
+				
+				local BiomeChosen = nil
+				for _, Biome in pairs(AllBiomes) do
+					local HeatOK = Heat >= Biome.HeatThresholds.X
+					    and Heat <= Biome.HeatThresholds.Y
+					local HumidOK = Humidity >= Biome.HumidityThresholds.X
+					    and Humidity <= Biome.HumidityThresholds.Y
+					local LightOK = Light >= Biome.LightThresholds.X
+					    and Light <= Biome.LightThresholds.Y
+					if HeatOK and HumidOK and LightOK then
+						BiomeChosen = Biome
+						break
+					end
+				end
+				if BiomeChosen then
+					BiomeChosen.Callback(X,Y,Z,BiomeSettings)
+				end
+			end
+		end
+	end
+	return Terrain
+end
+</code></pre></div>
+                </div>
+                <p class="description">Built a procedural terrain generation system for underground caves using 3D Perlin noise with heat, humidity, and light parameters for biome selection. Also developed a complementary camera system.</p>
+            </div>
+
+            <div class="portfolio-item reveal" style="transition-delay:0.05s">
+                <h3>RoGuessr</h3>
+                <div class="portfolio-role">Solo Developer &mdash; Full-stack game prototype</div>
+                <div class="portfolio-content">
+                    <video data-src="Portfolio/roguessr so far.mp4" controls class="portfolio-media" preload="none" playsinline></video>
+                    <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
+-- Services
+local Rep = game:GetService("ReplicatedStorage")
+local UpdateViewSphere = require(script.Parent:WaitForChild("UpdateViewSphere"))
+local SyncGame = require(script.Parent:WaitForChild("SyncGame"))
+local ViewSphere = workspace.ViewSphere.PrimaryPart
+local TweenService = game:GetService("TweenService")
+
+local Camera = workspace.CurrentCamera
+local Pointer = script:WaitForChild("Pointer")
+local Pointers = workspace:WaitForChild("Pointers")
+
+local RANDOM_INSTANCE = Random.new()
+local POINTER_RADIUS_OFFSET = 20
+local Y_OFFSET = 45
+local ANIMATION_INFO = TweenInfo.new(0.22,Enum.EasingStyle.Sine,Enum.EasingDirection.Out)
+local SIZE_MULTIPLIER = 1.1
+local VECTOR_MAP = {
+	[1] = "X",
+	[2] = "Y",
+	[3] = "Z"
+}
+
+local CurrentDetails = nil
+local Client = {}
+
+local function StringToVector(String : string)
+	if typeof(String) == "Vector3" then return String end
+	local SubbedLocation = String
+	local XYZLocation = { X = 0, Y = 0, Z = 0 }
+	for CoordinateIndex, Coordinate in pairs(string.split(SubbedLocation,",")) do
+		local XYZ = VECTOR_MAP[CoordinateIndex]
+		XYZLocation[XYZ] = tonumber(Coordinate)
+	end
+	return vector.create(XYZLocation.X,XYZLocation.Y,XYZLocation.Z)
+end
+
+function Client.MoveToIndex(Position, Rigid)
+	Pointers:ClearAllChildren()
+	local Textures = CurrentDetails.CurrentGame.Textures
+	local ActualPosition = StringToVector(Position)
+	for StringLocation, Textures in pairs(Textures) do
+		local Location = StringToVector(StringLocation)
+		if StringLocation ~= Position then
+			if not Pointers:FindFirstChild(StringLocation) then
+				local PointerClone = Pointer:Clone()
+				PointerClone.Parent = Pointers
+				PointerClone.Name = StringLocation
+			end
+		end
+	end
+	Camera:SetAttribute("CurrentPosition",ActualPosition)
+end
+
+function Client.Init()
+	SyncGame.AttachToSelectedGame(function(Details)
+		CurrentDetails = Details
+		Pointers:ClearAllChildren()
+		Client.MoveToIndex(Details.FirstTexture)
+	end)
+end
+
+return Client
+</code></pre></div>
+                </div>
+                <p class="description">A GeoGuessr-style game built for Roblox. Developed the full client-side navigation, 360° view sphere system, and pointer mechanics.</p>
+            </div>
+
+            <div class="portfolio-item reveal" style="transition-delay:0.05s">
+                <h3>Drone Obby Prototype</h3>
+                <div class="portfolio-role">Solo Developer &mdash; Physics-based game prototype</div>
+                <div class="portfolio-content">
+                    <video data-src="Portfolio/drone obby.mp4" controls class="portfolio-media" preload="none" playsinline></video>
+                    <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
+local Obstacles = require(script.Parent)
+local Player = game.Players.LocalPlayer
+local RunService = game:GetService("RunService")
+local Movement = require(game.ReplicatedStorage:WaitForChild("Modules")
+    :WaitForChild("Client"):WaitForChild("Movement"):WaitForChild("Walk"))
+local FAN_SPEED = 100
+local WIND_SPEED = vector.create(300,160,300)
+
+local module = {}
+
+function module:Load(WindTunnel)
+	self.WindTunnel = WindTunnel
+	local Hitbox = WindTunnel:WaitForChild("Hitbox")
+	
+	local NewWindAudio = game.ReplicatedStorage:WaitForChild("Assets")
+	    :WaitForChild("Sounds"):WaitForChild("Wind"):Clone()
+	NewWindAudio.Parent = Hitbox
+	NewWindAudio:Play()
+	
+	self.TouchConnection = Hitbox.Touched:Connect(function(Hit)
+		if Hit.Name ~= "HumanoidRootPart" then return end
+		if Hit.Parent:FindFirstChild("Humanoid") then
+			local HitPlayer = game.Players:GetPlayerFromCharacter(Hit.Parent)
+			if HitPlayer == Player then
+				Obstacles.SharedData.LastEffect = WindTunnel
+				Movement.ChangeAddition("WindTunnel",
+				    -Hitbox.CFrame.LookVector * WIND_SPEED)
+			end
+		end
+	end)
+	
+	if Obstacles.SharedData.AccessedWindTunnel == nil then
+		Obstacles.SharedData.AccessedWindTunnel = true
+		Obstacles.SharedData.WindTunnels = {}
+		RunService:BindToRenderStep("WindTunnel",4,function(DT)
+			for _, Tunnel in pairs(Obstacles.SharedData.WindTunnels) do
+				local Fan = Tunnel.BoxFan.Fan
+				Fan.CFrame *= CFrame.Angles(0,math.rad(15 * DT * FAN_SPEED),0)
+			end
+		end)
+	end
+	table.insert(Obstacles.SharedData.WindTunnels,WindTunnel)
+end
+
+function module:Unload()
+	self.TouchEndedConnection:Disconnect()
+	self.TouchConnection:Disconnect()
+	self.Audio:Destroy()
+	self.VFX:Destroy()
+	if Obstacles.SharedData.AccessedWindTunnel ~= nil then
+		Movement.ChangeAddition("WindTunnel", nil)
+		RunService:UnbindFromRenderStep("WindTunnel")
+	end
+	self.Finished:Fire()
+end
+
+return module
+</code></pre></div>
+                </div>
+                <p class="description">A complete drone obby prototype featuring wind tunnel physics, dynamic obstacle systems, and custom movement mechanics.</p>
+            </div>
+
+            <div class="portfolio-item reveal" style="transition-delay:0.05s">
+                <h3>Movement System</h3>
+                <div class="portfolio-role">Contract &mdash; Custom physics for horror game</div>
+                <div class="portfolio-content">
+                    <video data-src="Portfolio/movement system.mp4" controls class="portfolio-media" preload="none" playsinline></video>
+                </div>
+                <p class="description">Developed a custom movement system for an asymmetrical horror game, including sprint mechanics, stamina management, and responsive character controls.</p>
+            </div>
+
+            <div class="portfolio-item reveal" style="transition-delay:0.05s">
                 <h3>Sessions</h3>
-                <div class="portfolio-role">Developer &mdash; Rank &amp; session management</div>
+                <div class="portfolio-role">Developer &mdash; Rank &amp; session management system</div>
                 <div class="portfolio-content">
                     <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
 -- Services
@@ -1013,79 +1086,6 @@ return Ranks
 </code></pre></div>
                 </div>
                 <p class="description">Developed a session-based social game system with a full rank hierarchy, permission levels, and real-time session management with host migration.</p>
-            </div>
-
-            <div class="portfolio-item reveal" style="transition-delay:0.05s">
-                <h3>OwlVision &mdash; Brainrot Game</h3>
-                <div class="portfolio-role">Developer &mdash; Data systems &amp; inventory</div>
-                <div class="portfolio-content">
-                    <video data-src="Portfolio/brainrot.mp4" controls class="portfolio-media" preload="none" playsinline></video>
-                    <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
--- Services
-local Players = game:GetService("Players")
-local Rep = game:GetService("ReplicatedStorage")
-local Communication = Rep.Communication
-local AllInventoryModules = { Eggs = "nil", Brainrots = "nil" }
-
-local ProfileStore = require(game.ServerStorage.Modules.ProfileStore)
-local ProfileTemplate = {
-	Cash = 0, Wave = 0, WaveSpeed = 1, Id = 0,
-	Storage = {}, MaxStorage = 6,
-	Index = {}, Inventory = {}, LastLogin = 0
-}
-
-local PlayerDataStore = ProfileStore.New("PlayerData4", ProfileTemplate)
-local Profiles = {}
-local PlayerData = {}
-PlayerData.Profiles = Profiles
-
-function PlayerData:PlayerLoaded(Player)
-	local Profile = PlayerDataStore:StartSessionAsync(
-	    tostring(Player.UserId), {
-		Cancel = function() return Player.Parent ~= Players end,
-	})
-	if Profile ~= nil then
-		Profile:AddUserId(Player.UserId)
-		Profile:Reconcile()
-		Profile.OnSessionEnd:Connect(function()
-			self.Profiles[Player] = nil
-			Player:Kick("Profile session end - Please rejoin")
-		end)
-		if Player.Parent == Players then
-			Profile.Data.Cash = 5000
-			self.Profiles[Player] = Profile
-			-- Setup friend boosts, spawn slots, inventory
-		else
-			Profile:EndSession()
-		end
-	else
-		Player:Kick("Profile load fail - Please rejoin")
-	end
-end
-
-function PlayerData:ChangeData(Player, Data)
-	local Profile = self.Profiles[Player]
-	if Profile then
-		for Key, Value in pairs(Data) do
-			Profile.Data[Key] = Value
-		end
-	end
-	Communication.Player.UpdateData:FireClient(Player, Profile.Data)
-end
-
-function PlayerData:Load()
-	for Key, _ in pairs(AllInventoryModules) do
-		AllInventoryModules[Key] = require(
-		    Rep.Modules.ServerModules:FindFirstChild(Key))
-	end
-	Players.PlayerAdded:Connect(function(p) self:PlayerLoaded(p) end)
-	Players.PlayerRemoving:Connect(function(p) self:PlayerRemoved(p) end)
-end
-
-return PlayerData
-</code></pre></div>
-                </div>
-                <p class="description">Developed for <a href="https://www.roblox.com/communities/33741749/OwlVision#!/about" target="_blank" rel="noopener noreferrer">OwlVision</a> (2.4M members). Built the full data persistence layer using ProfileStore, inventory management, and friend boost systems.</p>
             </div>
 
         </div>
