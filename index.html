@@ -440,6 +440,22 @@
             .contact-item:hover { transform: translateY(-3px); }
             .hero-cta, .hero-cta-secondary { font-size: 1rem; padding: 0.75rem 1.5rem; }
             .nav-links a.nav-cta { padding: 0.6rem 1.8rem; font-size: 0.9rem; }
+
+            /* Mobile pay dropdown: expand inline instead of floating */
+            .pay-dropdown { width: 100%; }
+            .pay-dropdown-menu {
+                position: static; min-width: unset; width: 100%;
+                transform: none; box-shadow: none;
+                border: 1px solid rgba(138, 43, 226, 0.25); border-radius: 8px;
+                background: rgba(20, 20, 25, 0.6); backdrop-filter: none;
+                max-height: 0; overflow: hidden; opacity: 1; visibility: visible;
+                padding: 0; margin-top: 0.5rem;
+                transition: max-height 0.3s ease, padding 0.3s ease;
+            }
+            .pay-dropdown-menu.open {
+                max-height: 400px; padding: 0.5rem;
+                opacity: 1; visibility: visible; transform: none;
+            }
         }
         @media (max-width: 480px) {
             .hero h1 { font-size: 1.6rem; }
@@ -478,7 +494,7 @@
                 <li><a href="#projects">Projects</a></li>
                 <li><a href="#contact">Contact</a></li>
                 <li class="pay-dropdown">
-                    <a href="#" class="nav-cta" id="payMeBtn" onclick="event.preventDefault();document.getElementById('payDropdown').classList.toggle('open')"><i class="fa-solid fa-bolt"></i> Pay Me</a>
+                    <a href="#" class="nav-cta" id="payMeBtn"><i class="fa-solid fa-bolt"></i> Pay Me</a>
                     <div class="pay-dropdown-menu" id="payDropdown">
                         <a href="https://buy.stripe.com/9B65kD69Yavt088dULeZ203" target="_blank" rel="noopener noreferrer" class="pay-dropdown-option">
                             <i class="fa-brands fa-stripe-s"></i>
@@ -1183,15 +1199,28 @@ return Ranks
     requestAnimationFrame(raf);
   }
 
-  document.addEventListener('click', (e) => {
-    const dropdown = document.getElementById('payDropdown');
-    const btn = document.getElementById('payMeBtn');
-    if (!dropdown || !btn) return;
-    if (e.target.closest('.pay-dropdown-option')) { dropdown.classList.remove('open'); return; }
-    if (!dropdown.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
-      dropdown.classList.remove('open');
-    }
-  });
+  /* ── Pay Me dropdown ── */
+  const payBtn = document.getElementById('payMeBtn');
+  const payDropdown = document.getElementById('payDropdown');
+
+  if (payBtn && payDropdown) {
+    payBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      payDropdown.classList.toggle('open');
+    });
+
+    document.addEventListener('click', (e) => {
+      // Close if clicking a dropdown option or clicking outside
+      if (e.target.closest('.pay-dropdown-option')) {
+        payDropdown.classList.remove('open');
+        return;
+      }
+      if (!payDropdown.contains(e.target) && e.target !== payBtn && !payBtn.contains(e.target)) {
+        payDropdown.classList.remove('open');
+      }
+    });
+  }
 
   document.querySelectorAll('a[href^="#"]').forEach((a) => {
     a.addEventListener('click', function (e) {
@@ -1216,12 +1245,20 @@ return Ranks
     document.body.style.overflow = open ? 'hidden' : '';
     hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
     hamburger.setAttribute('aria-controls', 'navLinks');
+    // Close pay dropdown when closing menu
+    if (!open && payDropdown) payDropdown.classList.remove('open');
   };
 
   if (hamburger && navLinks && navOverlay) {
     hamburger.addEventListener('click', () => setMenu(!navLinks.classList.contains('open')));
     navOverlay.addEventListener('click', () => setMenu(false));
-    navLinks.querySelectorAll('a').forEach((l) => l.addEventListener('click', () => setMenu(false)));
+    // Close mobile menu on link click, but NOT for the Pay Me button
+    navLinks.querySelectorAll('a').forEach((l) => {
+      l.addEventListener('click', () => {
+        if (l === payBtn || l.closest('.pay-dropdown-menu')) return;
+        setMenu(false);
+      });
+    });
     setMenu(false);
   }
 
