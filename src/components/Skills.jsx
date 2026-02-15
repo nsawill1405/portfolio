@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 const skills = [
     { category: "Languages", items: ["Luau", "TypeScript", "Python", "Java", "C#", "JavaScript", "HTML", "CSS"] },
     { category: "Frameworks & Libs", items: ["Knit", "ProfileService", "ReplicaService"] },
-    { category: "Tools", items: ["Rojo", "Github", "Antigravity"] }
+    { category: "Tools", items: ["Rojo", "Github", "CodeRabbit", "Antigravity"] }
 ];
 
 const Skills = () => {
