@@ -14,3 +14,1506 @@
 </body>
 
 </html>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        html.lenis, html.lenis body { height: auto; }
+        .lenis.lenis-smooth { scroll-behavior: auto !important; }
+        .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000000; color: #ffffff; overflow-x: hidden;
+            scrollbar-width: none; -ms-overflow-style: none;
+        }
+        body::-webkit-scrollbar { display: none; }
+        html { scrollbar-width: none; -ms-overflow-style: none; }
+        html::-webkit-scrollbar { display: none; }
+
+        .cursor-glow {
+            position: fixed; width: 400px; height: 400px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(138,43,226,0.08) 0%, transparent 70%);
+            pointer-events: none; z-index: 9999; transform: translate(-50%, -50%);
+            transition: opacity 0.3s ease; opacity: 0; will-change: left, top;
+        }
+        .cursor-glow.visible { opacity: 1; }
+
+        #starfield { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; background: #000000; }
+
+        .shooting-star {
+            position: fixed; z-index: 1; height: 2px;
+            background: linear-gradient(90deg, transparent 0%, rgba(138,43,226,0.3) 30%, rgba(138,43,226,0.8) 70%, rgba(200,160,255,1) 95%, #fff 100%);
+            border-radius: 2px; opacity: 0; pointer-events: none;
+            filter: blur(0.3px);
+            box-shadow: 0 0 8px 2px rgba(138,43,226,0.6), 0 0 20px 4px rgba(138,43,226,0.3), 0 0 40px 6px rgba(138,43,226,0.1);
+        }
+        .shooting-star::after {
+            content: ''; position: absolute; right: -2px; top: 50%; transform: translateY(-50%);
+            width: 6px; height: 6px; border-radius: 50%;
+            background: radial-gradient(circle, #fff 0%, rgba(200,160,255,0.8) 50%, transparent 100%);
+            box-shadow: 0 0 10px 3px rgba(200,160,255,0.9), 0 0 20px 6px rgba(138,43,226,0.5);
+        }
+
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(15, 15, 20, 0.95); backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(138, 43, 226, 0.3); padding: 0 2rem;
+            box-shadow: 0 2px 20px rgba(138, 43, 226, 0.2);
+            transition: box-shadow 0.4s ease, background 0.4s ease;
+        }
+        nav.scrolled { background: rgba(10, 10, 15, 0.98); box-shadow: 0 4px 30px rgba(138, 43, 226, 0.35); }
+        .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; height: 70px; }
+        .logo {
+            font-size: 1.5rem; font-weight: 700;
+            background: linear-gradient(135deg, #9b59b6 0%, #8a2be2 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            white-space: nowrap; display: flex; align-items: center; gap: 0.8rem; flex-shrink: 0;
+        }
+        .logo-icon { width: 40px; height: 40px; border-radius: 8px; object-fit: contain; }
+        .nav-links { display: flex; gap: 2.5rem; list-style: none; align-items: center; }
+        .nav-links a {
+            color: #ffffff; text-decoration: none; font-size: 1rem; font-weight: 500;
+            transition: all 0.3s ease; position: relative; padding: 0.5rem 0;
+        }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px;
+            background: linear-gradient(135deg, #9b59b6 0%, #8a2be2 100%); transition: width 0.3s ease;
+        }
+        .nav-links a:hover { color: #9b59b6; }
+        .nav-links a:hover::after { width: 100%; }
+
+        .nav-links a.nav-cta {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: linear-gradient(135deg, #9b59b6 0%, #8a2be2 100%);
+            color: #fff !important; padding: 0.8rem 2.4rem; border-radius: 8px;
+            font-weight: 600; font-size: 0.95rem; text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+            -webkit-text-fill-color: #fff !important; white-space: nowrap;
+        }
+        .nav-links a.nav-cta::after { display: none !important; }
+        .nav-links a.nav-cta:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(138, 43, 226, 0.5); color: #fff !important; }
+
+        .pay-dropdown {
+            position: relative;
+        }
+        .pay-dropdown-menu {
+            position: absolute; top: calc(100% + 10px); right: 0; min-width: 260px;
+            background: rgba(15, 15, 20, 0.98); backdrop-filter: blur(20px);
+            border: 1px solid rgba(138, 43, 226, 0.4); border-radius: 10px;
+            padding: 0.5rem; opacity: 0; visibility: hidden;
+            transform: translateY(-8px); transition: all 0.25s ease;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5); z-index: 200;
+        }
+        .pay-dropdown-menu.open { opacity: 1; visibility: visible; transform: translateY(0); }
+        .pay-dropdown-option {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.85rem 1rem; border-radius: 8px; text-decoration: none;
+            color: #d0d0d0; transition: all 0.2s ease; cursor: pointer; border: none;
+            background: none; width: 100%; font-size: 0.95rem; font-family: inherit;
+        }
+        .pay-dropdown-option:hover { background: rgba(138, 43, 226, 0.15); color: #fff; }
+        .pay-dropdown-option i { font-size: 1.2rem; color: #9b59b6; width: 20px; text-align: center; }
+        .pay-dropdown-label { font-weight: 600; }
+        .pay-dropdown-hint { font-size: 0.8rem; color: #888; margin-top: 0.15rem; }
+
+        .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; z-index: 110; background: none; border: none; }
+        .hamburger span { display: block; width: 26px; height: 2px; background: #fff; border-radius: 2px; transition: all 0.3s ease; }
+        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+        main { position: relative; z-index: 10; max-width: 1200px; margin: 0 auto; padding: 4rem 2rem; padding-top: calc(70px + 2rem); min-height: calc(100vh - 70px); }
+
+        .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal-left { opacity: 0; transform: translateX(-50px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
+        .reveal-left.visible { opacity: 1; transform: translateX(0); }
+        .reveal-right { opacity: 0; transform: translateX(50px); transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1); }
+        .reveal-right.visible { opacity: 1; transform: translateX(0); }
+        .reveal-scale { opacity: 0; transform: scale(0.9); transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1), transform 0.6s cubic-bezier(0.22,1,0.36,1); }
+        .reveal-scale.visible { opacity: 1; transform: scale(1); }
+
+        .hero { text-align: center; padding: 6rem 0 4rem; }
+        .hero h1 {
+            font-size: 3.5rem; margin-bottom: 1rem;
+            background: linear-gradient(270deg, #9b59b6, #8a2be2, #6c3ce0, #9b59b6);
+            background-size: 300% 300%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            animation: gradientShift 6s ease infinite, heroFloat 4s ease-in-out infinite;
+        }
+        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        @keyframes heroFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        .hero p { font-size: 1.3rem; color: #b0b0b0; max-width: 600px; margin: 0 auto; }
+        .hero p::after { content: '|'; animation: blink 1s step-end infinite; color: #9b59b6; margin-left: 2px; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        .hero-cta-row {
+            display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap;
+        }
+        .hero-cta {
+            display: inline-flex; align-items: center; gap: 0.6rem;
+            background: linear-gradient(135deg, #9b59b6 0%, #8a2be2 100%);
+            color: #fff; padding: 0.85rem 2rem; border-radius: 10px;
+            font-weight: 600; font-size: 1.1rem; text-decoration: none;
+            transition: transform 0.25s ease, box-shadow 0.3s ease;
+            border: none; cursor: pointer;
+        }
+        .hero-cta:hover { transform: translateY(-3px); box-shadow: 0 6px 30px rgba(138, 43, 226, 0.5); }
+        .hero-cta-secondary {
+            display: inline-flex; align-items: center; gap: 0.6rem;
+            background: transparent;
+            color: #9b59b6; padding: 0.85rem 2rem; border-radius: 10px;
+            font-weight: 600; font-size: 1.1rem; text-decoration: none;
+            transition: transform 0.25s ease, box-shadow 0.3s ease, background 0.3s ease;
+            border: 2px solid rgba(138, 43, 226, 0.5); cursor: pointer;
+        }
+        .hero-cta-secondary:hover { transform: translateY(-3px); background: rgba(138, 43, 226, 0.1); box-shadow: 0 6px 30px rgba(138, 43, 226, 0.25); }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin: 3rem auto; max-width: 900px; }
+        .stat-card {
+            background: rgba(15, 15, 20, 0.8); padding: 1.5rem; border-radius: 10px;
+            border: 1px solid rgba(138, 43, 226, 0.3); text-align: center; position: relative; overflow: hidden;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .stat-card::before {
+            content: ''; position: absolute; top: -50%; left: -75%; width: 50%; height: 200%;
+            background: linear-gradient(90deg, transparent, rgba(138,43,226,0.07), transparent);
+            transform: skewX(-20deg); transition: left 0.6s ease; pointer-events: none;
+        }
+        .stat-card:hover::before { left: 125%; }
+        .stat-card:hover { transform: translateY(-5px); border-color: rgba(138, 43, 226, 0.8); box-shadow: 0 5px 25px rgba(138, 43, 226, 0.35); }
+        .stat-number {
+            font-size: 2.5rem; font-weight: 700;
+            background: linear-gradient(135deg, #9b59b6 0%, #8a2be2 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 0.5rem;
+        }
+        .stat-label { color: #b0b0b0; font-size: 1rem; }
+
+        .content-section {
+            margin: 4rem 0; padding: 2rem; background: rgba(15, 15, 20, 0.8); border-radius: 15px;
+            border: 1px solid rgba(138, 43, 226, 0.3); backdrop-filter: blur(10px);
+            transition: border-color 0.4s ease, box-shadow 0.4s ease; scroll-margin-top: 90px;
+            content-visibility: auto; contain-intrinsic-size: auto 600px;
+        }
+        .content-section:hover { border-color: rgba(138, 43, 226, 0.5); box-shadow: 0 0 40px rgba(138, 43, 226, 0.08); }
+        .content-section h2 { font-size: 2rem; margin-bottom: 1.5rem; color: #9b59b6; position: relative; display: inline-block; }
+        .content-section h2::after {
+            content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px;
+            background: linear-gradient(90deg, #9b59b6, #8a2be2, transparent);
+            transition: width 0.6s cubic-bezier(0.22,1,0.36,1);
+        }
+        .content-section:hover h2::after, .content-section h2.line-visible::after { width: 100%; }
+        .content-section p { line-height: 1.8; color: #d0d0d0; font-size: 1.1rem; }
+        .contact-item i { margin-right: 0.5rem; font-size: 1.1rem; }
+        .contact-icon-img {
+            width: 1.3rem; height: 1.3rem; margin-right: 0.5rem; vertical-align: middle;
+            filter: brightness(0) saturate(100%) invert(49%) sepia(45%) saturate(1200%) hue-rotate(240deg) brightness(90%) contrast(90%);
+        }
+
+        .description-container { display: grid; grid-template-columns: 1fr 350px; gap: 2rem; align-items: start; }
+        .description-text { line-height: 1.8; color: #d0d0d0; font-size: 1.1rem; }
+
+        .avatar-container {
+            width: 350px; height: 350px; border: 2px solid rgba(138, 43, 226, 0.5);
+            border-radius: 10px; background: rgba(10, 10, 15, 0.9); overflow: hidden; position: relative;
+            animation: avatarGlow 3s ease-in-out infinite alternate;
+        }
+        @keyframes avatarGlow { 0% { box-shadow: 0 0 10px rgba(138,43,226,0.2); } 100% { box-shadow: 0 0 25px rgba(138,43,226,0.4), 0 0 50px rgba(138,43,226,0.1); } }
+        model-viewer { width: 100%; height: 100%; --poster-color: #0a0a0f; }
+        model-viewer::part(default-progress-bar) { background: #8a2be2; }
+        .avatar-fallback { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #9b59b6; font-size: 0.9rem; text-align: center; padding: 1rem; display: none; }
+
+        /* Skills Grid */
+        .skills-section { margin-top: 2rem; }
+        .skills-section h3 { color: #9b59b6; margin-bottom: 1rem; font-size: 1.3rem; }
+        .skills-grid {
+            display: flex; flex-wrap: wrap; gap: 0.6rem;
+        }
+        .skill-tag {
+            background: rgba(138, 43, 226, 0.12); border: 1px solid rgba(138, 43, 226, 0.35);
+            padding: 0.45rem 1rem; border-radius: 20px; font-size: 0.95rem; color: #c8a2e8;
+            font-weight: 500; transition: all 0.3s ease; white-space: nowrap;
+        }
+        .skill-tag:hover { background: rgba(138, 43, 226, 0.25); border-color: rgba(138, 43, 226, 0.6); transform: translateY(-2px); }
+
+        .studios-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2rem; }
+        .studio-card {
+            background: rgba(15, 15, 20, 0.8); padding: 2rem; border-radius: 10px;
+            border: 1px solid rgba(138, 43, 226, 0.3); text-align: center; position: relative; overflow: hidden;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .studio-card::before {
+            content: ''; position: absolute; top: -50%; left: -75%; width: 50%; height: 200%;
+            background: linear-gradient(90deg, transparent, rgba(138,43,226,0.07), transparent);
+            transform: skewX(-20deg); transition: left 0.6s ease; pointer-events: none;
+        }
+        .studio-card:hover::before { left: 125%; }
+        .studio-card:hover { transform: translateY(-5px); border-color: rgba(138, 43, 226, 0.8); box-shadow: 0 5px 25px rgba(138, 43, 226, 0.35); }
+        .studio-name { font-size: 1.5rem; font-weight: 700; color: #9b59b6; margin-bottom: 1.5rem; }
+        .studio-stats { display: flex; flex-direction: column; gap: 1rem; }
+        .studio-stat {
+            background: rgba(20, 20, 25, 0.6); padding: 0.75rem; border-radius: 6px;
+            border: 1px solid rgba(138, 43, 226, 0.2);
+        }
+        .studio-stat-label { color: #b0b0b0; font-size: 0.9rem; margin-bottom: 0.25rem; }
+        .studio-stat-value {
+            font-size: 1.5rem; font-weight: 700;
+            background: linear-gradient(135deg, #9b59b6 0%, #8a2be2 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+
+        .portfolio-item {
+            background: rgba(15, 15, 20, 0.8); border-radius: 10px; padding: 1.5rem; margin: 1.5rem 0;
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.7s cubic-bezier(0.22,1,0.36,1);
+            position: relative; overflow: hidden; contain: layout style paint;
+        }
+        .portfolio-item::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(138,43,226,0.04) 0%, transparent 50%);
+            opacity: 0; transition: opacity 0.4s ease; pointer-events: none; border-radius: 10px;
+        }
+        .portfolio-item:hover::after { opacity: 1; }
+        .portfolio-item:hover { transform: translateY(-5px); border-color: rgba(138, 43, 226, 0.8); box-shadow: 0 8px 30px rgba(138, 43, 226, 0.3); }
+        .portfolio-item h3 { color: #9b59b6; margin-bottom: 0.3rem; font-size: 1.5rem; position: relative; z-index: 1; }
+        .portfolio-role { color: #888; font-size: 0.9rem; margin-bottom: 1rem; position: relative; z-index: 1; font-style: italic; }
+        .portfolio-content { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1rem; position: relative; z-index: 1; }
+        .portfolio-media {
+            width: 100%; height: 350px; border-radius: 8px; object-fit: cover;
+            background: rgba(20, 20, 25, 0.8); display: flex; align-items: center; justify-content: center;
+            color: #666; font-size: 1.2rem; border: 1px solid rgba(138, 43, 226, 0.2); transition: border-color 0.3s ease;
+        }
+        .portfolio-item:hover .portfolio-media { border-color: rgba(138, 43, 226, 0.4); }
+        .portfolio-code { background: #1a1a1f; border-radius: 8px; overflow: hidden; border: 1px solid rgba(138, 43, 226, 0.2); transition: border-color 0.3s ease; }
+        .portfolio-item:hover .portfolio-code { border-color: rgba(138, 43, 226, 0.4); }
+        .portfolio-code pre { margin: 0; height: 350px; overflow: auto; }
+        .portfolio-code code { font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; line-height: 1.5; }
+        .portfolio-item .description { color: #c0c0c0; line-height: 1.6; position: relative; z-index: 1; }
+        .portfolio-item .description a { color: #9b59b6; text-decoration: none; transition: color 0.3s ease; border-bottom: 1px solid rgba(138, 43, 226, 0.3); }
+        .portfolio-item .description a:hover { color: #b07ce0; border-bottom-color: #b07ce0; }
+
+        .portfolio-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; }
+        .portfolio-stat-card {
+            background: rgba(20, 20, 25, 0.8); padding: 1.25rem; border-radius: 8px;
+            border: 1px solid rgba(138, 43, 226, 0.25); text-align: center;
+            transition: all 0.3s ease; position: relative; overflow: hidden;
+        }
+        .portfolio-stat-card::before {
+            content: ''; position: absolute; top: -50%; left: -75%; width: 50%; height: 200%;
+            background: linear-gradient(90deg, transparent, rgba(138,43,226,0.06), transparent);
+            transform: skewX(-20deg); transition: left 0.6s ease; pointer-events: none;
+        }
+        .portfolio-stat-card:hover::before { left: 125%; }
+        .portfolio-stat-card:hover { border-color: rgba(138, 43, 226, 0.5); box-shadow: 0 3px 15px rgba(138, 43, 226, 0.2); }
+        .portfolio-stat-number {
+            font-size: 1.8rem; font-weight: 700;
+            background: linear-gradient(135deg, #9b59b6 0%, #8a2be2 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            margin-bottom: 0.3rem;
+        }
+        .portfolio-stat-label { color: #b0b0b0; font-size: 0.9rem; }
+
+        .contact-grid { display: grid; gap: 1.5rem; margin-top: 2rem; }
+        .contact-item {
+            background: rgba(15, 15, 20, 0.8); padding: 1.5rem; border-radius: 10px;
+            border: 1px solid rgba(138, 43, 226, 0.3); transition: all 0.35s cubic-bezier(0.22,1,0.36,1);
+            text-decoration: none; display: block; color: inherit; position: relative; overflow: hidden;
+        }
+        .contact-item::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(138,43,226,0.06), transparent);
+            transition: left 0.5s ease; pointer-events: none;
+        }
+        .contact-item:hover::before { left: 100%; }
+        .contact-item:hover { border-color: rgba(138, 43, 226, 0.8); transform: translateX(8px); box-shadow: 0 5px 25px rgba(138, 43, 226, 0.3); cursor: pointer; }
+        .contact-item h3 { color: #9b59b6; margin-bottom: 0.5rem; font-size: 1.2rem; }
+        .contact-item span { color: #b0b0b0; word-break: break-all; transition: color 0.3s ease; }
+        .contact-item:hover span { color: #9b59b6; }
+
+        .payment-methods { margin-top: 3rem; }
+        .payment-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 1.5rem; }
+        .payment-card {
+            background: rgba(15, 15, 20, 0.8); padding: 1.5rem; border-radius: 10px;
+            border: 1px solid rgba(138, 43, 226, 0.3); text-align: center; position: relative; overflow: hidden;
+            transition: all 0.35s cubic-bezier(0.22,1,0.36,1);
+        }
+        .payment-card::before {
+            content: ''; position: absolute; top: -50%; left: -75%; width: 50%; height: 200%;
+            background: linear-gradient(90deg, transparent, rgba(138,43,226,0.07), transparent);
+            transform: skewX(-20deg); transition: left 0.6s ease; pointer-events: none;
+        }
+        .payment-card:hover::before { left: 125%; }
+        .payment-card:hover { transform: translateY(-5px); border-color: rgba(138, 43, 226, 0.8); box-shadow: 0 5px 25px rgba(138, 43, 226, 0.35); }
+        .payment-card i { font-size: 2.5rem; color: #9b59b6; margin-bottom: 1rem; transition: transform 0.3s ease; }
+        .payment-card:hover i { transform: scale(1.15); }
+        .robux-icon {
+            width: 2.5rem; height: 2.5rem; margin: 0 auto 1rem auto; display: block;
+            filter: brightness(0) saturate(100%) invert(49%) sepia(45%) saturate(1200%) hue-rotate(240deg) brightness(90%) contrast(90%);
+            transition: transform 0.3s ease;
+        }
+        .payment-card:hover .robux-icon { transform: scale(1.15); }
+        .payment-card h4 { color: #ffffff; font-size: 1.2rem; margin-bottom: 0.5rem; }
+        .payment-card p { color: #b0b0b0; font-size: 0.95rem; line-height: 1.5; }
+
+        /* Availability Badge */
+        .availability-badge {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.4);
+            padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.9rem; color: #f59e0b;
+            margin-bottom: 1.5rem; font-weight: 500;
+        }
+        .availability-dot {
+            width: 8px; height: 8px; background: #f59e0b; border-radius: 50%;
+        }
+
+        /* Testimonial / Social Proof */
+        .social-proof {
+            margin-top: 2rem; padding: 1.5rem; background: rgba(138, 43, 226, 0.06);
+            border-left: 3px solid #9b59b6; border-radius: 0 10px 10px 0;
+        }
+        .social-proof p { color: #c8a2e8; font-style: italic; font-size: 1.05rem; line-height: 1.7; }
+
+        @media (max-width: 968px) {
+            .portfolio-content { grid-template-columns: 1fr; }
+            .portfolio-media, .portfolio-code pre { height: 280px; }
+            .description-container { grid-template-columns: 1fr; }
+            .avatar-container { width: 100%; max-width: 350px; height: 350px; margin: 0 auto; }
+            .studios-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .hamburger { display: flex; }
+            .cursor-glow { display: none; }
+            .nav-links {
+                position: fixed; top: 0; right: -100%; width: 260px; height: 100vh;
+                background: rgba(15, 15, 20, 0.98); backdrop-filter: blur(20px);
+                flex-direction: column; padding: 90px 2rem 2rem; gap: 1.5rem; transition: right 0.35s ease;
+                border-left: 1px solid rgba(138, 43, 226, 0.3); box-shadow: -5px 0 30px rgba(0, 0, 0, 0.5);
+            }
+            .nav-links.open { right: 0; }
+            .nav-links a { font-size: 1.15rem; padding: 0.6rem 0; }
+            .nav-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; }
+            .nav-overlay.active { display: block; }
+            nav { padding: 0 1rem; }
+            .nav-container { height: 60px; }
+            main { padding: 1.5rem 1rem; padding-top: calc(60px + 1rem); }
+            .hero { padding: 3rem 0 2rem; }
+            .hero h1 { font-size: 2rem; }
+            .hero p { font-size: 1rem; }
+            .logo { font-size: 1.15rem; }
+            .logo-icon { width: 32px; height: 32px; }
+            .stats-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .stat-number { font-size: 2rem; }
+            .content-section { padding: 1.25rem; margin: 2rem 0; }
+            .content-section h2 { font-size: 1.5rem; }
+            .content-section p, .description-text { font-size: 1rem; }
+            .avatar-container { width: 100%; height: 300px; }
+            .studios-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .portfolio-item { padding: 1rem; }
+            .portfolio-item h3 { font-size: 1.25rem; }
+            .portfolio-media, .portfolio-code pre { height: 220px; }
+            .portfolio-code code { font-size: 0.8rem; }
+            .portfolio-stat-number { font-size: 1.5rem; }
+            .portfolio-stat-label { font-size: 0.85rem; }
+            .payment-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .contact-item { padding: 1.25rem; }
+            .contact-item:hover { transform: translateY(-3px); }
+            .hero-cta, .hero-cta-secondary { font-size: 1rem; padding: 0.75rem 1.5rem; }
+            .nav-links a.nav-cta { padding: 0.6rem 1.8rem; font-size: 0.9rem; }
+
+            /* Mobile pay dropdown: expand inline instead of floating */
+            .pay-dropdown { width: 100%; }
+            .pay-dropdown-menu {
+                position: static; min-width: unset; width: 100%;
+                transform: none; box-shadow: none;
+                border: 1px solid rgba(138, 43, 226, 0.25); border-radius: 8px;
+                background: rgba(20, 20, 25, 0.6); backdrop-filter: none;
+                max-height: 0; overflow: hidden; opacity: 1; visibility: visible;
+                padding: 0; margin-top: 0.5rem;
+                transition: max-height 0.3s ease, padding 0.3s ease;
+            }
+            .pay-dropdown-menu.open {
+                max-height: 400px; padding: 0.5rem;
+                opacity: 1; visibility: visible; transform: none;
+            }
+        }
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 1.6rem; }
+            .hero p { font-size: 0.95rem; }
+            .stat-number { font-size: 1.75rem; }
+            .stat-label { font-size: 0.85rem; }
+            .portfolio-media, .portfolio-code pre { height: 180px; }
+            .portfolio-stat-number { font-size: 1.3rem; }
+            .avatar-container { height: 260px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+            html { scroll-behavior: auto; }
+            .reveal, .reveal-left, .reveal-right, .reveal-scale { opacity: 1 !important; transform: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="cursor-glow" id="cursorGlow"></div>
+    <div id="shootingStars"></div>
+    <canvas id="starfield"></canvas>
+    <div class="nav-overlay" id="navOverlay"></div>
+
+    <nav id="mainNav">
+        <div class="nav-container">
+            <div class="logo">
+                <img src="icon.png" alt="Logo" class="logo-icon" loading="lazy" decoding="async">
+                nsawill
+            </div>
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#about">About</a></li>
+                <li><a href="#studios">Studios</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li class="pay-dropdown">
+                    <a href="#" class="nav-cta" id="payMeBtn"><i class="fa-solid fa-bolt"></i> Pay Me</a>
+                    <div class="pay-dropdown-menu" id="payDropdown">
+                        <a href="https://buy.stripe.com/9B65kD69Yavt088dULeZ203" target="_blank" rel="noopener noreferrer" class="pay-dropdown-option">
+                            <i class="fa-brands fa-stripe-s"></i>
+                            <div>
+                                <div class="pay-dropdown-label">Stripe</div>
+                                <div class="pay-dropdown-hint">Secure checkout</div>
+                            </div>
+                        </a>
+                        <a href="https://www.xoom.com" target="_blank" rel="noopener noreferrer" class="pay-dropdown-option">
+                            <i class="fa-brands fa-paypal"></i>
+                            <div>
+                                <div class="pay-dropdown-label">PayPal (xoom.com)</div>
+                                <div class="pay-dropdown-hint">Must ask personally for bank details</div>
+                            </div>
+                        </a>
+                        <a href="https://www.roblox.com" target="_blank" rel="noopener noreferrer" class="pay-dropdown-option">
+                            <img src="robux.png" alt="Robux" style="width:1.2rem;height:1.2rem;filter:brightness(0) saturate(100%) invert(49%) sepia(45%) saturate(1200%) hue-rotate(240deg) brightness(90%) contrast(90%);">
+                            <div>
+                                <div class="pay-dropdown-label">Robux</div>
+                                <div class="pay-dropdown-hint">Must ask personally for details</div>
+                            </div>
+                        </a>
+                        <a href="https://www.roblox.com" target="_blank" rel="noopener noreferrer" class="pay-dropdown-option">
+                            <i class="fa-solid fa-percent"></i>
+                            <div>
+                                <div class="pay-dropdown-label">Percentage</div>
+                                <div class="pay-dropdown-hint">Must ask personally for details</div>
+                            </div>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="hero">
+            <div class="availability-badge reveal">
+                <span class="availability-dot"></span>
+                Currently unavailable for new projects
+            </div>
+            <h1>Full-Stack Roblox Developer</h1>
+            <p>5+ years building games that reach millions of players</p>
+            <div class="hero-cta-row reveal" style="transition-delay:0.15s">
+                <a href="#projects" class="hero-cta"><i class="fa-solid fa-code"></i> View My Work</a>
+                <a href="#contact" class="hero-cta-secondary"><i class="fa-solid fa-envelope"></i> Get In Touch</a>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card reveal" style="transition-delay:0.1s">
+                <div class="stat-number" data-target="40000000">0+</div>
+                <div class="stat-label">Total visits contributed to</div>
+            </div>
+            <div class="stat-card reveal" style="transition-delay:0.2s">
+                <div class="stat-number" data-target="5">0+</div>
+                <div class="stat-label">Years of experience</div>
+            </div>
+            <div class="stat-card reveal" style="transition-delay:0.3s">
+                <div class="stat-number" data-target="100">0+</div>
+                <div class="stat-label">Projects delivered</div>
+            </div>
+        </div>
+
+        <div class="content-section reveal" id="about">
+            <h2>About Me</h2>
+            <div class="description-container">
+                <div class="description-text reveal-left" style="transition-delay:0.15s">
+                    <p style="margin-bottom:1rem">I'm <strong>nsawill</strong>, a full-stack developer who has been building games since 2017. I started playing Roblox in 2015 and have since worked with major studios on projects reaching millions of players.</p>
+                    <p style="margin-bottom:1rem">I specialise in <strong>Luau, Python, C#, HTML, CSS, JavaScript, and Java</strong>, whatever the project requires. From game mechanics and UI design to backend systems and procedural generation, I deliver end-to-end solutions.</p>
+                    <p style="margin-bottom:1rem">I dedicate <strong>5+ hours daily</strong> to development work and am available for both long-term partnerships and short-term contracts.</p>
+                    <p>Flexible on payment, I accept <strong>percentage deals, Robux, or USD via Stripe or PayPal (xoom.com)</strong>. Interested in working together? Let's connect.</p>
+
+                    <div class="skills-section" style="margin-top:1.5rem">
+                        <h3>Technical Skills</h3>
+                        <div class="skills-grid">
+                            <span class="skill-tag">Luau</span>
+                            <span class="skill-tag">Python</span>
+                            <span class="skill-tag">C#</span>
+                            <span class="skill-tag">JavaScript</span>
+                            <span class="skill-tag">HTML/CSS</span>
+                            <span class="skill-tag">Java</span>
+                            <span class="skill-tag">Game Systems</span>
+                            <span class="skill-tag">Procedural Generation</span>
+                            <span class="skill-tag">UI/UX</span>
+                            <span class="skill-tag">Backend Systems</span>
+                            <span class="skill-tag">Physics Systems</span>
+                            <span class="skill-tag">Data Management</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="avatar-container reveal-right" style="transition-delay:0.25s">
+                    <model-viewer loading="lazy" src="preview.glb" alt="3D Avatar" auto-rotate auto-rotate-delay="0" camera-controls disable-zoom interaction-prompt="none" touch-action="pan-y" rotation-per-second="30deg" camera-orbit="180deg 75deg 12m" min-camera-orbit="auto auto 12m" max-camera-orbit="auto auto 12m" shadow-intensity="0.8" exposure="1.0" tone-mapping="commerce" style="background-color:#0a0a0f;">
+                        <div slot="poster" style="display:flex;align-items:center;justify-content:center;height:100%;color:#9b59b6;font-size:1rem;">Loading 3D Model...</div>
+                    </model-viewer>
+                    <div class="avatar-fallback" id="avatarFallback">Model not found. Place <code>preview.glb</code> in the same folder.<br><small style="color:#888;margin-top:0.5rem;display:block;">Convert .fbx to .glb with Blender or an online converter.</small></div>
+                </div>
+            </div>
+            <div class="payment-methods">
+                <h3 style="color:#9b59b6;margin:2rem 0 1rem 0;font-size:1.3rem;">Payment Methods</h3>
+                <div class="payment-grid">
+                    <div class="payment-card reveal-scale" style="transition-delay:0.1s"><i class="fa-solid fa-percent"></i><h4>Percentage</h4><p>Revenue share partnerships for long-term projects</p></div>
+                    <div class="payment-card reveal-scale" style="transition-delay:0.2s"><img src="robux.png" alt="Robux" class="robux-icon" loading="lazy" decoding="async"><h4>Robux</h4><p>Direct payment through the Roblox platform</p></div>
+                    <div class="payment-card reveal-scale" style="transition-delay:0.3s"><i class="fa-solid fa-dollar-sign"></i><h4>USD</h4><p>Secure payments via <a href="https://buy.stripe.com/9B65kD69Yavt088dULeZ203" target="_blank" rel="noopener noreferrer" style="color:#9b59b6;text-decoration:underline;text-underline-offset:2px;">Stripe</a> or <a href="https://www.xoom.com" target="_blank" rel="noopener noreferrer" style="color:#9b59b6;text-decoration:underline;text-underline-offset:2px;">PayPal (xoom.com)</a></p></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section reveal" id="studios">
+            <h2>Studios I've Worked With</h2>
+            <div class="studios-grid">
+                <div class="studio-card reveal-scale" style="transition-delay:0.1s">
+                    <div class="studio-name">Crafti Studios</div>
+                    <div class="studio-stats">
+                        <div class="studio-stat">
+                            <div class="studio-stat-label">Members</div>
+                            <div class="studio-stat-value">8k</div>
+                        </div>
+                        <div class="studio-stat">
+                            <div class="studio-stat-label">Peak CCU</div>
+                            <div class="studio-stat-value">400</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="studio-card reveal-scale" style="transition-delay:0.2s">
+                    <div class="studio-name">OwlVision Studios</div>
+                    <div class="studio-stats">
+                        <div class="studio-stat">
+                            <div class="studio-stat-label">Members</div>
+                            <div class="studio-stat-value">2.4M</div>
+                        </div>
+                        <div class="studio-stat">
+                            <div class="studio-stat-label">Peak CCU</div>
+                            <div class="studio-stat-value">5k</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="studio-card reveal-scale" style="transition-delay:0.3s">
+                    <div class="studio-name">Xenware Studios</div>
+                    <div class="studio-stats">
+                        <div class="studio-stat">
+                            <div class="studio-stat-label">Members</div>
+                            <div class="studio-stat-value">16k</div>
+                        </div>
+                        <div class="studio-stat">
+                            <div class="studio-stat-label">Peak CCU</div>
+                            <div class="studio-stat-value">2k</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section" id="projects">
+            <h2 class="reveal">Projects</h2>
+
+            <div class="portfolio-item reveal" style="transition-delay:0.05s">
+                <h3>Doomed 2 Die</h3>
+                <div class="portfolio-role">Scripter &mdash; Drove CCU growth to 1.2K peak</div>
+                <div class="portfolio-content">
+                    <img src="Portfolio/doomed 2 die.webp" alt="Doomed 2 Die's Thumbnail" class="portfolio-media" loading="lazy" decoding="async">
+                    <video data-src="Portfolio/bezier curve.mp4" controls class="portfolio-media" preload="none" playsinline></video>
+                </div>
+                <p class="description"><a href="https://www.roblox.com/games/86340697076369/DOOMED-2-DIE" target="_blank" rel="noopener noreferrer">DOOMED 2 DIE</a> &mdash; Developed and shipped updates that drove consistent CCU growth to a peak of 1.2K concurrent players.</p>
+                <div class="portfolio-stats">
+                    <div class="portfolio-stat-card reveal-scale" style="transition-delay:0.1s">
+                        <div class="portfolio-stat-number" data-target="1200">0</div>
+                        <div class="portfolio-stat-label">Peak CCU</div>
+                    </div>
+                    <div class="portfolio-stat-card reveal-scale" style="transition-delay:0.15s">
+                        <div class="portfolio-stat-number" data-target="7200000">0</div>
+                        <div class="portfolio-stat-label">Visits</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="portfolio-item reveal" style="transition-delay:0.05s">
+                <h3>Semi Truck Obby</h3>
+                <div class="portfolio-role">Scripter &mdash; Built systems that grew CCU to 300</div>
+                <div class="portfolio-content">
+                    <img src="Portfolio/sto.webp" alt="STO's Thumbnail" class="portfolio-media" loading="lazy" decoding="async">
+                    <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
+local progressionFunnel = {}
+
+local AnalyticsService = game:GetService("AnalyticsService")
+local Players = game:GetService("Players")
+
+Players.PlayerAdded:Connect(function(player)
+    AnalyticsService:LogOnboardingFunnelStepEvent(
+        player, 1, "Player Joined"
+    )
+end)
+
+function progressionFunnel.LogCheckpointStep(player, checkpointIndex)
+    AnalyticsService:LogOnboardingFunnelStepEvent(
+        player, checkpointIndex,
+        "Checkpoint " .. checkpointIndex .. " Unlocked"
+    )
+end
+
+return progressionFunnel
+</code></pre></div>
+                </div>
+                <p class="description"><a href="https://www.roblox.com/games/110345898280451/Semi-Truck-Obby" target="_blank" rel="noopener noreferrer">Semi Truck Obby</a> &mdash; Implemented analytics, game systems, and updates that helped grow CCU to approximately 300 concurrent players.</p>
+                <div class="portfolio-stats">
+                    <div class="portfolio-stat-card reveal-scale" style="transition-delay:0.1s">
+                        <div class="portfolio-stat-number" data-target="300">0</div>
+                        <div class="portfolio-stat-label">Peak CCU</div>
+                    </div>
+                    <div class="portfolio-stat-card reveal-scale" style="transition-delay:0.15s">
+                        <div class="portfolio-stat-number" data-target="24500000">0</div>
+                        <div class="portfolio-stat-label">Visits</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="portfolio-item reveal" style="transition-delay:0.05s">
+                <h3>OwlVision &mdash; Brainrot Game</h3>
+                <div class="portfolio-role">Developer &mdash; Data systems &amp; inventory for 2.4M member studio</div>
+                <div class="portfolio-content">
+                    <video data-src="Portfolio/brainrot.mp4" controls class="portfolio-media" preload="none" playsinline></video>
+                    <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
+-- Services
+local Players = game:GetService("Players")
+local Rep = game:GetService("ReplicatedStorage")
+local Communication = Rep.Communication
+local AllInventoryModules = { Eggs = "nil", Brainrots = "nil" }
+
+local ProfileStore = require(game.ServerStorage.Modules.ProfileStore)
+local ProfileTemplate = {
+	Cash = 0, Wave = 0, WaveSpeed = 1, Id = 0,
+	Storage = {}, MaxStorage = 6,
+	Index = {}, Inventory = {}, LastLogin = 0
+}
+
+local PlayerDataStore = ProfileStore.New("PlayerData4", ProfileTemplate)
+local Profiles = {}
+local PlayerData = {}
+PlayerData.Profiles = Profiles
+
+function PlayerData:PlayerLoaded(Player)
+	local Profile = PlayerDataStore:StartSessionAsync(
+	    tostring(Player.UserId), {
+		Cancel = function() return Player.Parent ~= Players end,
+	})
+	if Profile ~= nil then
+		Profile:AddUserId(Player.UserId)
+		Profile:Reconcile()
+		Profile.OnSessionEnd:Connect(function()
+			self.Profiles[Player] = nil
+			Player:Kick("Profile session end - Please rejoin")
+		end)
+		if Player.Parent == Players then
+			Profile.Data.Cash = 5000
+			self.Profiles[Player] = Profile
+			-- Setup friend boosts, spawn slots, inventory
+		else
+			Profile:EndSession()
+		end
+	else
+		Player:Kick("Profile load fail - Please rejoin")
+	end
+end
+
+function PlayerData:ChangeData(Player, Data)
+	local Profile = self.Profiles[Player]
+	if Profile then
+		for Key, Value in pairs(Data) do
+			Profile.Data[Key] = Value
+		end
+	end
+	Communication.Player.UpdateData:FireClient(Player, Profile.Data)
+end
+
+function PlayerData:Load()
+	for Key, _ in pairs(AllInventoryModules) do
+		AllInventoryModules[Key] = require(
+		    Rep.Modules.ServerModules:FindFirstChild(Key))
+	end
+	Players.PlayerAdded:Connect(function(p) self:PlayerLoaded(p) end)
+	Players.PlayerRemoving:Connect(function(p) self:PlayerRemoved(p) end)
+end
+
+return PlayerData
+</code></pre></div>
+                </div>
+                <p class="description">Developed for <a href="https://www.roblox.com/communities/33741749/OwlVision#!/about" target="_blank" rel="noopener noreferrer">OwlVision</a> (2.4M members). Built the full data persistence layer using ProfileStore, inventory management, and friend boost systems.</p>
+            </div>
+
+            <div class="portfolio-item reveal" style="transition-delay:0.05s">
+                <h3>Pet Simulator System</h3>
+                <div class="portfolio-role">Contract &mdash; Full inventory &amp; egg hatching system</div>
+                <div class="portfolio-content">
+                    <video data-src="Portfolio/petsim.mp4" controls class="portfolio-media" preload="none" playsinline></video>
+                    <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
+--Services
+local Knit = require(game.ReplicatedStorage.Packages.Knit)
+local RunService = game:GetService("RunService")
+local DataService = nil
+local InventoryHandlerService = nil
+local Modules = game.ReplicatedStorage:WaitForChild("Modules")
+
+local Player = game.Players.LocalPlayer
+local Mouse = Player:GetMouse()
+local SelectedTemplate = nil
+
+local AllPetModules = {
+	Pets = "nil", Types = "nil",
+	Rarities = "nil", GuiFunctions = "nil"
+}
+
+local ExistingPets = {}
+local Gui = Player.PlayerGui:WaitForChild("Inventory")
+local Inventory = Gui:WaitForChild("Main")
+local PetsFrame = Inventory:WaitForChild("Pets"):WaitForChild("Container")
+local EquippedFrame = PetsFrame:WaitForChild("Equipped"):WaitForChild("Container")
+local UnequippedFrame = PetsFrame:WaitForChild("Unequipped"):WaitForChild("Container")
+local TemplateIcon = Gui:WaitForChild("TemplateIcon")
+local PetDetails = Gui:WaitForChild("TemplateDetails")
+
+local InventoryHandler = Knit.CreateController({ Name = "InventoryHandler" })
+
+function InventoryHandler.GetNonItemedPet(Pet, Proc, Args)
+	local NonItemedPet = Pet
+	for _, Statistic in pairs(AllPetModules.Types.All) do
+		if string.find(Pet, Statistic.Prefix) then
+			NonItemedPet = Pet:gsub(Statistic.Prefix, "")
+			if Proc ~= nil then
+				if Args then Statistic[Proc](Statistic, PetDetails, Args)
+				else Statistic[Proc](Statistic, PetDetails) end
+			end
+			NonItemedPet = InventoryHandler.GetNonItemedPet(NonItemedPet)
+		end
+	end
+	return NonItemedPet
+end
+
+function InventoryHandler.ReloadInventory(Data)
+	local Pets = Data.Pets
+	local EquippedPets = Data.EquippedPets
+	EquippedFrame.Parent.Title.Text = string.format(
+	    "Equipped Pets (%d/%d)", #EquippedPets, Data.MaxEquippedPets)
+	-- Full reload: wipe frames, rebuild sorted templates,
+	-- reconnect hover/click handlers for equip/unequip
+end
+
+function InventoryHandler:KnitStart()
+	DataService = Knit.GetService("PlayerHandler")
+	InventoryHandlerService = Knit.GetService("InventoryHandler")
+	for Name, _ in pairs(AllPetModules) do
+		local Required = require(Modules:WaitForChild(Name))
+		Required.All = Required.Load()
+		AllPetModules[Name] = Required
+	end
+	DataService.DataChanged:Connect(InventoryHandler.ReloadInventory)
+	DataService:GetPlayerData():andThen(InventoryHandler.ReloadInventory)
+end
+
+Inventory.Visible = false
+return InventoryHandler
+</code></pre></div>
+                </div>
+                <p class="description">Built a complete pet simulator inventory and egg hatching system with rarity tiers, pet types with stat modifiers, and a responsive UI for equipping and managing pets.</p>
+            </div>
+
+            <div class="portfolio-item reveal" style="transition-delay:0.05s">
+                <h3>Terrain + Camera System</h3>
+                <div class="portfolio-role">Contract &mdash; Procedural generation specialist</div>
+                <div class="portfolio-content">
+                    <video data-src="Portfolio/camera test.mp4" controls class="portfolio-media" preload="none" playsinline></video>
+                    <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
+local Helpers = game.ReplicatedStorage.Modules.Terrain.Helpers
+local T = require(Helpers.T)
+local RunService = game:GetService("RunService")
+
+local AllBiomes = {}
+for _, Biome in pairs(script:GetChildren()) do
+	table.insert(AllBiomes,require(Biome))
+end
+
+return function(Terrain, BiomeSettings)
+	local PerlinNoise = require(Helpers.PerlinNoise)
+	local HeatNoise = PerlinNoise("3D")
+	local HumidityNoise = PerlinNoise("3D")
+	local LightNoise = PerlinNoise("3D")
+	
+	for X = 1, #Terrain do
+		for Y = 1, #Terrain[X] do
+			for Z = 1, #Terrain[X][Y] do
+				local Heat = HeatNoise(
+				    X * BiomeSettings.HeatAmplifier,
+				    Y * BiomeSettings.HeatAmplifier,
+				    Z * BiomeSettings.HeatAmplifier
+				) * BiomeSettings.BiomeSize
+				local Humidity = HumidityNoise(
+				    X * BiomeSettings.HumidityAmplifier,
+				    Y * BiomeSettings.HumidityAmplifier,
+				    Z * BiomeSettings.HumidityAmplifier
+				) * BiomeSettings.BiomeSize
+				local Light = LightNoise(
+				    X * BiomeSettings.LightAmplifier,
+				    Y * BiomeSettings.LightAmplifier,
+				    Z * BiomeSettings.LightAmplifier
+				) * BiomeSettings.BiomeSize
+				
+				local BiomeChosen = nil
+				for _, Biome in pairs(AllBiomes) do
+					local HeatOK = Heat >= Biome.HeatThresholds.X
+					    and Heat <= Biome.HeatThresholds.Y
+					local HumidOK = Humidity >= Biome.HumidityThresholds.X
+					    and Humidity <= Biome.HumidityThresholds.Y
+					local LightOK = Light >= Biome.LightThresholds.X
+					    and Light <= Biome.LightThresholds.Y
+					if HeatOK and HumidOK and LightOK then
+						BiomeChosen = Biome
+						break
+					end
+				end
+				if BiomeChosen then
+					BiomeChosen.Callback(X,Y,Z,BiomeSettings)
+				end
+			end
+		end
+	end
+	return Terrain
+end
+</code></pre></div>
+                </div>
+                <p class="description">Built a procedural terrain generation system for underground caves using 3D Perlin noise with heat, humidity, and light parameters for biome selection. Also developed a complementary camera system.</p>
+            </div>
+
+            <div class="portfolio-item reveal" style="transition-delay:0.05s">
+                <h3>RoGuessr</h3>
+                <div class="portfolio-role">Solo Developer &mdash; Full-stack game prototype</div>
+                <div class="portfolio-content">
+                    <video data-src="Portfolio/roguessr so far.mp4" controls class="portfolio-media" preload="none" playsinline></video>
+                    <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
+-- Services
+local Rep = game:GetService("ReplicatedStorage")
+local UpdateViewSphere = require(script.Parent:WaitForChild("UpdateViewSphere"))
+local SyncGame = require(script.Parent:WaitForChild("SyncGame"))
+local ViewSphere = workspace.ViewSphere.PrimaryPart
+local TweenService = game:GetService("TweenService")
+
+local Camera = workspace.CurrentCamera
+local Pointer = script:WaitForChild("Pointer")
+local Pointers = workspace:WaitForChild("Pointers")
+
+local RANDOM_INSTANCE = Random.new()
+local POINTER_RADIUS_OFFSET = 20
+local Y_OFFSET = 45
+local ANIMATION_INFO = TweenInfo.new(0.22,Enum.EasingStyle.Sine,Enum.EasingDirection.Out)
+local SIZE_MULTIPLIER = 1.1
+local VECTOR_MAP = {
+	[1] = "X",
+	[2] = "Y",
+	[3] = "Z"
+}
+
+local CurrentDetails = nil
+local Client = {}
+
+local function StringToVector(String : string)
+	if typeof(String) == "Vector3" then return String end
+	local SubbedLocation = String
+	local XYZLocation = { X = 0, Y = 0, Z = 0 }
+	for CoordinateIndex, Coordinate in pairs(string.split(SubbedLocation,",")) do
+		local XYZ = VECTOR_MAP[CoordinateIndex]
+		XYZLocation[XYZ] = tonumber(Coordinate)
+	end
+	return vector.create(XYZLocation.X,XYZLocation.Y,XYZLocation.Z)
+end
+
+function Client.MoveToIndex(Position, Rigid)
+	Pointers:ClearAllChildren()
+	local Textures = CurrentDetails.CurrentGame.Textures
+	local ActualPosition = StringToVector(Position)
+	for StringLocation, Textures in pairs(Textures) do
+		local Location = StringToVector(StringLocation)
+		if StringLocation ~= Position then
+			if not Pointers:FindFirstChild(StringLocation) then
+				local PointerClone = Pointer:Clone()
+				PointerClone.Parent = Pointers
+				PointerClone.Name = StringLocation
+			end
+		end
+	end
+	Camera:SetAttribute("CurrentPosition",ActualPosition)
+end
+
+function Client.Init()
+	SyncGame.AttachToSelectedGame(function(Details)
+		CurrentDetails = Details
+		Pointers:ClearAllChildren()
+		Client.MoveToIndex(Details.FirstTexture)
+	end)
+end
+
+return Client
+</code></pre></div>
+                </div>
+                <p class="description">A GeoGuessr-style game built for Roblox. Developed the full client-side navigation, 360° view sphere system, and pointer mechanics.</p>
+            </div>
+
+            <div class="portfolio-item reveal" style="transition-delay:0.05s">
+                <h3>Drone Obby Prototype</h3>
+                <div class="portfolio-role">Solo Developer &mdash; Physics-based game prototype</div>
+                <div class="portfolio-content">
+                    <video data-src="Portfolio/drone obby.mp4" controls class="portfolio-media" preload="none" playsinline></video>
+                    <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
+local Obstacles = require(script.Parent)
+local Player = game.Players.LocalPlayer
+local RunService = game:GetService("RunService")
+local Movement = require(game.ReplicatedStorage:WaitForChild("Modules")
+    :WaitForChild("Client"):WaitForChild("Movement"):WaitForChild("Walk"))
+local FAN_SPEED = 100
+local WIND_SPEED = vector.create(300,160,300)
+
+local module = {}
+
+function module:Load(WindTunnel)
+	self.WindTunnel = WindTunnel
+	local Hitbox = WindTunnel:WaitForChild("Hitbox")
+	
+	local NewWindAudio = game.ReplicatedStorage:WaitForChild("Assets")
+	    :WaitForChild("Sounds"):WaitForChild("Wind"):Clone()
+	NewWindAudio.Parent = Hitbox
+	NewWindAudio:Play()
+	
+	self.TouchConnection = Hitbox.Touched:Connect(function(Hit)
+		if Hit.Name ~= "HumanoidRootPart" then return end
+		if Hit.Parent:FindFirstChild("Humanoid") then
+			local HitPlayer = game.Players:GetPlayerFromCharacter(Hit.Parent)
+			if HitPlayer == Player then
+				Obstacles.SharedData.LastEffect = WindTunnel
+				Movement.ChangeAddition("WindTunnel",
+				    -Hitbox.CFrame.LookVector * WIND_SPEED)
+			end
+		end
+	end)
+	
+	if Obstacles.SharedData.AccessedWindTunnel == nil then
+		Obstacles.SharedData.AccessedWindTunnel = true
+		Obstacles.SharedData.WindTunnels = {}
+		RunService:BindToRenderStep("WindTunnel",4,function(DT)
+			for _, Tunnel in pairs(Obstacles.SharedData.WindTunnels) do
+				local Fan = Tunnel.BoxFan.Fan
+				Fan.CFrame *= CFrame.Angles(0,math.rad(15 * DT * FAN_SPEED),0)
+			end
+		end)
+	end
+	table.insert(Obstacles.SharedData.WindTunnels,WindTunnel)
+end
+
+function module:Unload()
+	self.TouchEndedConnection:Disconnect()
+	self.TouchConnection:Disconnect()
+	self.Audio:Destroy()
+	self.VFX:Destroy()
+	if Obstacles.SharedData.AccessedWindTunnel ~= nil then
+		Movement.ChangeAddition("WindTunnel", nil)
+		RunService:UnbindFromRenderStep("WindTunnel")
+	end
+	self.Finished:Fire()
+end
+
+return module
+</code></pre></div>
+                </div>
+                <p class="description">A complete drone obby prototype featuring wind tunnel physics, dynamic obstacle systems, and custom movement mechanics.</p>
+            </div>
+
+            <div class="portfolio-item reveal" style="transition-delay:0.05s">
+                <h3>Movement System</h3>
+                <div class="portfolio-role">Contract &mdash; Custom physics for horror game</div>
+                <div class="portfolio-content">
+                    <video data-src="Portfolio/movement system.mp4" controls class="portfolio-media" preload="none" playsinline></video>
+                </div>
+                <p class="description">Developed a custom movement system for an asymmetrical horror game, including sprint mechanics, stamina management, and responsive character controls.</p>
+            </div>
+
+            <div class="portfolio-item reveal" style="transition-delay:0.05s">
+                <h3>Sessions</h3>
+                <div class="portfolio-role">Developer &mdash; Rank &amp; session management system</div>
+                <div class="portfolio-content">
+                    <div class="portfolio-code"><pre data-lenis-prevent><code class="language-lua">
+-- Services
+local Players = game:GetService("Players")
+local SessionManager = require(script.Parent.SessionManager)
+local PlayerManager = require(script.Parent.PlayerManager)
+
+local PlayerRanks = {}
+local AllRanks = {}
+local LastOwner = nil
+local DEFAULT_RANK = "Visitor"
+local DEFAULT_OWNER_RANK = "Owner"
+
+local BaseRank = {}
+BaseRank.PermissionLevel = 0
+BaseRank.Name = ""
+function BaseRank:Apply(Player)
+	Player:SetAttribute("PermissionLevel",self.PermissionLevel)
+	Player:SetAttribute("Rank",self.Name)
+	PlayerManager.UpdateData(Player,{Rank = self.Name})
+	PlayerRanks[Player] = self.Name
+end
+function BaseRank:Remove(Player) end
+
+local Ranks = {}
+local function New(Rank)
+	return setmetatable(Rank,{__index = BaseRank})
+end
+
+function Ranks.RankPlayer(Player, Rank)
+	if PlayerRanks[Player] ~= nil then
+		AllRanks[PlayerRanks[Player]]:Remove(Player)
+	end
+	AllRanks[Rank]:Apply(Player)
+end
+
+function Ranks.Initialize()
+	for _, Module in pairs(script:GetChildren()) do
+		local RequiredRank = New(require(Module))
+		RequiredRank.Name = Module.Name
+		AllRanks[Module.Name] = RequiredRank
+	end
+	
+	PlayerManager.BindToData({"JoinTime","Rank"},function(Player, Key, NewData)
+		if NewData == nil then return end
+		local SessionData = SessionManager.GetSessionData()
+		if SessionData == nil then return end
+		if Key == "Rank" then
+			SessionData.Ranks[Player.UserId] = NewData
+			if NewData == DEFAULT_OWNER_RANK then
+				SessionData.Host = {
+					DisplayName = Player.DisplayName,
+					UserId = Player.UserId,
+					Name = Player.Name
+				}
+				SessionManager.UpdateSession(SessionData)
+			end
+		elseif Key == "JoinTime" then
+			if SessionData.Host.UserId == Player.UserId then
+				Ranks.RankPlayer(Player,DEFAULT_OWNER_RANK)
+			else
+				Ranks.RankPlayer(Player,DEFAULT_RANK)
+			end
+		end
+	end)
+end
+
+export type Rank = {
+	PermissionLevel : number,
+	Apply : (self : {}, Player : Player) -> nil,
+	Remove : (self : {}, Player : Player) -> nil
+}
+return Ranks
+</code></pre></div>
+                </div>
+                <p class="description">Developed a session-based social game system with a full rank hierarchy, permission levels, and real-time session management with host migration.</p>
+            </div>
+
+        </div>
+
+        <div class="content-section reveal" id="contact">
+            <h2>Let's Work Together</h2>
+            <p>Ready to start a project? Reach out through any of the platforms below.</p>
+            <div class="contact-grid">
+                <a href="mailto:businessnsawill@outlook.com" class="contact-item reveal" style="transition-delay:0.1s">
+                    <h3><i class="fa-solid fa-envelope"></i> Email</h3>
+                    <span>businessnsawill@outlook.com</span>
+                </a>
+                <a href="https://discord.com/users/996690533168721930" target="_blank" rel="noopener noreferrer" class="contact-item reveal" style="transition-delay:0.2s">
+                    <h3><i class="fa-brands fa-discord"></i> Discord</h3>
+                    <span>nsawill</span>
+                </a>
+                <a href="https://www.roblox.com/users/8284290795/profile" target="_blank" rel="noopener noreferrer" class="contact-item reveal" style="transition-delay:0.3s">
+                    <h3><img src="roblox.png" alt="Roblox" class="contact-icon-img" loading="lazy" decoding="async"> Roblox</h3>
+                    <span>https://www.roblox.com/users/8284290795/profile</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+<script>
+(() => {
+  const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+  const LenisClass = window.Lenis || window.lenis?.Lenis;
+  let lenis = null;
+
+  if (LenisClass && !reducedMotion) {
+    lenis = new LenisClass({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      touchMultiplier: 1.5
+    });
+    const raf = (t) => { lenis?.raf(t); requestAnimationFrame(raf); };
+    requestAnimationFrame(raf);
+  }
+
+  /* ── Pay Me dropdown ── */
+  const payBtn = document.getElementById('payMeBtn');
+  const payDropdown = document.getElementById('payDropdown');
+
+  if (payBtn && payDropdown) {
+    payBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      payDropdown.classList.toggle('open');
+    });
+
+    document.addEventListener('click', (e) => {
+      // Close if clicking a dropdown option or clicking outside
+      if (e.target.closest('.pay-dropdown-option')) {
+        payDropdown.classList.remove('open');
+        return;
+      }
+      if (!payDropdown.contains(e.target) && e.target !== payBtn && !payBtn.contains(e.target)) {
+        payDropdown.classList.remove('open');
+      }
+    });
+  }
+
+  document.querySelectorAll('a[href^="#"]').forEach((a) => {
+    a.addEventListener('click', function (e) {
+      const href = this.getAttribute('href');
+      const target = href ? document.querySelector(href) : null;
+      if (!target) return;
+      e.preventDefault();
+      if (lenis) lenis.scrollTo(target, { offset: -90 });
+      else target.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });
+    });
+  });
+
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.getElementById('navLinks');
+  const navOverlay = document.getElementById('navOverlay');
+
+  const setMenu = (open) => {
+    if (!hamburger || !navLinks || !navOverlay) return;
+    hamburger.classList.toggle('active', open);
+    navLinks.classList.toggle('open', open);
+    navOverlay.classList.toggle('active', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+    hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    hamburger.setAttribute('aria-controls', 'navLinks');
+    // Close pay dropdown when closing menu
+    if (!open && payDropdown) payDropdown.classList.remove('open');
+  };
+
+  if (hamburger && navLinks && navOverlay) {
+    hamburger.addEventListener('click', () => setMenu(!navLinks.classList.contains('open')));
+    navOverlay.addEventListener('click', () => setMenu(false));
+    // Close mobile menu on link click, but NOT for the Pay Me button
+    navLinks.querySelectorAll('a').forEach((l) => {
+      l.addEventListener('click', () => {
+        if (l === payBtn || l.closest('.pay-dropdown-menu')) return;
+        setMenu(false);
+      });
+    });
+    setMenu(false);
+  }
+
+  const mainNav = document.getElementById('mainNav');
+  if (mainNav) {
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        mainNav.classList.toggle('scrolled', window.scrollY > 50);
+        ticking = false;
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  const cursorGlow = document.getElementById('cursorGlow');
+  if (!reducedMotion && cursorGlow && window.matchMedia('(pointer: fine)').matches) {
+    let mouseX = 0, mouseY = 0, glowX = 0, glowY = 0, visible = false;
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX; mouseY = e.clientY;
+      if (!visible) { cursorGlow.classList.add('visible'); visible = true; }
+    }, { passive: true });
+
+    document.addEventListener('mouseleave', () => {
+      cursorGlow.classList.remove('visible'); visible = false;
+    });
+
+    const loop = () => {
+      glowX += (mouseX - glowX) * 0.12;
+      glowY += (mouseY - glowY) * 0.12;
+      cursorGlow.style.left = glowX + 'px';
+      cursorGlow.style.top = glowY + 'px';
+      requestAnimationFrame(loop);
+    };
+    loop();
+  }
+
+  const shootingStarsContainer = document.getElementById('shootingStars');
+  let shootingStarTimer = null;
+
+  const createShootingStar = () => {
+    if (!shootingStarsContainer) return;
+
+    const star = document.createElement('div');
+    star.className = 'shooting-star';
+    star.style.left = (Math.random() * window.innerWidth * 0.7) + 'px';
+    star.style.top = (Math.random() * window.innerHeight * 0.4) + 'px';
+    star.style.width = (100 + Math.random() * 80) + 'px';
+
+    const angle = 25 + Math.random() * 20;
+    const dist = 500 + Math.random() * 400;
+    const dur = 1400 + Math.random() * 800;
+
+    shootingStarsContainer.appendChild(star);
+
+    const t = 'rotate(' + angle + 'deg) translateX(';
+    const anim = star.animate([
+      { opacity: 0, transform: t + '0px)' },
+      { opacity: 0.3, transform: t + (dist * 0.08) + 'px)', offset: 0.08 },
+      { opacity: 0.7, transform: t + (dist * 0.18) + 'px)', offset: 0.18 },
+      { opacity: 1, transform: t + (dist * 0.55) + 'px)', offset: 0.55 },
+      { opacity: 0.4, transform: t + (dist * 0.8) + 'px)', offset: 0.8 },
+      { opacity: 0, transform: t + dist + 'px)' }
+    ], { duration: dur, easing: 'linear', fill: 'forwards' });
+
+    anim.onfinish = () => star.remove();
+  };
+
+  const stopShootingStars = () => {
+    if (shootingStarTimer) clearTimeout(shootingStarTimer);
+    shootingStarTimer = null;
+  };
+
+  const scheduleShootingStar = () => {
+    stopShootingStars();
+    shootingStarTimer = setTimeout(() => {
+      createShootingStar();
+      scheduleShootingStar();
+    }, 3000 + Math.random() * 6000);
+  };
+
+  if (!reducedMotion) scheduleShootingStar();
+
+  const revealObserver = new IntersectionObserver((entries, obs) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      e.target.classList.add('visible');
+      obs.unobserve(e.target);
+    }
+  }, { threshold: 0.02, rootMargin: '0px 0px -20px 0px' });
+
+  document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale')
+    .forEach((el) => revealObserver.observe(el));
+
+  const titleObserver = new IntersectionObserver((entries, obs) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      e.target.classList.add('line-visible');
+      obs.unobserve(e.target);
+    }
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('.content-section h2').forEach((h2) => titleObserver.observe(h2));
+
+  const lazyVideoObserver = new IntersectionObserver((entries, obs) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      const v = e.target;
+      const src = v.getAttribute('data-src');
+      if (src && !v.src) { v.src = src; v.load(); }
+      obs.unobserve(v);
+    }
+  }, { threshold: 0.15, rootMargin: '300px 0px' });
+
+  document.querySelectorAll('video[data-src]').forEach((v) => lazyVideoObserver.observe(v));
+
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas ? canvas.getContext('2d', { willReadFrequently: false, alpha: false }) : null;
+
+  let stars = [];
+  let scrollOffset = 0;
+  let starRAF = 0;
+  let running = false;
+  let lastFrame = 0;
+
+  const FPS = 30;
+  const FRAME_MS = 1000 / FPS;
+
+  function resizeCanvas() {
+    if (!canvas) return;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const count = window.innerWidth < 768 ? 100 : 200;
+    stars = [];
+    for (let i = 0; i < count; i++) stars.push(new Star());
+  }
+
+  class Star {
+    constructor() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.size = Math.random() * 2 + 0.5;
+      this.speedX = (Math.random() - 0.5) * 0.3;
+      this.speedY = (Math.random() - 0.5) * 0.3;
+      this.opacity = Math.random();
+      this.opacityChange = (Math.random() - 0.5) * 0.02;
+      this.depth = 0.5 + Math.random() * 0.5;
+    }
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+      this.opacity += this.opacityChange;
+
+      if (this.x > canvas.width) this.x = 0;
+      if (this.x < 0) this.x = canvas.width;
+      if (this.y > canvas.height) this.y = 0;
+      if (this.y < 0) this.y = canvas.height;
+
+      if (this.opacity >= 1 || this.opacity <= 0) this.opacityChange = -this.opacityChange;
+    }
+    draw() {
+      const py = (this.y - scrollOffset * this.depth + canvas.height) % canvas.height;
+      ctx.fillStyle = 'rgba(255,255,255,' + this.opacity + ')';
+      ctx.beginPath();
+      ctx.arc(this.x, py, this.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function startStarfield() {
+    if (!canvas || !ctx || reducedMotion || running) return;
+    running = true;
+    lastFrame = 0;
+
+    const loop = (ts) => {
+      if (!running) return;
+      if (!lastFrame) lastFrame = ts;
+      const delta = ts - lastFrame;
+
+      if (delta >= FRAME_MS) {
+        lastFrame = ts - (delta % FRAME_MS);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (const s of stars) { s.update(); s.draw(); }
+      }
+      starRAF = requestAnimationFrame(loop);
+    };
+
+    starRAF = requestAnimationFrame(loop);
+  }
+
+  function stopStarfield() {
+    running = false;
+    if (starRAF) cancelAnimationFrame(starRAF);
+    starRAF = 0;
+  }
+
+  if (canvas && ctx && !reducedMotion) {
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas, { passive: true });
+    window.addEventListener('scroll', () => { scrollOffset = window.scrollY * 0.03; }, { passive: true });
+    startStarfield();
+  }
+
+  const animateCounter = (el, target, duration = 2000) => {
+    const start = performance.now();
+    const format = (val) => {
+      if (target >= 1000000) return (val / 1000000).toFixed(1) + 'M+';
+      if (target >= 1000) return (val / 1000).toFixed(1) + 'K+';
+      return Math.floor(val) + '+';
+    };
+
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      el.textContent = format(target * eased);
+      if (t < 1) requestAnimationFrame(tick);
+      else el.textContent = format(target);
+    };
+    requestAnimationFrame(tick);
+  };
+
+  const counterObserver = new IntersectionObserver((entries, obs) => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      const el = e.target;
+      if (el.classList.contains('animated')) continue;
+      animateCounter(el, parseInt(el.dataset.target || '0', 10));
+      el.classList.add('animated');
+      obs.unobserve(el);
+    }
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('.stat-number, .portfolio-stat-number').forEach((s) => counterObserver.observe(s));
+
+  window.addEventListener('load', () => {
+    if (window.hljs?.highlightAll) window.hljs.highlightAll();
+
+    const mv = document.querySelector('model-viewer');
+    const fb = document.getElementById('avatarFallback');
+    if (mv) {
+      mv.addEventListener('error', () => {
+        mv.style.display = 'none';
+        if (fb) fb.style.display = 'block';
+      });
+
+      mv.addEventListener('load', () => {
+        const model = mv.model;
+        if (model?.materials) {
+          for (const mat of model.materials) {
+            mat.setDoubleSided(true);
+            mat.setAlphaMode('OPAQUE');
+            mat.pbrMetallicRoughness.setBaseColorFactor([
+              mat.pbrMetallicRoughness.baseColorFactor[0],
+              mat.pbrMetallicRoughness.baseColorFactor[1],
+              mat.pbrMetallicRoughness.baseColorFactor[2],
+              1.0
+            ]);
+          }
+        }
+      });
+    }
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      stopShootingStars();
+      stopStarfield();
+    } else {
+      if (!reducedMotion) scheduleShootingStar();
+      startStarfield();
+    }
+  });
+})();
+</script>
+</body>
+</html>
+>>>>>>> fd0cdfed7dbeba9a9949252be45718eccfae6cda
