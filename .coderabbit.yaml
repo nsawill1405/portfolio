@@ -1,0 +1,35 @@
+# CodeRabbit Configuration File
+# Documentation: https://docs.coderabbit.ai/guiding-coderabbit/configuration/
+
+language: "en-US"
+early_access: false
+reviews:
+  # localized_code_reviews: false # Set to true to receive reviews in the language of the code
+  profile: "chill" # Options: "chill", "assertive"
+  request_changes_workflow: false
+  high_level_summary: true
+  auto_review:
+    enabled: true
+    ignore_title_keywords:
+      - "WIP"
+      - "Draft"
+    drafts: false
+  tools:
+    ast-grep:
+      enabled: true
+      rule_sets:
+        - "react"
+        - "javascript"
+        - "security"
+    linter:
+      enabled: true
+
+chat:
+  auto_reply: true
+
+# files:
+#   ignore:
+#     - "dist/**"
+#     - "node_modules/**"
+#     - "public/**"
+#     - "*.lock"
