@@ -42,7 +42,12 @@ const Experience = () => {
                     <div className="h-1 w-20 bg-white"></div>
                 </motion.div>
 
-                <div className="relative border-l-2 border-white/20 ml-3 md:ml-6 space-y-12">
+                <div className="relative border-l-2 border-white/20 ml-3 md:ml-6 space-y-12 pb-12 mt-8">
+                    {/* Recent Label */}
+                    <div className="absolute left-[-1px] -top-10 -translate-x-1/2 bg-black border border-white/20 px-2 py-1 rounded-full text-xs text-gray-400 font-mono">
+                        RECENT
+                    </div>
+
                     {experiences.map((exp, index) => (
                         <motion.div
                             key={index}
@@ -53,15 +58,11 @@ const Experience = () => {
                             className="relative pl-8 md:pl-12"
                         >
                             {/* Timeline Dot */}
-                            <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-black border-2 border-white mt-[1.5rem]"></div>
+                            <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-black border-2 border-white mt-1"></div>
 
                             <div className="bg-zinc-900/80 border border-white/10 p-6 rounded-lg backdrop-blur-md hover:border-white/30 hover:bg-zinc-900 transition-all shadow-lg hover:shadow-white/5">
                                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
                                     <h3 className="text-xl font-bold text-white">{exp.role}</h3>
-                                    <div className="flex items-center gap-2 text-gray-400 text-sm mt-1 md:mt-0 bg-white/5 px-3 py-1 rounded-full">
-                                        <Calendar className="w-4 h-4" />
-                                        <span>{exp.period}</span>
-                                    </div>
                                 </div>
 
                                 <h4 className="text-lg text-gray-300 font-semibold mb-4">{exp.company}</h4>
@@ -79,6 +80,11 @@ const Experience = () => {
                             </div>
                         </motion.div>
                     ))}
+
+                    {/* Older Label */}
+                    <div className="absolute left-[-1px] bottom-0 -translate-x-1/2 bg-black border border-white/20 px-2 py-1 rounded-full text-xs text-gray-400 font-mono">
+                        OLDER
+                    </div>
                 </div>
             </div>
         </section>
